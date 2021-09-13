@@ -123,12 +123,20 @@ nextState state =
         Nothing ->
             let
                 newState =
-                    reduceStack state
+                    reduceStack { state | counter = state.counter + 1 } |> reverseStack
+
+                _ =
+                    debug1 "STACK" ( newState.counter, List.map .content newState.stack )
             in
-            Done { newState | output = newState.stack ++ newState.output, counter = newState.counter + 1 }
+            Done { newState | output = newState.stack ++ newState.output }
 
         Just line ->
             Loop (nextStateAux line { state | counter = state.counter + 1, input = List.drop 1 state.input })
+
+
+reverseStack : State -> State
+reverseStack state =
+    { state | stack = List.reverse state.stack }
 
 
 reduceStack : State -> State
