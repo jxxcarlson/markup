@@ -3,8 +3,8 @@ module LineTest exposing (suite)
 import Chunker
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, list, string)
-import Line.L1 as L1
-import Line.Line as Line
+import L1.Line as L1
+import Line
 import Parser
 import Test exposing (..)
 

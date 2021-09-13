@@ -1,6 +1,6 @@
-module Line.L1 exposing (classify)
+module L1.Line exposing (classify)
 
-import Line.Line as Line
+import Line
 import Parser exposing ((|.), (|=), Parser)
 
 
