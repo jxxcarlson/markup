@@ -1,6 +1,6 @@
 module LineTest exposing (suite)
 
-import Chunker
+import BlockParser
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, list, string)
 import L1.Line as L1
