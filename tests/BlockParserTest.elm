@@ -10,7 +10,7 @@ import Test exposing (..)
 
 
 rs str =
-    BlockParser.runFromString 1 str |> .output |> List.reverse |> List.map .content
+    BlockParser.runFromString 1 str |> .output |> List.map .content
 
 
 testParser input output =
@@ -25,12 +25,17 @@ suite =
     describe "The Line modules for L1"
         [ testParser
             "| indent\n   foo"
-            [ Block "indent" [ Paragraph [ "   foo" ] ] ]
-        , testParser
-            "| indent\nfoo"
             [ Block "indent" [ Paragraph [ "foo" ] ] ]
-        , Test.only <|
-            testParser
-                "| indent\nfoo\nbar"
-                [ Block "indent" [ Paragraph [ "foo", "bar" ] ] ]
+        , testParser
+            "| indent\nfoo (*)"
+            [ Block "indent" [], Paragraph [ "foo (*)" ] ]
+        , testParser
+            "| indent\n   foo\n   bar"
+            [ Block "indent" [ Paragraph [ "foo", "bar" ] ] ]
+        , testParser
+            "| indent\n   foo\n   bar\n   baz"
+            [ Block "indent" [ Paragraph [ "foo", "bar", "baz" ] ] ]
+        , testParser
+            "| indent\n   foo\n   bar\n| math\n   x^2"
+            [ Block "indent" [ Paragraph [ "foo", "bar" ] ], Block "math" [ Paragraph [ "x^2" ] ] ]
         ]
