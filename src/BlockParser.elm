@@ -164,6 +164,19 @@ reduceStack state =
                                 in
                                 reduceStack { state | stack = stack3, output = newBlock :: state.output }
 
+                            VerbatimBlock name blocks ->
+                                case blockM1.content of
+                                    Paragraph strings ->
+                                        let
+                                            newBlock : BlockM
+                                            newBlock =
+                                                { content = VerbatimBlock name (List.reverse <| strings ++ blocks), meta = blockM2.meta }
+                                        in
+                                        reduceStack { state | stack = stack3, output = newBlock :: state.output }
+
+                                    _ ->
+                                        state
+
                             _ ->
                                 { state | output = state.stack ++ state.output }
 
@@ -223,15 +236,27 @@ nextStateAux line state =
 
 handleBlankLine indent state =
     -- TODO: finish up
-    state
+    if level indent == level state.indent then
+        case List.head state.stack of
+            Nothing ->
+                state
+
+            Just blockM ->
+                if List.member (typeOfBlock blockM.content) [ P, V ] then
+                    { state | stack = appendLineAtTop "" state.stack, indent = indent }
+
+                else
+                    state
+
+    else
+        state
 
 
 handleOrdinaryLine indent line state =
-    if indent > state.indent + quantumOfIndentation then
+    if level indent > level state.indent + 1 then
         shift (Paragraph [ line ]) { state | indent = indent }
 
-    else if indent < state.indent - quantumOfIndentation then
-        -- Indented less
+    else if level indent < level state.indent - 1 then
         state |> reduce OrdinaryLine |> shift (Paragraph [ String.dropLeft indent line ]) |> (\st -> { st | indent = indent })
 
     else
