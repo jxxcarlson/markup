@@ -123,90 +123,25 @@ nextState state =
         Nothing ->
             let
                 newState =
-                    reduceStack { state | counter = state.counter + 1 } |> reverseStack
+                    reduceStack { state | counter = state.counter + 1 }
 
+                -- |> reverseStack
                 _ =
                     debug1 "STACK" ( newState.counter, List.map .content newState.stack, blockLevelOfStackTop newState.stack )
+
+                _ =
+                    debug1 "Reduce stack" (newState.output |> List.map .content)
+
+                finalState =
+                    { newState | output = newState.stack ++ newState.output |> List.reverse }
+
+                _ =
+                    finalState |> .output |> List.map .content |> debug1 "OUTPUT"
             in
-            Done { newState | output = newState.stack ++ newState.output }
+            Done finalState
 
         Just line ->
             Loop (nextStateAux line { state | counter = state.counter + 1, input = List.drop 1 state.input })
-
-
-reverseStack : State -> State
-reverseStack state =
-    { state | stack = List.reverse state.stack }
-
-
-reduceStack : State -> State
-reduceStack state =
-    case List.Extra.uncons state.stack of
-        Nothing ->
-            state
-
-        Just ( blockM1, stack2 ) ->
-            case List.Extra.uncons stack2 of
-                Nothing ->
-                    { state | output = blockM1 :: state.output, stack = [] }
-
-                Just ( blockM2, stack3 ) ->
-                    if blockLevel blockM1 <= blockLevel blockM2 then
-                        state
-
-                    else
-                        case blockM2.content of
-                            Block name blocks ->
-                                let
-                                    newBlock : BlockM
-                                    newBlock =
-                                        { content = Block name (reverseContents blockM1.content :: blocks), meta = blockM2.meta }
-                                in
-                                reduceStack { state | stack = stack3, output = newBlock :: state.output }
-
-                            VerbatimBlock name blocks ->
-                                case blockM1.content of
-                                    Paragraph strings ->
-                                        let
-                                            newBlock : BlockM
-                                            newBlock =
-                                                { content = VerbatimBlock name (List.reverse <| strings ++ blocks), meta = blockM2.meta }
-                                        in
-                                        reduceStack { state | stack = stack3, output = newBlock :: state.output }
-
-                                    _ ->
-                                        state
-
-                            _ ->
-                                { state | output = state.stack ++ state.output }
-
-
-
---{ state | stack = newBlock :: stack3 }
-
-
-quantumOfIndentation =
-    3
-
-
-level : Int -> Int
-level indentation =
-    indentation // quantumOfIndentation
-
-
-blockLevel : BlockM -> Int
-blockLevel blockM =
-    Maybe.map .indent blockM.meta |> Maybe.withDefault 0 |> level
-
-
-blockLevelOfStackTop : List BlockM -> Int
-blockLevelOfStackTop stack =
-    case List.head stack of
-        Nothing ->
-            0
-
-        Just blockM ->
-            blockLevel blockM
 
 
 nextStateAux : String -> State -> State
@@ -220,10 +155,18 @@ nextStateAux line state =
     in
     case lineType.lineType of
         BeginBlock s ->
-            shift (Block s []) { state | indent = indent }
+            if level indent <= blockLevelOfStackTop state.stack then
+                { state | indent = indent } |> reduceStack |> shift (Block s [])
+
+            else
+                { state | indent = indent } |> shift (Block s [])
 
         BeginVerbatimBlock s ->
-            shift (VerbatimBlock s []) { state | indent = indent }
+            if level indent <= blockLevelOfStackTop state.stack then
+                { state | indent = indent } |> reduceStack |> shift (VerbatimBlock s [])
+
+            else
+                { state | indent = indent } |> shift (VerbatimBlock s [])
 
         OrdinaryLine ->
             state |> handleOrdinaryLine indent line
@@ -263,30 +206,10 @@ handleBlankLine indent state =
 
 
 handleOrdinaryLine indent line state =
-    let
-        _ =
-            debug3 "(level.line, level.state)" ( level indent, blockLevelOfStackTop state.stack )
-    in
-    if level indent > level state.indent + 1 then
-        -- if level indent < blockLevelOfStackTop state.stack then
+    if level indent >= blockLevelOfStackTop state.stack then
         let
             _ =
-                debug3 "BRANCH 1" "-"
-        in
-        shift (Paragraph [ line ]) { state | indent = indent }
-
-    else if level indent < level state.indent - 1 then
-        -- else if level indent > blockLevelOfStackTop state.stack then
-        let
-            _ =
-                debug3 "BRANCH 2" "-"
-        in
-        state |> reduce OrdinaryLine |> shift (Paragraph [ String.dropLeft indent line ]) |> (\st -> { st | indent = indent })
-
-    else
-        let
-            _ =
-                debug3 "BRANCH 3" "-"
+                debug3 "BRANCH 3" "Shift or append line at top"
         in
         case List.head state.stack of
             Nothing ->
@@ -298,6 +221,124 @@ handleOrdinaryLine indent line state =
 
                 else
                     shift (Paragraph [ String.dropLeft indent line ]) { state | indent = indent }
+
+    else if level indent < blockLevelOfStackTop state.stack then
+        -- else if level indent > level state.indent + 1 then
+        let
+            _ =
+                debug3 "BRANCH 1" "Shift, reduceStack"
+        in
+        shift (Paragraph [ line ]) (reduceStack { state | indent = indent })
+
+    else
+        -- else if level indent > blockLevelOfStackTop state.stack then
+        let
+            _ =
+                debug3 "BRANCH 2" "INACCESSIBLE ??"
+        in
+        state |> reduce OrdinaryLine |> shift (Paragraph [ String.dropLeft indent line ]) |> (\st -> { st | indent = indent })
+
+
+reverseStack : State -> State
+reverseStack state =
+    { state | stack = List.reverse state.stack }
+
+
+reduceStack : State -> State
+reduceStack state =
+    let
+        _ =
+            debug1 "reduceStack" True
+    in
+    case List.Extra.uncons state.stack of
+        Nothing ->
+            state
+
+        Just ( blockM1, stack2 ) ->
+            case List.Extra.uncons stack2 of
+                Nothing ->
+                    let
+                        _ =
+                            debug1 "reduceStack, len = " 1
+                    in
+                    { state | output = reverseContentsM blockM1 :: state.output, stack = [] }
+
+                Just ( blockM2, stack3 ) ->
+                    let
+                        _ =
+                            debug1 "reduceStack, (level(1), level(2)" ( blockLevel blockM1, blockLevel blockM2 )
+                    in
+                    if blockLevel blockM1 <= blockLevel blockM2 then
+                        let
+                            _ =
+                                debug1 "blockLevel blockM1 <= blockLevel blockM2" True
+                        in
+                        state
+
+                    else
+                        case blockM2.content of
+                            Block name blocks ->
+                                let
+                                    _ =
+                                        debug1 "reduceStack Block" True
+
+                                    newBlock : BlockM
+                                    newBlock =
+                                        { content = Block name (reverseContents blockM1.content :: blocks), meta = blockM2.meta }
+                                in
+                                reduceStack { state | stack = stack3, output = newBlock :: state.output }
+
+                            VerbatimBlock name blocks ->
+                                let
+                                    _ =
+                                        debug1 "reduceStack VerbatimBlock" True
+                                in
+                                case blockM1.content of
+                                    Paragraph strings ->
+                                        let
+                                            newBlock : BlockM
+                                            newBlock =
+                                                { content = VerbatimBlock name (List.reverse <| strings ++ blocks), meta = blockM2.meta }
+                                        in
+                                        reduceStack { state | stack = stack3, output = newBlock :: state.output }
+
+                                    _ ->
+                                        state
+
+                            _ ->
+                                let
+                                    _ =
+                                        state.stack ++ state.output |> debug1 "STATE IN reduceStack"
+                                in
+                                { state | output = state.stack ++ state.output }
+
+
+
+--{ state | stack = newBlock :: stack3 }
+
+
+quantumOfIndentation =
+    3
+
+
+level : Int -> Int
+level indentation =
+    indentation // quantumOfIndentation
+
+
+blockLevel : BlockM -> Int
+blockLevel blockM =
+    Maybe.map .indent blockM.meta |> Maybe.withDefault 0 |> level
+
+
+blockLevelOfStackTop : List BlockM -> Int
+blockLevelOfStackTop stack =
+    case List.head stack of
+        Nothing ->
+            0
+
+        Just blockM ->
+            blockLevel blockM
 
 
 appendLineAtTop line stack =

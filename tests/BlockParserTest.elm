@@ -51,10 +51,15 @@ suite =
             "|| code\n   foo\n   bar\n   \n   baz"
             [ VerbatimBlock "code" [ "foo", "bar", "", "baz" ]
             ]
-        , Test.only <|
-            testParser
-                "|| code\n   foo\n   bar\n   \n   baz\nho ho ho!"
-                [ VerbatimBlock "code" [ "foo", "bar", "", "baz" ]
-                , Paragraph [ "ho ho ho!" ]
-                ]
+        , testParser
+            "|| code\n   foo\n   bar\n   \n   baz\nho ho ho!"
+            [ VerbatimBlock "code" [ "foo", "bar", "", "baz" ]
+            , Paragraph [ "ho ho ho!" ]
+            ]
+        , testParser
+            "ABC\nXYZ\n|| code\n   foo\n   bar\nDEF\n\nGHI"
+            [ Paragraph [ "ABC", "XYZ" ]
+            , VerbatimBlock "code" [ "foo", "bar" ]
+            , Paragraph [ "DEF", "", "GHI" ]
+            ]
         ]
