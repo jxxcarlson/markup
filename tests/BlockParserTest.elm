@@ -44,8 +44,17 @@ suite =
         , testParser
             "| indent\n   foo\n   bar\n|\n\n   baz"
             [ Block "indent" [ Paragraph [ "foo", "bar", "baz" ] ] ]
+        , testParser
+            "|| code\n   foo\n   bar\n\n   baz"
+            [ VerbatimBlock "code" [ "foo", "bar", "baz" ] ]
+        , testParser
+            "|| code\n   foo\n   bar\n   \n   baz"
+            [ VerbatimBlock "code" [ "foo", "bar", "", "baz" ]
+            ]
         , Test.only <|
             testParser
-                "|| code\n   foo\n   bar\n|\n   baz"
-                [ VerbatimBlock "code" [ "foo", "bar", "baz" ] ]
+                "|| code\n   foo\n   bar\n   \n   baz\nho ho ho!"
+                [ VerbatimBlock "code" [ "foo", "bar", "", "baz" ]
+                , Paragraph [ "ho ho ho!" ]
+                ]
         ]

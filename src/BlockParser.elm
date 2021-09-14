@@ -117,7 +117,7 @@ nextState : State -> Step State State
 nextState state =
     let
         _ =
-            debug2 "STACK" ( state.counter, List.map .content state.stack )
+            debug2 "STACK" ( state.counter, List.map .content state.stack, blockLevelOfStackTop state.stack )
     in
     case List.head state.input of
         Nothing ->
@@ -126,7 +126,7 @@ nextState state =
                     reduceStack { state | counter = state.counter + 1 } |> reverseStack
 
                 _ =
-                    debug1 "STACK" ( newState.counter, List.map .content newState.stack )
+                    debug1 "STACK" ( newState.counter, List.map .content newState.stack, blockLevelOfStackTop newState.stack )
             in
             Done { newState | output = newState.stack ++ newState.output }
 
@@ -199,6 +199,16 @@ blockLevel blockM =
     Maybe.map .indent blockM.meta |> Maybe.withDefault 0 |> level
 
 
+blockLevelOfStackTop : List BlockM -> Int
+blockLevelOfStackTop stack =
+    case List.head stack of
+        Nothing ->
+            0
+
+        Just blockM ->
+            blockLevel blockM
+
+
 nextStateAux : String -> State -> State
 nextStateAux line state =
     let
@@ -216,7 +226,7 @@ nextStateAux line state =
             shift (VerbatimBlock s []) { state | indent = indent }
 
         OrdinaryLine ->
-            handleOrdinaryLine indent line state
+            state |> handleOrdinaryLine indent line
 
         BlankLine ->
             handleBlankLine indent state
@@ -253,13 +263,31 @@ handleBlankLine indent state =
 
 
 handleOrdinaryLine indent line state =
+    let
+        _ =
+            debug3 "(level.line, level.state)" ( level indent, blockLevelOfStackTop state.stack )
+    in
     if level indent > level state.indent + 1 then
+        -- if level indent < blockLevelOfStackTop state.stack then
+        let
+            _ =
+                debug3 "BRANCH 1" "-"
+        in
         shift (Paragraph [ line ]) { state | indent = indent }
 
     else if level indent < level state.indent - 1 then
+        -- else if level indent > blockLevelOfStackTop state.stack then
+        let
+            _ =
+                debug3 "BRANCH 2" "-"
+        in
         state |> reduce OrdinaryLine |> shift (Paragraph [ String.dropLeft indent line ]) |> (\st -> { st | indent = indent })
 
     else
+        let
+            _ =
+                debug3 "BRANCH 3" "-"
+        in
         case List.head state.stack of
             Nothing ->
                 shift (Paragraph [ String.dropLeft indent line ]) { state | indent = indent }
