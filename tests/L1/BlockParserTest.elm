@@ -1,11 +1,7 @@
-module BlockParserTest exposing (..)
+module L1.BlockParserTest exposing (..)
 
-import BlockParser exposing (Block(..))
 import Expect exposing (Expectation)
-import Fuzz exposing (Fuzzer, int, list, string)
-import L1.Line as L1
-import Line
-import Parser
+import L1.BlockParser as BlockParser exposing (Block(..))
 import Test exposing (..)
 
 

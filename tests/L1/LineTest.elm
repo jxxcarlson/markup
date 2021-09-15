@@ -1,8 +1,6 @@
-module LineTest exposing (suite)
+module L1.LineTest exposing (suite)
 
-import BlockParser
 import Expect exposing (Expectation)
-import Fuzz exposing (Fuzzer, int, list, string)
 import L1.Line as L1
 import Line
 import Parser

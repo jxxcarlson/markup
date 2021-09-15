@@ -1,37 +1,9 @@
-module BlockParser exposing (Block(..), run, runFromString)
+module L1.BlockParser exposing (Block(..), run, runFromString)
 
 import Console
 import L1.Line as Line
 import Line exposing (LineType(..))
 import List.Extra
-
-
-debugOn =
-    True
-
-
-debug1 str =
-    if debugOn then
-        Debug.log (Console.magenta str)
-
-    else
-        identity
-
-
-debug2 str =
-    if debugOn then
-        Debug.log (Console.cyan str)
-
-    else
-        identity
-
-
-debug3 str =
-    if debugOn then
-        Debug.log (Console.yellow str)
-
-    else
-        identity
 
 
 type Block
@@ -46,36 +18,16 @@ type BlockType
     | B
 
 
-typeOfBlock : Block -> BlockType
-typeOfBlock b =
-    case b of
-        Paragraph _ ->
-            P
-
-        VerbatimBlock _ _ ->
-            V
-
-        Block _ _ ->
-            B
-
-
 type alias BlockM =
     { content : Block, meta : Maybe Meta }
 
 
-sameKindOfBlock : Block -> Block -> Bool
-sameKindOfBlock a b =
-    typeOfBlock a == typeOfBlock b
-
-
-blockIsLikeTopOfStack : Block -> List BlockM -> Bool
-blockIsLikeTopOfStack block blocks =
-    case List.head blocks of
-        Nothing ->
-            False
-
-        Just blockM ->
-            sameKindOfBlock block blockM.content
+type alias Meta =
+    { start : Int
+    , end : Int
+    , indent : Int
+    , id : String
+    }
 
 
 type alias State =
@@ -187,6 +139,10 @@ nextStateAux line state =
             state
 
 
+
+-- HANDLERS
+
+
 handleBlankLine indent state =
     -- TODO: finish up
     if level indent == level state.indent then
@@ -237,6 +193,10 @@ handleOrdinaryLine indent line state =
                 debug3 "BRANCH 2" "INACCESSIBLE ??"
         in
         state |> reduce OrdinaryLine |> shift (Paragraph [ String.dropLeft indent line ]) |> (\st -> { st | indent = indent })
+
+
+
+-- STACK
 
 
 reverseStack : State -> State
@@ -313,8 +273,76 @@ reduceStack state =
                                 { state | output = state.stack ++ state.output }
 
 
+appendLineAtTop line stack =
+    -- TODO: check this
+    case List.head stack of
+        Nothing ->
+            stack
 
---{ state | stack = newBlock :: stack3 }
+        Just block ->
+            case block.content of
+                Paragraph strings ->
+                    { content = Paragraph (line :: strings), meta = block.meta } :: List.drop 1 stack
+
+                _ ->
+                    stack
+
+
+
+-- SHIFT
+
+
+shift : Block -> State -> State
+shift block state =
+    let
+        newBlock =
+            { content = block
+            , meta =
+                Just
+                    { start = state.lineNumber
+                    , end = state.lineNumber
+                    , indent = state.indent
+                    , id = String.fromInt state.generation ++ "." ++ String.fromInt state.blockCount
+                    }
+            }
+    in
+    { state
+        | stack = newBlock :: state.stack
+        , lineNumber = state.lineNumber + 1
+        , blockCount = state.blockCount + 1
+    }
+
+
+
+-- REDUCE
+
+
+reduce : Line.LineType -> State -> State
+reduce lineType state =
+    state
+
+
+
+-- LOOP
+
+
+type Step state a
+    = Loop state
+    | Done a
+
+
+loop : State -> (State -> Step State State) -> State
+loop s nextState_ =
+    case nextState s of
+        Loop s_ ->
+            loop s_ nextState_
+
+        Done b ->
+            b
+
+
+
+-- HELPERS
 
 
 quantumOfIndentation =
@@ -341,76 +369,32 @@ blockLevelOfStackTop stack =
             blockLevel blockM
 
 
-appendLineAtTop line stack =
-    -- TODO: check this
-    case List.head stack of
+typeOfBlock : Block -> BlockType
+typeOfBlock b =
+    case b of
+        Paragraph _ ->
+            P
+
+        VerbatimBlock _ _ ->
+            V
+
+        Block _ _ ->
+            B
+
+
+sameKindOfBlock : Block -> Block -> Bool
+sameKindOfBlock a b =
+    typeOfBlock a == typeOfBlock b
+
+
+blockIsLikeTopOfStack : Block -> List BlockM -> Bool
+blockIsLikeTopOfStack block blocks =
+    case List.head blocks of
         Nothing ->
-            stack
+            False
 
-        Just block ->
-            case block.content of
-                Paragraph strings ->
-                    { content = Paragraph (line :: strings), meta = block.meta } :: List.drop 1 stack
-
-                _ ->
-                    stack
-
-
-
--- Indented about the same
-
-
-reduce : Line.LineType -> State -> State
-reduce lineType state =
-    state
-
-
-shift : Block -> State -> State
-shift block state =
-    let
-        newBlock =
-            { content = block
-            , meta =
-                Just
-                    { start = state.lineNumber
-                    , end = state.lineNumber
-                    , indent = state.indent
-                    , id = String.fromInt state.generation ++ "." ++ String.fromInt state.blockCount
-                    }
-            }
-    in
-    { state
-        | stack = newBlock :: state.stack
-        , lineNumber = state.lineNumber + 1
-        , blockCount = state.blockCount + 1
-    }
-
-
-type alias Meta =
-    { start : Int
-    , end : Int
-    , indent : Int
-    , id : String
-    }
-
-
-type Step state a
-    = Loop state
-    | Done a
-
-
-loop : State -> (State -> Step State State) -> State
-loop s nextState_ =
-    case nextState s of
-        Loop s_ ->
-            loop s_ nextState_
-
-        Done b ->
-            b
-
-
-
--- HELPERS
+        Just blockM ->
+            sameKindOfBlock block blockM.content
 
 
 reverseContents : Block -> Block
@@ -429,3 +413,35 @@ reverseContents block =
 reverseContentsM : BlockM -> BlockM
 reverseContentsM { content, meta } =
     { content = reverseContents content, meta = meta }
+
+
+
+-- DEBUG
+
+
+debugOn =
+    True
+
+
+debug1 str =
+    if debugOn then
+        Debug.log (Console.magenta str)
+
+    else
+        identity
+
+
+debug2 str =
+    if debugOn then
+        Debug.log (Console.cyan str)
+
+    else
+        identity
+
+
+debug3 str =
+    if debugOn then
+        Debug.log (Console.yellow str)
+
+    else
+        identity
