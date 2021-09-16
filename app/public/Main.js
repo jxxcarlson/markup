@@ -12868,17 +12868,18 @@ var $author$project$Common$BlockParser$quantumOfIndentation = 3;
 var $author$project$Common$BlockParser$level = function (indentation) {
 	return (indentation / $author$project$Common$BlockParser$quantumOfIndentation) | 0;
 };
-var $author$project$Common$BlockParser$blockLevel = function (blockM) {
-	return $author$project$Common$BlockParser$level(
-		A2(
-			$elm$core$Maybe$withDefault,
-			0,
-			A2(
-				$elm$core$Maybe$map,
-				function ($) {
-					return $.indent;
-				},
-				blockM.meta)));
+var $author$project$Common$BlockParser$blockLevel = function (block) {
+	switch (block.$) {
+		case 'Paragraph':
+			var meta = block.b;
+			return $author$project$Common$BlockParser$level(meta.indent);
+		case 'VerbatimBlock':
+			var meta = block.c;
+			return $author$project$Common$BlockParser$level(meta.indent);
+		default:
+			var meta = block.c;
+			return $author$project$Common$BlockParser$level(meta.indent);
+	}
 };
 var $author$project$Common$BlockParser$blockLevelOfStackTop = function (stack) {
 	var _v0 = $elm$core$List$head(stack);
@@ -12934,46 +12935,46 @@ var $elm$core$List$drop = F2(
 			}
 		}
 	});
-var $author$project$Common$Syntax$Block = F2(
-	function (a, b) {
-		return {$: 'Block', a: a, b: b};
+var $author$project$Common$Syntax$Block = F3(
+	function (a, b, c) {
+		return {$: 'Block', a: a, b: b, c: c};
 	});
-var $author$project$Common$Syntax$VerbatimBlock = F2(
-	function (a, b) {
-		return {$: 'VerbatimBlock', a: a, b: b};
+var $author$project$Common$Syntax$VerbatimBlock = F3(
+	function (a, b, c) {
+		return {$: 'VerbatimBlock', a: a, b: b, c: c};
 	});
-var $author$project$Common$Syntax$Paragraph = function (a) {
-	return {$: 'Paragraph', a: a};
-};
+var $author$project$Common$Syntax$Paragraph = F2(
+	function (a, b) {
+		return {$: 'Paragraph', a: a, b: b};
+	});
 var $author$project$Common$BlockParser$reverseContents = function (block) {
 	switch (block.$) {
 		case 'Paragraph':
 			var strings = block.a;
-			return $author$project$Common$Syntax$Paragraph(
-				$elm$core$List$reverse(strings));
+			var meta = block.b;
+			return A2(
+				$author$project$Common$Syntax$Paragraph,
+				$elm$core$List$reverse(strings),
+				meta);
 		case 'VerbatimBlock':
 			var name = block.a;
 			var strings = block.b;
-			return A2(
+			var meta = block.c;
+			return A3(
 				$author$project$Common$Syntax$VerbatimBlock,
 				name,
-				$elm$core$List$reverse(strings));
+				$elm$core$List$reverse(strings),
+				meta);
 		default:
 			var name = block.a;
 			var strings = block.b;
-			return A2(
+			var meta = block.c;
+			return A3(
 				$author$project$Common$Syntax$Block,
 				name,
-				$elm$core$List$reverse(strings));
+				$elm$core$List$reverse(strings),
+				meta);
 	}
-};
-var $author$project$Common$BlockParser$reverseContentsM = function (_v0) {
-	var content = _v0.content;
-	var meta = _v0.meta;
-	return {
-		content: $author$project$Common$BlockParser$reverseContents(content),
-		meta: meta
-	};
 };
 var $elm_community$list_extra$List$Extra$uncons = function (list) {
 	if (!list.b) {
@@ -12994,9 +12995,9 @@ var $author$project$Common$BlockParser$reduceStack = function (state) {
 			return state;
 		} else {
 			var _v2 = _v1.a;
-			var blockM1 = _v2.a;
-			var stack2 = _v2.b;
-			var _v3 = $elm_community$list_extra$List$Extra$uncons(stack2);
+			var block1 = _v2.a;
+			var stack1 = _v2.b;
+			var _v3 = $elm_community$list_extra$List$Extra$uncons(stack1);
 			if (_v3.$ === 'Nothing') {
 				var _v4 = A2($author$project$Common$Debug$debug1, 'reduceStack, len = ', 1);
 				return _Utils_update(
@@ -13004,70 +13005,67 @@ var $author$project$Common$BlockParser$reduceStack = function (state) {
 					{
 						output: A2(
 							$elm$core$List$cons,
-							$author$project$Common$BlockParser$reverseContentsM(blockM1),
+							$author$project$Common$BlockParser$reverseContents(block1),
 							state.output),
-						stack: stack2
+						stack: stack1
 					});
 			} else {
 				var _v5 = _v3.a;
-				var blockM2 = _v5.a;
-				var stack3 = _v5.b;
+				var block2 = _v5.a;
+				var stack2 = _v5.b;
 				var _v6 = A2(
 					$author$project$Common$Debug$debug1,
 					'reduceStack, (level(1), level(2)',
 					_Utils_Tuple2(
-						$author$project$Common$BlockParser$blockLevel(blockM1),
-						$author$project$Common$BlockParser$blockLevel(blockM2)));
+						$author$project$Common$BlockParser$blockLevel(block1),
+						$author$project$Common$BlockParser$blockLevel(block2)));
 				if (_Utils_cmp(
-					$author$project$Common$BlockParser$blockLevel(blockM1),
-					$author$project$Common$BlockParser$blockLevel(blockM2)) < 1) {
+					$author$project$Common$BlockParser$blockLevel(block1),
+					$author$project$Common$BlockParser$blockLevel(block2)) < 1) {
 					var _v7 = A2($author$project$Common$Debug$debug1, 'blockLevel blockM1 <= blockLevel blockM2', true);
 					return state;
 				} else {
-					var _v8 = blockM2.content;
-					switch (_v8.$) {
+					switch (block2.$) {
 						case 'Block':
-							var name = _v8.a;
-							var blocks = _v8.b;
-							var newBlock = {
-								content: A2(
-									$author$project$Common$Syntax$Block,
-									name,
-									A2(
-										$elm$core$List$cons,
-										$author$project$Common$BlockParser$reverseContents(blockM1.content),
-										blocks)),
-								meta: blockM2.meta
-							};
+							var name = block2.a;
+							var blocks = block2.b;
+							var meta = block2.c;
+							var newBlock = A3(
+								$author$project$Common$Syntax$Block,
+								name,
+								A2(
+									$elm$core$List$cons,
+									$author$project$Common$BlockParser$reverseContents(block1),
+									blocks),
+								meta);
 							var _v9 = A2($author$project$Common$Debug$debug1, 'reduceStack Block', true);
 							var $temp$state = _Utils_update(
 								state,
 								{
 									output: A2($elm$core$List$cons, newBlock, state.output),
-									stack: stack3
+									stack: stack2
 								});
 							state = $temp$state;
 							continue reduceStack;
 						case 'VerbatimBlock':
-							var name = _v8.a;
-							var blocks = _v8.b;
+							var name = block2.a;
+							var blocks = block2.b;
+							var meta = block2.c;
 							var _v10 = A2($author$project$Common$Debug$debug1, 'reduceStack VerbatimBlock', true);
-							var _v11 = blockM1.content;
-							if (_v11.$ === 'Paragraph') {
-								var strings = _v11.a;
-								var newBlock = {
-									content: A2(
-										$author$project$Common$Syntax$VerbatimBlock,
-										name,
-										$elm$core$List$reverse(
-											_Utils_ap(strings, blocks))),
-									meta: blockM2.meta
-								};
+							if (block1.$ === 'Paragraph') {
+								var strings = block1.a;
+								var metaP = block1.b;
+								var newBlock = A3(
+									$author$project$Common$Syntax$VerbatimBlock,
+									name,
+									$elm$core$List$reverse(
+										_Utils_ap(strings, blocks)),
+									metaP);
 								var $temp$state = _Utils_update(
 									state,
 									{
 										output: A2($elm$core$List$cons, newBlock, state.output),
-										stack: stack3
+										stack: stack2
 									});
 								state = $temp$state;
 								continue reduceStack;
@@ -13082,6 +13080,35 @@ var $author$project$Common$BlockParser$reduceStack = function (state) {
 		}
 	}
 };
+var $author$project$Common$Syntax$BBBlock = F2(
+	function (a, b) {
+		return {$: 'BBBlock', a: a, b: b};
+	});
+var $author$project$Common$Syntax$BBParagraph = function (a) {
+	return {$: 'BBParagraph', a: a};
+};
+var $author$project$Common$Syntax$BBVerbatimBlock = F2(
+	function (a, b) {
+		return {$: 'BBVerbatimBlock', a: a, b: b};
+	});
+var $author$project$Common$Syntax$simplify = function (block) {
+	switch (block.$) {
+		case 'Paragraph':
+			var strings = block.a;
+			return $author$project$Common$Syntax$BBParagraph(strings);
+		case 'VerbatimBlock':
+			var name = block.a;
+			var strings = block.b;
+			return A2($author$project$Common$Syntax$BBVerbatimBlock, name, strings);
+		default:
+			var name = block.a;
+			var blocks = block.b;
+			return A2(
+				$author$project$Common$Syntax$BBBlock,
+				name,
+				A2($elm$core$List$map, $author$project$Common$Syntax$simplify, blocks));
+	}
+};
 var $author$project$Common$BlockParser$nextState = F2(
 	function (nextStateAux, state) {
 		var _v0 = A2(
@@ -13089,12 +13116,7 @@ var $author$project$Common$BlockParser$nextState = F2(
 			'STACK',
 			_Utils_Tuple3(
 				state.counter,
-				A2(
-					$elm$core$List$map,
-					function ($) {
-						return $.content;
-					},
-					state.stack),
+				A2($elm$core$List$map, $author$project$Common$Syntax$simplify, state.stack),
 				$author$project$Common$BlockParser$blockLevelOfStackTop(state.stack)));
 		var _v1 = $elm$core$List$head(state.input);
 		if (_v1.$ === 'Nothing') {
@@ -13113,31 +13135,16 @@ var $author$project$Common$BlockParser$nextState = F2(
 				'STACK',
 				_Utils_Tuple3(
 					newState.counter,
-					A2(
-						$elm$core$List$map,
-						function ($) {
-							return $.content;
-						},
-						newState.stack),
+					A2($elm$core$List$map, $author$project$Common$Syntax$simplify, newState.stack),
 					$author$project$Common$BlockParser$blockLevelOfStackTop(newState.stack)));
 			var _v3 = A2(
 				$author$project$Common$Debug$debug1,
 				'Reduce stack',
-				A2(
-					$elm$core$List$map,
-					function ($) {
-						return $.content;
-					},
-					newState.output));
+				A2($elm$core$List$map, $author$project$Common$Syntax$simplify, newState.output));
 			var _v4 = A2(
 				$author$project$Common$Debug$debug1,
 				'OUTPUT',
-				A2(
-					$elm$core$List$map,
-					function ($) {
-						return $.content;
-					},
-					finalState.output));
+				A2($elm$core$List$map, $author$project$Common$Syntax$simplify, finalState.output));
 			return $author$project$Common$BlockParser$Done(finalState);
 		} else {
 			var line = _v1.a;
@@ -13168,9 +13175,6 @@ var $author$project$Common$BlockParser$blockLabel = function (block) {
 			return s;
 	}
 };
-var $author$project$Common$BlockParser$blockLabelM = function (block) {
-	return $author$project$Common$BlockParser$blockLabel(block.content);
-};
 var $author$project$Common$BlockParser$blockLabelAtBottomOfStack = function (stack) {
 	var _v0 = $elm$core$List$head(
 		$elm$core$List$reverse(stack));
@@ -13178,7 +13182,7 @@ var $author$project$Common$BlockParser$blockLabelAtBottomOfStack = function (sta
 		return '(no label)';
 	} else {
 		var block = _v0.a;
-		return $author$project$Common$BlockParser$blockLabelM(block);
+		return $author$project$Common$BlockParser$blockLabel(block);
 	}
 };
 var $elm$parser$Parser$Advanced$Parser = function (a) {
@@ -13652,16 +13656,15 @@ var $author$project$Common$BlockParser$appendLineAtTop = F2(
 			return stack;
 		} else {
 			var block = _v0.a;
-			var _v1 = block.content;
-			if (_v1.$ === 'Paragraph') {
-				var strings = _v1.a;
+			if (block.$ === 'Paragraph') {
+				var strings = block.a;
+				var meta = block.b;
 				return A2(
 					$elm$core$List$cons,
-					{
-						content: $author$project$Common$Syntax$Paragraph(
-							A2($elm$core$List$cons, line, strings)),
-						meta: block.meta
-					},
+					A2(
+						$author$project$Common$Syntax$Paragraph,
+						A2($elm$core$List$cons, line, strings),
+						meta),
 					A2($elm$core$List$drop, 1, stack));
 			} else {
 				return stack;
@@ -13688,10 +13691,10 @@ var $author$project$Markdown$BlockParser$handleBlankLine = F2(
 			if (_v0.$ === 'Nothing') {
 				return state;
 			} else {
-				var blockM = _v0.a;
+				var block = _v0.a;
 				return A2(
 					$elm$core$List$member,
-					$author$project$Common$BlockParser$typeOfBlock(blockM.content),
+					$author$project$Common$BlockParser$typeOfBlock(block),
 					_List_fromArray(
 						[$author$project$Common$Syntax$P, $author$project$Common$Syntax$V])) ? _Utils_update(
 					state,
@@ -13704,18 +13707,31 @@ var $author$project$Markdown$BlockParser$handleBlankLine = F2(
 			return $author$project$Common$BlockParser$reduceStack(state);
 		}
 	});
+var $author$project$Common$BlockParser$replaceMeta = F2(
+	function (meta, block) {
+		switch (block.$) {
+			case 'Paragraph':
+				var strings = block.a;
+				return A2($author$project$Common$Syntax$Paragraph, strings, meta);
+			case 'VerbatimBlock':
+				var name = block.a;
+				var strings = block.b;
+				return A3($author$project$Common$Syntax$VerbatimBlock, name, strings, meta);
+			default:
+				var name = block.a;
+				var blocks = block.b;
+				return A3($author$project$Common$Syntax$Block, name, blocks, meta);
+		}
+	});
 var $author$project$Common$BlockParser$shift = F2(
 	function (block, state) {
-		var newBlock = {
-			content: block,
-			meta: $elm$core$Maybe$Just(
-				{
-					end: state.lineNumber,
-					id: $elm$core$String$fromInt(state.generation) + ('.' + $elm$core$String$fromInt(state.blockCount)),
-					indent: state.indent,
-					start: state.lineNumber
-				})
+		var newMeta = {
+			end: state.lineNumber,
+			id: $elm$core$String$fromInt(state.generation) + ('.' + $elm$core$String$fromInt(state.blockCount)),
+			indent: state.indent,
+			start: state.lineNumber
 		};
+		var newBlock = A2($author$project$Common$BlockParser$replaceMeta, newMeta, block);
 		return _Utils_update(
 			state,
 			{
@@ -13733,18 +13749,20 @@ var $author$project$Markdown$BlockParser$handleOrdinaryLine = F3(
 			if (_v0.$ === 'Nothing') {
 				return A2(
 					$author$project$Common$BlockParser$shift,
-					$author$project$Common$Syntax$Paragraph(
+					A2(
+						$author$project$Common$Syntax$Paragraph,
 						_List_fromArray(
 							[
 								A2($elm$core$String$dropLeft, indent, line)
-							])),
+							]),
+						A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
 					_Utils_update(
 						state,
 						{indent: indent}));
 			} else {
-				var blockM = _v0.a;
+				var block = _v0.a;
 				return _Utils_eq(
-					$author$project$Common$BlockParser$typeOfBlock(blockM.content),
+					$author$project$Common$BlockParser$typeOfBlock(block),
 					$author$project$Common$Syntax$P) ? _Utils_update(
 					state,
 					{
@@ -13755,11 +13773,13 @@ var $author$project$Markdown$BlockParser$handleOrdinaryLine = F3(
 							state.stack)
 					}) : A2(
 					$author$project$Common$BlockParser$shift,
-					$author$project$Common$Syntax$Paragraph(
+					A2(
+						$author$project$Common$Syntax$Paragraph,
 						_List_fromArray(
 							[
 								A2($elm$core$String$dropLeft, indent, line)
-							])),
+							]),
+						A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
 					_Utils_update(
 						state,
 						{indent: indent}));
@@ -13767,9 +13787,11 @@ var $author$project$Markdown$BlockParser$handleOrdinaryLine = F3(
 		} else {
 			return A2(
 				$author$project$Common$BlockParser$shift,
-				$author$project$Common$Syntax$Paragraph(
+				A2(
+					$author$project$Common$Syntax$Paragraph,
 					_List_fromArray(
-						[line])),
+						[line]),
+					A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
 				$author$project$Common$BlockParser$reduceStack(
 					_Utils_update(
 						state,
@@ -13788,70 +13810,67 @@ var $author$project$Common$BlockParser$reduceStack_ = function (state) {
 			return state;
 		} else {
 			var _v1 = _v0.a;
-			var blockM1 = _v1.a;
-			var stack2 = _v1.b;
-			var _v2 = $elm_community$list_extra$List$Extra$uncons(stack2);
+			var block1 = _v1.a;
+			var stack1 = _v1.b;
+			var _v2 = $elm_community$list_extra$List$Extra$uncons(stack1);
 			if (_v2.$ === 'Nothing') {
 				return {
 					output: _List_fromArray(
 						[
-							$author$project$Common$BlockParser$reverseContentsM(blockM1)
+							$author$project$Common$BlockParser$reverseContents(block1)
 						]),
-					stack: stack2
+					stack: stack1
 				};
 			} else {
 				var _v3 = _v2.a;
-				var blockM2 = _v3.a;
-				var stack3 = _v3.b;
+				var block2 = _v3.a;
+				var stack2 = _v3.b;
 				if (_Utils_cmp(
-					$author$project$Common$BlockParser$blockLevel(blockM1),
-					$author$project$Common$BlockParser$blockLevel(blockM2)) < 1) {
+					$author$project$Common$BlockParser$blockLevel(block1),
+					$author$project$Common$BlockParser$blockLevel(block2)) < 1) {
 					var _v4 = A2($author$project$Common$Debug$debug1, 'blockLevel blockM1 <= blockLevel blockM2', true);
 					return state;
 				} else {
-					var _v5 = blockM2.content;
-					switch (_v5.$) {
+					switch (block2.$) {
 						case 'Block':
-							var name = _v5.a;
-							var blocks = _v5.b;
-							var newBlock = {
-								content: A2(
-									$author$project$Common$Syntax$Block,
-									name,
-									A2(
-										$elm$core$List$cons,
-										$author$project$Common$BlockParser$reverseContents(blockM1.content),
-										blocks)),
-								meta: blockM2.meta
-							};
+							var name = block2.a;
+							var blocks = block2.b;
+							var meta = block2.c;
+							var newBlock = A3(
+								$author$project$Common$Syntax$Block,
+								name,
+								A2(
+									$elm$core$List$cons,
+									$author$project$Common$BlockParser$reverseContents(block1),
+									blocks),
+								meta);
 							var _v6 = A2($author$project$Common$Debug$debug1, 'reduceStack Block', true);
 							var $temp$state = _Utils_update(
 								state,
 								{
 									output: A2($elm$core$List$cons, newBlock, state.output),
-									stack: stack3
+									stack: stack2
 								});
 							state = $temp$state;
 							continue reduceStack_;
 						case 'VerbatimBlock':
-							var name = _v5.a;
-							var blocks = _v5.b;
-							var _v7 = blockM1.content;
-							if (_v7.$ === 'Paragraph') {
-								var strings = _v7.a;
-								var newBlock = {
-									content: A2(
-										$author$project$Common$Syntax$VerbatimBlock,
-										name,
-										$elm$core$List$reverse(
-											_Utils_ap(strings, blocks))),
-									meta: blockM2.meta
-								};
+							var name = block2.a;
+							var blocks = block2.b;
+							var meta = block2.c;
+							if (block1.$ === 'Paragraph') {
+								var strings = block1.a;
+								var metaP = block1.b;
+								var newBlock = A3(
+									$author$project$Common$Syntax$VerbatimBlock,
+									name,
+									$elm$core$List$reverse(
+										_Utils_ap(strings, blocks)),
+									meta);
 								var $temp$state = _Utils_update(
 									state,
 									{
 										output: A2($elm$core$List$cons, newBlock, state.output),
-										stack: stack3
+										stack: stack2
 									});
 								state = $temp$state;
 								continue reduceStack_;
@@ -13934,13 +13953,21 @@ var $author$project$Markdown$BlockParser$nextStateAux = F2(
 					$author$project$Common$BlockParser$level(indent),
 					$author$project$Common$BlockParser$blockLevelOfStackTop(state.stack)) < 1) ? A2(
 					$author$project$Common$BlockParser$shift,
-					A2($author$project$Common$Syntax$Block, s, _List_Nil),
+					A3(
+						$author$project$Common$Syntax$Block,
+						s,
+						_List_Nil,
+						A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
 					$author$project$Common$BlockParser$reduceStack(
 						_Utils_update(
 							state,
 							{indent: indent}))) : A2(
 					$author$project$Common$BlockParser$shift,
-					A2($author$project$Common$Syntax$Block, s, _List_Nil),
+					A3(
+						$author$project$Common$Syntax$Block,
+						s,
+						_List_Nil,
+						A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
 					_Utils_update(
 						state,
 						{indent: indent}));
@@ -13953,7 +13980,7 @@ var $author$project$Markdown$BlockParser$nextStateAux = F2(
 						$author$project$Utility$takeUntil,
 						function (a) {
 							return _Utils_eq(
-								$author$project$Common$BlockParser$blockLabelM(a),
+								$author$project$Common$BlockParser$blockLabel(a),
 								s) && _Utils_eq(
 								$author$project$Common$BlockParser$blockLevel(a),
 								$author$project$Common$BlockParser$level(indent));
@@ -13971,7 +13998,11 @@ var $author$project$Markdown$BlockParser$nextStateAux = F2(
 							state,
 							{indent: indent})) : A2(
 						$author$project$Common$BlockParser$shift,
-						A2($author$project$Common$Syntax$VerbatimBlock, s, _List_Nil),
+						A3(
+							$author$project$Common$Syntax$VerbatimBlock,
+							s,
+							_List_Nil,
+							A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
 						$author$project$Common$BlockParser$reduceStack(
 							_Utils_update(
 								state,
@@ -13979,7 +14010,11 @@ var $author$project$Markdown$BlockParser$nextStateAux = F2(
 				} else {
 					return A2(
 						$author$project$Common$BlockParser$shift,
-						A2($author$project$Common$Syntax$VerbatimBlock, s, _List_Nil),
+						A3(
+							$author$project$Common$Syntax$VerbatimBlock,
+							s,
+							_List_Nil,
+							A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
 						_Utils_update(
 							state,
 							{indent: indent}));
@@ -13994,7 +14029,7 @@ var $author$project$Markdown$BlockParser$nextStateAux = F2(
 					$author$project$Utility$takeUntil,
 					function (a) {
 						return _Utils_eq(
-							$author$project$Common$BlockParser$blockLabelM(a),
+							$author$project$Common$BlockParser$blockLabel(a),
 							s) && _Utils_eq(
 							$author$project$Common$BlockParser$blockLevel(a),
 							$author$project$Common$BlockParser$level(indent));
@@ -14018,13 +14053,11 @@ var $author$project$Markdown$BlockParser$nextStateAux = F2(
 						});
 				} else {
 					var s2 = $author$project$Common$BlockParser$blockLabelAtBottomOfStack(prefix);
-					var errorMessage = {
-						content: $author$project$Common$Syntax$Paragraph(
-							_List_fromArray(
-								['Error: I was expecting an end-block labeled  ' + (s2 + (', but found ' + s))])),
-						meta: $elm$core$Maybe$Just(
-							A2($author$project$Common$Syntax$dummyMeta, 0, 0))
-					};
+					var errorMessage = A2(
+						$author$project$Common$Syntax$Paragraph,
+						_List_fromArray(
+							['Error: I was expecting an end-block labeled  ' + (s2 + (', but found ' + s))]),
+						A2($author$project$Common$Syntax$dummyMeta, 0, 0));
 					return _Utils_update(
 						state,
 						{
@@ -14057,15 +14090,17 @@ var $author$project$Markdown$BlockParser$parse = F2(
 	function (generation, lines) {
 		return A2($author$project$Markdown$BlockParser$run, generation, lines).output;
 	});
-var $author$project$Common$Render$notImplemented = function (str) {
-	return A2(
-		$mdgriffith$elm_ui$Element$el,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$Font$color(
-				A3($mdgriffith$elm_ui$Element$rgb255, 40, 40, 255))
-			]),
-		$mdgriffith$elm_ui$Element$text('not implemented: ' + str));
+var $elm$core$Dict$fromList = function (assocs) {
+	return A3(
+		$elm$core$List$foldl,
+		F2(
+			function (_v0, dict) {
+				var key = _v0.a;
+				var value = _v0.b;
+				return A3($elm$core$Dict$insert, key, value, dict);
+			}),
+		$elm$core$Dict$empty,
+		assocs);
 };
 var $mdgriffith$elm_ui$Internal$Model$Paragraph = {$: 'Paragraph'};
 var $mdgriffith$elm_ui$Element$paragraph = F2(
@@ -14117,18 +14152,6 @@ var $author$project$Common$Render$codeBlock = F3(
 				]),
 			A2($elm$core$List$map, $mdgriffith$elm_ui$Element$text, lines));
 	});
-var $elm$core$Dict$fromList = function (assocs) {
-	return A3(
-		$elm$core$List$foldl,
-		F2(
-			function (_v0, dict) {
-				var key = _v0.a;
-				var value = _v0.b;
-				return A3($elm$core$Dict$insert, key, value, dict);
-			}),
-		$elm$core$Dict$empty,
-		assocs);
-};
 var $author$project$Common$Render$verbatimBlockDict = $elm$core$Dict$fromList(
 	_List_fromArray(
 		[
@@ -14139,19 +14162,32 @@ var $author$project$Common$Render$verbatimBlockDict = $elm$core$Dict$fromList(
 					return A3($author$project$Common$Render$codeBlock, g, s, lines);
 				}))
 		]));
+var $author$project$Common$Render$quotationBlock = F3(
+	function (generation, settings, blocks) {
+		return A2(
+			$mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$paddingEach(
+					{bottom: 0, left: 18, right: 0, top: 0})
+				]),
+			A2(
+				$elm$core$List$map,
+				A2($author$project$Common$Render$renderBlock, generation, settings),
+				blocks));
+	});
 var $author$project$Common$Render$renderBlock = F3(
 	function (generation, settings, block) {
-		var _v0 = block.content;
-		switch (_v0.$) {
+		switch (block.$) {
 			case 'Paragraph':
-				var strings = _v0.a;
+				var strings = block.a;
 				return A2(
 					$mdgriffith$elm_ui$Element$paragraph,
 					_List_Nil,
 					A2($elm$core$List$map, $mdgriffith$elm_ui$Element$text, strings));
 			case 'VerbatimBlock':
-				var name = _v0.a;
-				var lines = _v0.b;
+				var name = block.a;
+				var lines = block.b;
 				var _v1 = A2($elm$core$Dict$get, name, $author$project$Common$Render$verbatimBlockDict);
 				if (_v1.$ === 'Nothing') {
 					return A2(
@@ -14163,9 +14199,42 @@ var $author$project$Common$Render$renderBlock = F3(
 					return A3(f, generation, settings, lines);
 				}
 			default:
-				return $author$project$Common$Render$notImplemented('(block)');
+				var name = block.a;
+				var blocks = block.b;
+				var _v2 = A2(
+					$elm$core$Dict$get,
+					name,
+					$author$project$Common$Render$cyclic$blockDict());
+				if (_v2.$ === 'Nothing') {
+					return A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_Nil,
+						$mdgriffith$elm_ui$Element$text('Unimplemented block: ' + name));
+				} else {
+					var f = _v2.a;
+					return A3(f, generation, settings, blocks);
+				}
 		}
 	});
+function $author$project$Common$Render$cyclic$blockDict() {
+	return $elm$core$Dict$fromList(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'quotation',
+				F3(
+					function (g, s, blocks) {
+						return A3($author$project$Common$Render$quotationBlock, g, s, blocks);
+					}))
+			]));
+}
+try {
+	var $author$project$Common$Render$blockDict = $author$project$Common$Render$cyclic$blockDict();
+	$author$project$Common$Render$cyclic$blockDict = function () {
+		return $author$project$Common$Render$blockDict;
+	};
+} catch ($) {
+	throw 'Some top-level definitions from `Common.Render` are causing infinite recursion:\n\n  ┌─────┐\n  │    blockDict\n  │     ↓\n  │    quotationBlock\n  │     ↓\n  │    renderBlock\n  └─────┘\n\nThese errors are very tricky, so read https://elm-lang.org/0.19.1/bad-recursion to learn how to fix it!';}
 var $author$project$Common$Render$render = F3(
 	function (generation, settings, blocks) {
 		return A2(

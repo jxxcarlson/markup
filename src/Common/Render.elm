@@ -1,6 +1,6 @@
 module Common.Render exposing (Settings, render)
 
-import Common.Syntax as Syntax exposing (BasicBlock(..), Block)
+import Common.Syntax as Syntax exposing (Block(..))
 import Dict exposing (Dict)
 import Element exposing (Element)
 import Element.Font as Font
@@ -17,11 +17,11 @@ render generation settings blocks =
 
 renderBlock : Int -> Settings -> Block -> Element msg
 renderBlock generation settings block =
-    case block.content of
-        BBParagraph strings ->
+    case block of
+        Paragraph strings _ ->
             Element.paragraph [] (List.map Element.text strings)
 
-        BBVerbatimBlock name lines ->
+        VerbatimBlock name lines _ ->
             case Dict.get name verbatimBlockDict of
                 Nothing ->
                     Element.el [] (Element.text ("Unimplemented verbatim block: " ++ name))
@@ -29,16 +29,13 @@ renderBlock generation settings block =
                 Just f ->
                     f generation settings lines
 
-        BBBlock name blocks ->
+        Block name blocks _ ->
             case Dict.get name blockDict of
                 Nothing ->
                     Element.el [] (Element.text ("Unimplemented block: " ++ name))
 
                 Just f ->
                     f generation settings blocks
-
-        _ ->
-            notImplemented "(block)"
 
 
 verbatimBlockDict : Dict String (Int -> Settings -> List String -> Element msg)
@@ -48,7 +45,7 @@ verbatimBlockDict =
         ]
 
 
-blockDict : Dict String (Int -> Settings -> List BasicBlock -> Element msg)
+blockDict : Dict String (Int -> Settings -> List Block -> Element msg)
 blockDict =
     Dict.fromList
         [ ( "quotation", \g s blocks -> quotationBlock g s blocks )
@@ -68,7 +65,7 @@ codeBlock generation settings lines =
         (List.map Element.text lines)
 
 
-quotationBlock : Int -> Settings -> List BasicBlock -> Element msg
+quotationBlock : Int -> Settings -> List Block -> Element msg
 quotationBlock generation settings blocks =
     Element.column
         [ Element.paddingEach { left = 18, right = 0, top = 0, bottom = 0 }
