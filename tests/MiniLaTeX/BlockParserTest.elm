@@ -1,7 +1,8 @@
 module MiniLaTeX.BlockParserTest exposing (..)
 
+import Common.BlockParser exposing (Block(..))
 import Expect exposing (Expectation)
-import MiniLaTeX.BlockParser as BlockParser exposing (Block(..))
+import MiniLaTeX.BlockParser as BlockParser
 import Test exposing (..)
 
 
