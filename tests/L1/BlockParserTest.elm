@@ -1,7 +1,8 @@
 module L1.BlockParserTest exposing (..)
 
+import Common.BlockParser exposing (Block(..))
 import Expect exposing (Expectation)
-import L1.BlockParser as BlockParser exposing (Block(..))
+import L1.BlockParser as BlockParser
 import Test exposing (..)
 
 

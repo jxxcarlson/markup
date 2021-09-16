@@ -1,4 +1,23 @@
-module Common.BlockParser exposing (..)
+module Common.BlockParser exposing
+    ( Block(..)
+    , BlockM
+    , BlockType(..)
+    , State
+    , Step(..)
+    , appendLineAtTop
+    , blockLabelAtBottomOfStack
+    , blockLabelM
+    , blockLevel
+    , blockLevelOfStackTop
+    , dummyMeta
+    , initialState
+    , level
+    , loop
+    , reduceStack
+    , reduceStack_
+    , shift
+    , typeOfBlock
+    )
 
 import Common.Debug exposing (debug1, debug2, debug3)
 import List.Extra
