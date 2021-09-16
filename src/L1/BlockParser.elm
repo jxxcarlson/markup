@@ -333,7 +333,7 @@ type Step state a
 
 loop : State -> (State -> Step State State) -> State
 loop s nextState_ =
-    case nextState s of
+    case nextState_ s of
         Loop s_ ->
             loop s_ nextState_
 
