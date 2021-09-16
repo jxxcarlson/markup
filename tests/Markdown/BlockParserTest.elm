@@ -8,7 +8,7 @@ import Test exposing (..)
 
 
 rs str =
-    BlockParser.runFromString 1 str |> .output |> List.map .content
+    BlockParser.run 1 (String.lines str) |> .output |> List.map .content
 
 
 testParser input output =
@@ -22,6 +22,9 @@ suite : Test
 suite =
     describe "The Markdown Block Parser"
         [ testParser
+            "This is a test\n   and so is this"
+            [ Paragraph [ "This is a test", "and so is this" ] ]
+        , testParser
             ">\n   This is a test\n   and so is this"
             [ Block "quotation" [ Paragraph [ "This is a test", "and so is this" ] ] ]
         , testParser

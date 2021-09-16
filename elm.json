@@ -11,6 +11,7 @@
         "elm/parser": "1.1.0 <= v < 2.0.0",
         "elm/random": "1.0.0 <= v < 2.0.0",
         "elm-community/list-extra": "8.5.0 <= v < 9.0.0",
+        "mdgriffith/elm-ui": "1.1.8 <= v < 2.0.0",
         "rtfeldman/console-print": "1.0.1 <= v < 2.0.0"
     },
     "test-dependencies": {

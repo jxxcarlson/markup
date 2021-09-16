@@ -1,4 +1,4 @@
-module Markdown.BlockParser exposing (run, runFromString)
+module Markdown.BlockParser exposing (parse, run)
 
 import Common.BlockParser as BP exposing (State, Step(..), loop)
 import Common.Debug exposing (debug1, debug2, debug3)
@@ -8,9 +8,9 @@ import Markdown.Line as Line
 import Utility
 
 
-runFromString : Int -> String -> State
-runFromString k str =
-    run k (String.lines str)
+parse : Int -> List String -> List BlockM
+parse generation lines =
+    lines |> run generation |> .output
 
 
 run : Int -> List String -> State
