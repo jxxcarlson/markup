@@ -1,18 +1,15 @@
 module Common.BlockParser exposing
-    ( Block(..)
-    , BlockM
-    , BlockType(..)
-    , State
+    ( State
     , Step(..)
     , appendLineAtTop
     , blockLabelAtBottomOfStack
     , blockLabelM
     , blockLevel
     , blockLevelOfStackTop
-    , dummyMeta
     , initialState
     , level
     , loop
+    , nextState
     , reduceStack
     , reduceStack_
     , reverseStack
@@ -21,36 +18,8 @@ module Common.BlockParser exposing
     )
 
 import Common.Debug exposing (debug1, debug2, debug3)
+import Common.Syntax as Syntax exposing (Block(..), BlockM, BlockType(..))
 import List.Extra
-
-
-type Block
-    = Paragraph (List String)
-    | VerbatimBlock String (List String)
-    | Block String (List Block)
-
-
-type BlockType
-    = P
-    | V
-    | B
-
-
-type alias BlockM =
-    { content : Block, meta : Maybe Meta }
-
-
-type alias Meta =
-    { start : Int
-    , end : Int
-    , indent : Int
-    , id : String
-    }
-
-
-dummyMeta : Int -> Int -> Meta
-dummyMeta start indent =
-    { start = start, end = start, indent = indent, id = "76" }
 
 
 type alias State =
@@ -63,6 +32,37 @@ type alias State =
     , counter : Int
     , stack : List BlockM
     }
+
+
+nextState : (String -> State -> State) -> State -> Step State State
+nextState nextStateAux state =
+    let
+        _ =
+            debug2 "STACK" ( state.counter, List.map .content state.stack, blockLevelOfStackTop state.stack )
+    in
+    case List.head state.input of
+        Nothing ->
+            let
+                newState =
+                    reduceStack { state | counter = state.counter + 1 }
+
+                -- |> reverseStack
+                _ =
+                    debug1 "STACK" ( newState.counter, List.map .content newState.stack, blockLevelOfStackTop newState.stack )
+
+                _ =
+                    debug1 "Reduce stack" (newState.output |> List.map .content)
+
+                finalState =
+                    { newState | output = newState.stack ++ newState.output |> List.reverse }
+
+                _ =
+                    finalState |> .output |> List.map .content |> debug1 "OUTPUT"
+            in
+            Done finalState
+
+        Just line ->
+            Loop (nextStateAux line { state | counter = state.counter + 1, input = List.drop 1 state.input })
 
 
 initialState : Int -> List String -> State

@@ -1,8 +1,9 @@
 module MiniLaTeX.BlockParser exposing (run, runFromString)
 
-import Common.BlockParser as BP exposing (Block(..), BlockM, BlockType(..), State, Step(..), loop)
+import Common.BlockParser as BP exposing (State, Step(..), loop)
 import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Line as Line exposing (LineType(..))
+import Common.Syntax exposing (Block(..), BlockM, BlockType(..))
 import MiniLaTeX.Line as Line
 import Utility
 
@@ -14,50 +15,7 @@ runFromString k str =
 
 run : Int -> List String -> State
 run generation input =
-    loop (BP.initialState generation input) nextState
-
-
-nextState : State -> Step State State
-nextState state =
-    let
-        _ =
-            debug3 "-------------------------------------" "-"
-
-        _ =
-            debug3 "INPUT" ( state.counter, state.input )
-
-        _ =
-            debug1 "OUTPUT" ( state.counter, List.map .content state.output )
-
-        _ =
-            debug2 "STACK" ( state.counter, List.map .content state.stack, BP.blockLevelOfStackTop state.stack )
-    in
-    case List.head state.input of
-        Nothing ->
-            let
-                newState =
-                    BP.reduceStack { state | counter = state.counter + 1 }
-
-                -- |> reverseStack
-                _ =
-                    debug1 "STACK" ( newState.counter, List.map .content newState.stack, BP.blockLevelOfStackTop newState.stack )
-
-                _ =
-                    debug1 "Reduce stack" (newState.output |> List.map .content)
-
-                finalState =
-                    { newState | output = newState.stack ++ newState.output |> List.reverse }
-
-                _ =
-                    finalState |> .input |> debug1 "INPUT"
-
-                _ =
-                    finalState |> .output |> List.map .content |> debug1 "OUTPUT"
-            in
-            Done finalState
-
-        Just line ->
-            Loop (nextStateAux line { state | counter = state.counter + 1, input = List.drop 1 state.input })
+    BP.loop (BP.initialState generation input) (BP.nextState nextStateAux)
 
 
 nextStateAux : String -> State -> State
@@ -123,7 +81,7 @@ nextStateAux line state =
 
                     errorMessage : BlockM
                     errorMessage =
-                        { content = Paragraph [ "Error: I was expecting an end-block labeled  " ++ s2 ++ ", but found " ++ s ], meta = Just <| BP.dummyMeta 0 0 }
+                        { content = Paragraph [ "Error: I was expecting an end-block labeled  " ++ s2 ++ ", but found " ++ s ], meta = Just <| Common.Syntax.dummyMeta 0 0 }
                 in
                 { state | stack = data.stack ++ rest, output = errorMessage :: data.output ++ state.output }
 
