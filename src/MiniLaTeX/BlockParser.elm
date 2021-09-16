@@ -133,7 +133,21 @@ nextStateAux line state =
 
         BeginVerbatimBlock s ->
             if level indent <= blockLevelOfStackTop state.stack then
-                { state | indent = indent } |> reduceStack |> shift (VerbatimBlock s [])
+                let
+                    _ =
+                        debug1 "(BeginVerbatimBlock)" s
+
+                    yada =
+                        Utility.takeUntil (\a -> blockLabelM a == s && blockLevel a == level indent) state.stack
+
+                    _ =
+                        yada.prefix |> blockLabelAtBottomOfStack |> debug2 "yada.prefix, bottom label"
+                in
+                if blockLabelAtBottomOfStack yada.prefix == s then
+                    { state | indent = indent } |> reduceStack
+
+                else
+                    { state | indent = indent } |> reduceStack |> shift (VerbatimBlock s [])
 
             else
                 { state | indent = indent } |> shift (VerbatimBlock s [])

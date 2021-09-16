@@ -42,8 +42,13 @@ suite =
         , testParser
             "\\begin{foo}\n   ho ho ho!\n\n\n\\begin{bar}\n   HA HA HA!\n\\end{bar}"
             [ Block "foo" [ Paragraph [ "ho ho ho!" ] ], Block "bar" [ Paragraph [ "HA HA HA!" ] ] ]
-        , Test.only <|
-            testParser
-                "$$\n    x^2\n$$"
-                [ VerbatimBlock "math" [ "x^2" ] ]
+        , testParser
+            "$$\n    x^2"
+            [ VerbatimBlock "math" [ "x^2" ] ]
+        , testParser
+            "$$\n    x^2\n\nHo ho ho!"
+            [ VerbatimBlock "math" [ "x^2" ], Paragraph [ "Ho ho ho!" ] ]
+        , testParser
+            "$$\n    x^2\n$$"
+            [ VerbatimBlock "math" [ "x^2" ] ]
         ]
