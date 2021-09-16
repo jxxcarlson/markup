@@ -9,4 +9,4 @@ renderMarkdown : Int -> Settings -> List String -> List (Element msg)
 renderMarkdown generation settings lines =
     lines
         |> Markdown.parse generation
-        |> Common.Render.render settings
+        |> Common.Render.render generation settings

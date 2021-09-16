@@ -5318,7 +5318,7 @@ var $elm$core$Basics$always = F2(
 	function (a, _v0) {
 		return a;
 	});
-var $author$project$Data$MarkdownTest$text = '\n\n\nThis is some text.\n\nThis is some math\n\n$$\n   \\int_0^1 x^n dx = \\frac{1}{n+1}\n\nThis is some code:\n\n```\n   a[1] = 1\n\n   b[i] = 2\n\n\nThis is a quote:\n\n>\n   Regular languages are rather inexpressive, \n   but they work great for lexers. On the opposite \n   side of expressivity spectrum are Turing machines. \n   For them, we also have a number of meta-languages \n   (like Rust), which work great for humans.\n    It’s interesting that a Turing machine is \n    equivalent to a finite state machine with \n    a pair of stacks: to get two stacks from a tape, \n    cut the tape in half where the head is. Moving \n    the head then corresponds to popping from one \n    stack and pushing to another.\n\n\n\n*by James Carlson*\n';
+var $author$project$Data$MarkdownTest$text = '\n\n\nThis is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.\n\nThis is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.\n\nTHIS IS SOME MATH:\n$$\n   \\int_0^1 x^n dx = \\frac{1}{n+1}\n\nThis is some code:\n\n```\n   a[1] = 1\n   .\n   b[i] = 2\n\n\nThis is a quote:\n\n>\n   Regular languages are rather inexpressive, \n   but they work great for lexers. On the opposite \n   side of expressivity spectrum are Turing machines. \n   For them, we also have a number of meta-languages \n   (like Rust), which work great for humans.\n    It’s interesting that a Turing machine is \n    equivalent to a finite state machine with \n    a pair of stacks: to get two stacks from a tape, \n    cut the tape in half where the head is. Moving \n    the head then corresponds to popping from one \n    stack and pushing to another.\n\n\n\n*by James Carlson*\n';
 var $author$project$Main$initialText = $author$project$Data$MarkdownTest$text;
 var $elm$core$Process$sleep = _Process_sleep;
 var $author$project$Main$init = function (flags) {
@@ -12833,6 +12833,8 @@ var $author$project$Main$fontGray = function (g) {
 	return $mdgriffith$elm_ui$Element$Font$color(
 		A3($mdgriffith$elm_ui$Element$rgb, g, g, g));
 };
+var $mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
+var $mdgriffith$elm_ui$Element$alignTop = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$Top);
 var $elm$core$String$lines = _String_lines;
 var $author$project$Common$BlockParser$initialState = F2(
 	function (generation, input) {
@@ -14055,220 +14057,155 @@ var $author$project$Markdown$BlockParser$parse = F2(
 	function (generation, lines) {
 		return A2($author$project$Markdown$BlockParser$run, generation, lines).output;
 	});
-var $mdgriffith$elm_ui$Internal$Model$Padding = F5(
-	function (a, b, c, d, e) {
-		return {$: 'Padding', a: a, b: b, c: c, d: d, e: e};
-	});
-var $mdgriffith$elm_ui$Internal$Model$Spaced = F3(
-	function (a, b, c) {
-		return {$: 'Spaced', a: a, b: b, c: c};
-	});
-var $mdgriffith$elm_ui$Internal$Model$extractSpacingAndPadding = function (attrs) {
-	return A3(
-		$elm$core$List$foldr,
-		F2(
-			function (attr, _v0) {
-				var pad = _v0.a;
-				var spacing = _v0.b;
-				return _Utils_Tuple2(
-					function () {
-						if (pad.$ === 'Just') {
-							var x = pad.a;
-							return pad;
-						} else {
-							if ((attr.$ === 'StyleClass') && (attr.b.$ === 'PaddingStyle')) {
-								var _v3 = attr.b;
-								var name = _v3.a;
-								var t = _v3.b;
-								var r = _v3.c;
-								var b = _v3.d;
-								var l = _v3.e;
-								return $elm$core$Maybe$Just(
-									A5($mdgriffith$elm_ui$Internal$Model$Padding, name, t, r, b, l));
-							} else {
-								return $elm$core$Maybe$Nothing;
-							}
-						}
-					}(),
-					function () {
-						if (spacing.$ === 'Just') {
-							var x = spacing.a;
-							return spacing;
-						} else {
-							if ((attr.$ === 'StyleClass') && (attr.b.$ === 'SpacingStyle')) {
-								var _v6 = attr.b;
-								var name = _v6.a;
-								var x = _v6.b;
-								var y = _v6.c;
-								return $elm$core$Maybe$Just(
-									A3($mdgriffith$elm_ui$Internal$Model$Spaced, name, x, y));
-							} else {
-								return $elm$core$Maybe$Nothing;
-							}
-						}
-					}());
-			}),
-		_Utils_Tuple2($elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing),
-		attrs);
+var $author$project$Common$Render$notImplemented = function (str) {
+	return A2(
+		$mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$Font$color(
+				A3($mdgriffith$elm_ui$Element$rgb255, 40, 40, 255))
+			]),
+		$mdgriffith$elm_ui$Element$text('not implemented: ' + str));
 };
-var $mdgriffith$elm_ui$Element$wrappedRow = F2(
+var $mdgriffith$elm_ui$Internal$Model$Paragraph = {$: 'Paragraph'};
+var $mdgriffith$elm_ui$Element$paragraph = F2(
 	function (attrs, children) {
-		var _v0 = $mdgriffith$elm_ui$Internal$Model$extractSpacingAndPadding(attrs);
-		var padded = _v0.a;
-		var spaced = _v0.b;
-		if (spaced.$ === 'Nothing') {
-			return A4(
-				$mdgriffith$elm_ui$Internal$Model$element,
-				$mdgriffith$elm_ui$Internal$Model$asRow,
-				$mdgriffith$elm_ui$Internal$Model$div,
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asParagraph,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$Paragraph),
 				A2(
 					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.wrapped)))),
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 					A2(
 						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-						A2(
-							$elm$core$List$cons,
-							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-							attrs))),
-				$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-		} else {
-			var _v2 = spaced.a;
-			var spaceName = _v2.a;
-			var x = _v2.b;
-			var y = _v2.c;
-			var newPadding = function () {
-				if (padded.$ === 'Just') {
-					var _v5 = padded.a;
-					var name = _v5.a;
-					var t = _v5.b;
-					var r = _v5.c;
-					var b = _v5.d;
-					var l = _v5.e;
-					if ((_Utils_cmp(r, x / 2) > -1) && (_Utils_cmp(b, y / 2) > -1)) {
-						var newTop = t - (y / 2);
-						var newRight = r - (x / 2);
-						var newLeft = l - (x / 2);
-						var newBottom = b - (y / 2);
-						return $elm$core$Maybe$Just(
-							A2(
-								$mdgriffith$elm_ui$Internal$Model$StyleClass,
-								$mdgriffith$elm_ui$Internal$Flag$padding,
-								A5(
-									$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-									A4($mdgriffith$elm_ui$Internal$Model$paddingNameFloat, newTop, newRight, newBottom, newLeft),
-									newTop,
-									newRight,
-									newBottom,
-									newLeft)));
-					} else {
-						return $elm$core$Maybe$Nothing;
-					}
-				} else {
-					return $elm$core$Maybe$Nothing;
-				}
-			}();
-			if (newPadding.$ === 'Just') {
-				var pad = newPadding.a;
-				return A4(
-					$mdgriffith$elm_ui$Internal$Model$element,
-					$mdgriffith$elm_ui$Internal$Model$asRow,
-					$mdgriffith$elm_ui$Internal$Model$div,
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.wrapped)))),
-						A2(
-							$elm$core$List$cons,
-							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-							A2(
-								$elm$core$List$cons,
-								$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-								_Utils_ap(
-									attrs,
-									_List_fromArray(
-										[pad]))))),
-					$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-			} else {
-				var halfY = -(y / 2);
-				var halfX = -(x / 2);
-				return A4(
-					$mdgriffith$elm_ui$Internal$Model$element,
-					$mdgriffith$elm_ui$Internal$Model$asEl,
-					$mdgriffith$elm_ui$Internal$Model$div,
-					attrs,
-					$mdgriffith$elm_ui$Internal$Model$Unkeyed(
-						_List_fromArray(
-							[
-								A4(
-								$mdgriffith$elm_ui$Internal$Model$element,
-								$mdgriffith$elm_ui$Internal$Model$asRow,
-								$mdgriffith$elm_ui$Internal$Model$div,
-								A2(
-									$elm$core$List$cons,
-									$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.wrapped)))),
-									A2(
-										$elm$core$List$cons,
-										$mdgriffith$elm_ui$Internal$Model$Attr(
-											A2(
-												$elm$html$Html$Attributes$style,
-												'margin',
-												$elm$core$String$fromFloat(halfY) + ('px' + (' ' + ($elm$core$String$fromFloat(halfX) + 'px'))))),
-										A2(
-											$elm$core$List$cons,
-											$mdgriffith$elm_ui$Internal$Model$Attr(
-												A2(
-													$elm$html$Html$Attributes$style,
-													'width',
-													'calc(100% + ' + ($elm$core$String$fromInt(x) + 'px)'))),
-											A2(
-												$elm$core$List$cons,
-												$mdgriffith$elm_ui$Internal$Model$Attr(
-													A2(
-														$elm$html$Html$Attributes$style,
-														'height',
-														'calc(100% + ' + ($elm$core$String$fromInt(y) + 'px)'))),
-												A2(
-													$elm$core$List$cons,
-													A2(
-														$mdgriffith$elm_ui$Internal$Model$StyleClass,
-														$mdgriffith$elm_ui$Internal$Flag$spacing,
-														A3($mdgriffith$elm_ui$Internal$Model$SpacingStyle, spaceName, x, y)),
-													_List_Nil))))),
-								$mdgriffith$elm_ui$Internal$Model$Unkeyed(children))
-							])));
-			}
-		}
+						$mdgriffith$elm_ui$Element$spacing(5),
+						attrs))),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
-var $author$project$Common$Render$renderBlock = F2(
-	function (settings, block) {
+var $author$project$Common$Render$codeColor = A3($mdgriffith$elm_ui$Element$rgb, 0.4, 0, 0.8);
+var $mdgriffith$elm_ui$Element$Font$family = function (families) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$fontFamily,
+		A2(
+			$mdgriffith$elm_ui$Internal$Model$FontFamily,
+			A3($elm$core$List$foldl, $mdgriffith$elm_ui$Internal$Model$renderFontClassName, 'ff-', families),
+			families));
+};
+var $mdgriffith$elm_ui$Internal$Model$Monospace = {$: 'Monospace'};
+var $mdgriffith$elm_ui$Element$Font$monospace = $mdgriffith$elm_ui$Internal$Model$Monospace;
+var $mdgriffith$elm_ui$Element$Font$typeface = $mdgriffith$elm_ui$Internal$Model$Typeface;
+var $author$project$Common$Render$codeBlock = F3(
+	function (generation, settings, lines) {
+		return A2(
+			$mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$Font$family(
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$Font$typeface('Inconsolata'),
+							$mdgriffith$elm_ui$Element$Font$monospace
+						])),
+					$mdgriffith$elm_ui$Element$Font$color($author$project$Common$Render$codeColor),
+					$mdgriffith$elm_ui$Element$paddingEach(
+					{bottom: 0, left: 18, right: 0, top: 0})
+				]),
+			A2($elm$core$List$map, $mdgriffith$elm_ui$Element$text, lines));
+	});
+var $elm$core$Dict$fromList = function (assocs) {
+	return A3(
+		$elm$core$List$foldl,
+		F2(
+			function (_v0, dict) {
+				var key = _v0.a;
+				var value = _v0.b;
+				return A3($elm$core$Dict$insert, key, value, dict);
+			}),
+		$elm$core$Dict$empty,
+		assocs);
+};
+var $author$project$Common$Render$verbatimBlockDict = $elm$core$Dict$fromList(
+	_List_fromArray(
+		[
+			_Utils_Tuple2(
+			'code',
+			F3(
+				function (g, s, lines) {
+					return A3($author$project$Common$Render$codeBlock, g, s, lines);
+				}))
+		]));
+var $author$project$Common$Render$renderBlock = F3(
+	function (generation, settings, block) {
 		var _v0 = block.content;
-		if (_v0.$ === 'Paragraph') {
-			var strings = _v0.a;
-			return A2(
-				$mdgriffith$elm_ui$Element$wrappedRow,
-				_List_Nil,
-				A2($elm$core$List$map, $mdgriffith$elm_ui$Element$text, strings));
-		} else {
-			return A2(
-				$mdgriffith$elm_ui$Element$el,
-				_List_Nil,
-				$mdgriffith$elm_ui$Element$text('Not implmented'));
+		switch (_v0.$) {
+			case 'Paragraph':
+				var strings = _v0.a;
+				return A2(
+					$mdgriffith$elm_ui$Element$paragraph,
+					_List_Nil,
+					A2($elm$core$List$map, $mdgriffith$elm_ui$Element$text, strings));
+			case 'VerbatimBlock':
+				var name = _v0.a;
+				var lines = _v0.b;
+				var _v1 = A2($elm$core$Dict$get, name, $author$project$Common$Render$verbatimBlockDict);
+				if (_v1.$ === 'Nothing') {
+					return A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_Nil,
+						$mdgriffith$elm_ui$Element$text('Unimplemented verbatim block: ' + name));
+				} else {
+					var f = _v1.a;
+					return A3(f, generation, settings, lines);
+				}
+			default:
+				return $author$project$Common$Render$notImplemented('(block)');
 		}
 	});
-var $author$project$Common$Render$render = F2(
-	function (settings, blocks) {
+var $author$project$Common$Render$render = F3(
+	function (generation, settings, blocks) {
 		return A2(
 			$elm$core$List$map,
-			$author$project$Common$Render$renderBlock(settings),
+			A2($author$project$Common$Render$renderBlock, generation, settings),
 			blocks);
 	});
 var $author$project$Common$API$renderMarkdown = F3(
 	function (generation, settings, lines) {
-		return A2(
+		return A3(
 			$author$project$Common$Render$render,
+			generation,
 			settings,
 			A2($author$project$Markdown$BlockParser$parse, generation, lines));
 	});
+var $author$project$Main$renderedText = function (model) {
+	return A2(
+		$mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$spacing(18),
+				A2($mdgriffith$elm_ui$Element$paddingXY, 24, 36),
+				$mdgriffith$elm_ui$Element$width(
+				$mdgriffith$elm_ui$Element$px($author$project$Main$panelWidth_)),
+				$mdgriffith$elm_ui$Element$height(
+				$mdgriffith$elm_ui$Element$px(
+					$author$project$Main$panelHeight_(model))),
+				$mdgriffith$elm_ui$Element$scrollbarY,
+				$mdgriffith$elm_ui$Element$moveUp(9),
+				$mdgriffith$elm_ui$Element$Font$size(12),
+				$mdgriffith$elm_ui$Element$alignTop,
+				$mdgriffith$elm_ui$Element$Background$color(
+				A3($mdgriffith$elm_ui$Element$rgb255, 255, 240, 240))
+			]),
+		A3(
+			$author$project$Common$API$renderMarkdown,
+			0,
+			{width: 500},
+			$elm$core$String$lines(model.sourceText)));
+};
 var $author$project$Main$wordCount = function (str) {
 	return $elm$core$List$length(
 		$elm$core$String$words(str));
@@ -14319,14 +14256,7 @@ var $author$project$Main$rhs = function (model) {
 						'generation: ' + $elm$core$String$fromInt(model.count)),
 						$author$project$Main$wordCountElement(model.sourceText)
 					])),
-				A2(
-				$mdgriffith$elm_ui$Element$column,
-				_List_Nil,
-				A3(
-					$author$project$Common$API$renderMarkdown,
-					0,
-					{width: 500},
-					$elm$core$String$lines(model.sourceText)))
+				$author$project$Main$renderedText(model)
 			]));
 };
 var $author$project$Main$title = function (str) {

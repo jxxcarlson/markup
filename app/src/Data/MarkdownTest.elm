@@ -5,10 +5,11 @@ text =
     """
 
 
-This is some text.
+This is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.
 
-This is some math
+This is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.
 
+THIS IS SOME MATH:
 $$
    \\int_0^1 x^n dx = \\frac{1}{n+1}
 
@@ -16,7 +17,7 @@ This is some code:
 
 ```
    a[1] = 1
-
+   .
    b[i] = 2
 
 

@@ -169,7 +169,7 @@ rhs model =
             , Font.size 14
             ]
             [ dummyButton, text ("generation: " ++ String.fromInt model.count), wordCountElement model.sourceText ]
-        , column [] (API.renderMarkdown 0 { width = 500 } (String.lines model.sourceText))
+        , renderedText model
         ]
 
 
@@ -187,13 +187,14 @@ renderedText : Model -> Element Msg
 renderedText model =
     column
         [ spacing 18
-        , Background.color (Element.rgb 1.0 1.0 1.0)
         , paddingXY 24 36
         , width (px panelWidth_)
         , height (px (panelHeight_ model))
         , scrollbarY
         , moveUp 9
         , Font.size 12
+        , alignTop
+        , Background.color (Element.rgb255 255 240 240)
         ]
         (API.renderMarkdown 0 { width = 500 } (String.lines model.sourceText))
 
