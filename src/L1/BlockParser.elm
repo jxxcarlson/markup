@@ -84,10 +84,6 @@ handleBlankLine indent state =
 
 handleOrdinaryLine indent line state =
     if BP.level indent >= BP.blockLevelOfStackTop state.stack then
-        let
-            _ =
-                debug3 "BRANCH 3" "Shift or append line at top"
-        in
         case List.head state.stack of
             Nothing ->
                 BP.shift (Paragraph [ String.dropLeft indent line ]) { state | indent = indent }
@@ -99,26 +95,12 @@ handleOrdinaryLine indent line state =
                 else
                     BP.shift (Paragraph [ String.dropLeft indent line ]) { state | indent = indent }
 
-    else if BP.level indent < BP.blockLevelOfStackTop state.stack then
-        -- else if BP.level indent > BP.level state.indent + 1 then
-        let
-            _ =
-                debug3 "BRANCH 1" "Shift, reduceStack"
-        in
+    else
         BP.shift (Paragraph [ line ]) (BP.reduceStack { state | indent = indent })
 
-    else
-        -- else if BP.level indent > BP.blockLevelOfStackTop state.stack then
-        let
-            _ =
-                debug3 "BRANCH 2" "INACCESSIBLE ??"
-        in
-        state |> reduce OrdinaryLine |> BP.shift (Paragraph [ String.dropLeft indent line ]) |> (\st -> { st | indent = indent })
 
 
-
--- STACK
--- REDUCE
+-- HELPERS
 
 
 reduce : Line.LineType -> State -> State
