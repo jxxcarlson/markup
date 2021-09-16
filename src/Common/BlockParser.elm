@@ -330,6 +330,7 @@ reduceStack_ state =
                                 state
 
 
+appendLineAtTop : String -> List Block -> List Block
 appendLineAtTop line stack =
     -- TODO: check this
     case List.head stack of

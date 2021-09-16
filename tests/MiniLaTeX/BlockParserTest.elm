@@ -1,14 +1,14 @@
 module MiniLaTeX.BlockParserTest exposing (..)
 
 import Common.BlockParser
-import Common.Syntax exposing (BasicBlock(..))
+import Common.Syntax as Syntax exposing (BasicBlock(..))
 import Expect exposing (Expectation)
 import MiniLaTeX.BlockParser as BlockParser
 import Test exposing (..)
 
 
 rs str =
-    BlockParser.runFromString 1 str |> .output |> List.map .content
+    BlockParser.runFromString 1 str |> .output |> List.map Syntax.simplify
 
 
 testParser input output =

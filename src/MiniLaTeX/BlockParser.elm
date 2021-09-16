@@ -3,7 +3,7 @@ module MiniLaTeX.BlockParser exposing (run, runFromString)
 import Common.BlockParser as BP exposing (State, Step(..), loop)
 import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Line as Line exposing (LineType(..))
-import Common.Syntax exposing (BasicBlock(..), Block, BlockType(..))
+import Common.Syntax as Syntax exposing (BasicBlock(..), Block(..), BlockType(..))
 import MiniLaTeX.Line as Line
 import Utility
 
@@ -30,10 +30,10 @@ nextStateAux line state =
     case lineType.lineType of
         BeginBlock s ->
             if BP.level indent <= BP.blockLevelOfStackTop state.stack then
-                { state | indent = indent } |> BP.reduceStack |> BP.shift (BBBlock s [])
+                { state | indent = indent } |> BP.reduceStack |> BP.shift (Block s [] (Syntax.dummyMeta 0 0))
 
             else
-                { state | indent = indent } |> BP.shift (BBBlock s [])
+                { state | indent = indent } |> BP.shift (Block s [] (Syntax.dummyMeta 0 0))
 
         BeginVerbatimBlock s ->
             if BP.level indent <= BP.blockLevelOfStackTop state.stack then
@@ -42,7 +42,7 @@ nextStateAux line state =
                         debug1 "(BeginVerbatimBlock)" s
 
                     yada =
-                        Utility.takeUntil (\a -> BP.blockLabelM a == s && BP.blockLevel a == BP.level indent) state.stack
+                        Utility.takeUntil (\a -> BP.blockLabel a == s && BP.blockLevel a == BP.level indent) state.stack
 
                     _ =
                         yada.prefix |> BP.blockLabelAtBottomOfStack |> debug2 "yada.prefix, bottom label"
@@ -51,10 +51,10 @@ nextStateAux line state =
                     { state | indent = indent } |> BP.reduceStack
 
                 else
-                    { state | indent = indent } |> BP.reduceStack |> BP.shift (BBVerbatimBlock s [])
+                    { state | indent = indent } |> BP.reduceStack |> BP.shift (VerbatimBlock s [] (Syntax.dummyMeta 0 0))
 
             else
-                { state | indent = indent } |> BP.shift (BBVerbatimBlock s [])
+                { state | indent = indent } |> BP.shift (VerbatimBlock s [] (Syntax.dummyMeta 0 0))
 
         OrdinaryLine ->
             state |> handleOrdinaryLine indent line
@@ -66,7 +66,7 @@ nextStateAux line state =
             -- TODO: finish up
             let
                 { prefix, rest } =
-                    Utility.takeUntil (\a -> BP.blockLabelM a == s && BP.blockLevel a == BP.level indent) state.stack
+                    Utility.takeUntil (\a -> BP.blockLabel a == s && BP.blockLevel a == BP.level indent) state.stack
 
                 data =
                     BP.reduceStack_ { stack = prefix, output = [] } |> debug1 "data (1), Endblock"
@@ -81,7 +81,7 @@ nextStateAux line state =
 
                     errorMessage : Block
                     errorMessage =
-                        { content = BBParagraph [ "Error: I was expecting an end-block labeled  " ++ s2 ++ ", but found " ++ s ], meta = Just <| Common.Syntax.dummyMeta 0 0 }
+                        Paragraph [ "Error: I was expecting an end-block labeled  " ++ s2 ++ ", but found " ++ s ] (Syntax.dummyMeta 0 0)
                 in
                 { state | stack = data.stack ++ rest, output = errorMessage :: data.output ++ state.output }
 
@@ -105,8 +105,8 @@ handleBlankLine indent state =
             Nothing ->
                 state
 
-            Just blockM ->
-                if List.member (BP.typeOfBlock blockM.content) [ P, V ] then
+            Just block ->
+                if List.member (BP.typeOfBlock block) [ P, V ] then
                     { state | stack = BP.appendLineAtTop "" state.stack, indent = indent }
 
                 else
@@ -120,17 +120,17 @@ handleOrdinaryLine indent line state =
     if BP.level indent >= BP.blockLevelOfStackTop state.stack then
         case List.head state.stack of
             Nothing ->
-                BP.shift (BBParagraph [ String.dropLeft indent line ]) { state | indent = indent }
+                BP.shift (Paragraph [ String.dropLeft indent line ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
 
-            Just blockM ->
-                if BP.typeOfBlock blockM.content == P then
+            Just block ->
+                if BP.typeOfBlock block == P then
                     { state | stack = BP.appendLineAtTop (String.dropLeft indent line) state.stack, indent = indent }
 
                 else
-                    BP.shift (BBParagraph [ String.dropLeft indent line ]) { state | indent = indent }
+                    BP.shift (Paragraph [ String.dropLeft indent line ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
 
     else
-        BP.shift (BBParagraph [ line ]) (BP.reduceStack { state | indent = indent })
+        BP.shift (Paragraph [ line ] (Syntax.dummyMeta 0 0)) (BP.reduceStack { state | indent = indent })
 
 
 

@@ -1,13 +1,13 @@
 module L1.BlockParserTest exposing (..)
 
-import Common.Syntax exposing (BasicBlock(..))
+import Common.Syntax as Syntax exposing (BasicBlock(..))
 import Expect exposing (Expectation)
 import L1.BlockParser as BlockParser
 import Test exposing (..)
 
 
 rs str =
-    BlockParser.runFromString 1 str |> .output |> List.map .content
+    BlockParser.runFromString 1 str |> .output |> List.map Syntax.simplify
 
 
 testParser input output =

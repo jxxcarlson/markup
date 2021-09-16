@@ -1,14 +1,14 @@
 module Markdown.BlockParserTest exposing (..)
 
 import Common.BlockParser
-import Common.Syntax exposing (BasicBlock(..))
+import Common.Syntax as Syntax exposing (BasicBlock(..))
 import Expect exposing (Expectation)
 import Markdown.BlockParser as BlockParser
 import Test exposing (..)
 
 
 rs str =
-    BlockParser.run 1 (String.lines str) |> .output |> List.map .content
+    BlockParser.run 1 (String.lines str) |> .output |> List.map Syntax.simplify
 
 
 testParser input output =
