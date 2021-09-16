@@ -148,14 +148,6 @@ handleOrdinaryLine indent line state =
 
 
 -- STACK
-
-
-reverseStack : State -> State
-reverseStack state =
-    { state | stack = List.reverse state.stack }
-
-
-
 -- REDUCE
 
 

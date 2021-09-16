@@ -3,8 +3,6 @@ module MiniLaTeX.BlockParser exposing (run, runFromString)
 import Common.BlockParser as BP exposing (Block(..), BlockM, BlockType(..), State, Step(..), loop)
 import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Line as Line exposing (LineType(..))
-import Console
-import List.Extra
 import MiniLaTeX.Line as Line
 import Utility
 

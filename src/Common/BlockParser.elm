@@ -15,6 +15,7 @@ module Common.BlockParser exposing
     , loop
     , reduceStack
     , reduceStack_
+    , reverseStack
     , shift
     , typeOfBlock
     )
