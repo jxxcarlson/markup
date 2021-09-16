@@ -1,7 +1,7 @@
 module MiniLaTeX.LineTest exposing (suite)
 
+import Common.Line as Line
 import Expect exposing (Expectation)
-import Line
 import MiniLaTeX.Line as MiniLaTeX
 import Parser
 import Test exposing (..)

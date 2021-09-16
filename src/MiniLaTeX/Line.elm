@@ -1,6 +1,6 @@
 module MiniLaTeX.Line exposing (classify)
 
-import Line
+import Common.Line as Line
 import Parser exposing ((|.), (|=), Parser)
 
 

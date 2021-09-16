@@ -1,7 +1,7 @@
 module MiniLaTeX.BlockParser exposing (Block(..), run, runFromString)
 
+import Common.Line as Line exposing (LineType(..))
 import Console
-import Line exposing (LineType(..))
 import List.Extra
 import MiniLaTeX.Line as Line
 import Utility

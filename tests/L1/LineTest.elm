@@ -1,8 +1,8 @@
 module L1.LineTest exposing (suite)
 
+import Common.Line as Line
 import Expect exposing (Expectation)
 import L1.Line as L1
-import Line
 import Parser
 import Test exposing (..)
 

@@ -1,4 +1,4 @@
-module Line exposing (LineType(..), countLeadingSpaces, emptyLineParser, ordinaryLineParser)
+module Common.Line exposing (LineType(..), countLeadingSpaces, emptyLineParser, ordinaryLineParser)
 
 import Parser exposing ((|.), (|=), Parser)
 

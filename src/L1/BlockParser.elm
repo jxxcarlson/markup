@@ -1,8 +1,8 @@
 module L1.BlockParser exposing (Block(..), run, runFromString)
 
+import Common.Line as Line exposing (LineType(..))
 import Console
 import L1.Line as Line
-import Line exposing (LineType(..))
 import List.Extra
 
 
