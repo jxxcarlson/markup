@@ -3,7 +3,7 @@ module L1.BlockParser exposing (run, runFromString)
 import Common.BlockParser as BP exposing (State, Step(..), loop)
 import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Line as Line exposing (LineType(..))
-import Common.Syntax exposing (Block(..), BlockM, BlockType(..))
+import Common.Syntax exposing (BasicBlock(..), Block, BlockType(..))
 import L1.Line as Line
 
 
@@ -29,17 +29,17 @@ nextStateAux line state =
     case lineType.lineType of
         BeginBlock s ->
             if BP.level indent <= BP.blockLevelOfStackTop state.stack then
-                { state | indent = indent } |> BP.reduceStack |> BP.shift (Block s [])
+                { state | indent = indent } |> BP.reduceStack |> BP.shift (BBBlock s [])
 
             else
-                { state | indent = indent } |> BP.shift (Block s [])
+                { state | indent = indent } |> BP.shift (BBBlock s [])
 
         BeginVerbatimBlock s ->
             if BP.level indent <= BP.blockLevelOfStackTop state.stack then
-                { state | indent = indent } |> BP.reduceStack |> BP.shift (VerbatimBlock s [])
+                { state | indent = indent } |> BP.reduceStack |> BP.shift (BBVerbatimBlock s [])
 
             else
-                { state | indent = indent } |> BP.shift (VerbatimBlock s [])
+                { state | indent = indent } |> BP.shift (BBVerbatimBlock s [])
 
         OrdinaryLine ->
             state |> handleOrdinaryLine indent line
@@ -86,17 +86,17 @@ handleOrdinaryLine indent line state =
     if BP.level indent >= BP.blockLevelOfStackTop state.stack then
         case List.head state.stack of
             Nothing ->
-                BP.shift (Paragraph [ String.dropLeft indent line ]) { state | indent = indent }
+                BP.shift (BBParagraph [ String.dropLeft indent line ]) { state | indent = indent }
 
             Just blockM ->
                 if BP.typeOfBlock blockM.content == P then
                     { state | stack = BP.appendLineAtTop (String.dropLeft indent line) state.stack, indent = indent }
 
                 else
-                    BP.shift (Paragraph [ String.dropLeft indent line ]) { state | indent = indent }
+                    BP.shift (BBParagraph [ String.dropLeft indent line ]) { state | indent = indent }
 
     else
-        BP.shift (Paragraph [ line ]) (BP.reduceStack { state | indent = indent })
+        BP.shift (BBParagraph [ line ]) (BP.reduceStack { state | indent = indent })
 
 
 

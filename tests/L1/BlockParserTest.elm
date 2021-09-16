@@ -1,6 +1,6 @@
 module L1.BlockParserTest exposing (..)
 
-import Common.Syntax exposing (Block(..))
+import Common.Syntax exposing (BasicBlock(..))
 import Expect exposing (Expectation)
 import L1.BlockParser as BlockParser
 import Test exposing (..)
@@ -22,41 +22,41 @@ suite =
     describe "The Line modules for L1"
         [ testParser
             "| indent\n   foo"
-            [ Block "indent" [ Paragraph [ "foo" ] ] ]
+            [ BBBlock "indent" [ BBParagraph [ "foo" ] ] ]
         , testParser
             "| indent\nfoo (*)"
-            [ Block "indent" [], Paragraph [ "foo (*)" ] ]
+            [ BBBlock "indent" [], BBParagraph [ "foo (*)" ] ]
         , testParser
             "| indent\n   foo\n   bar"
-            [ Block "indent" [ Paragraph [ "foo", "bar" ] ] ]
+            [ BBBlock "indent" [ BBParagraph [ "foo", "bar" ] ] ]
         , testParser
             "| indent\n   foo\n   bar\n   baz"
-            [ Block "indent" [ Paragraph [ "foo", "bar", "baz" ] ] ]
+            [ BBBlock "indent" [ BBParagraph [ "foo", "bar", "baz" ] ] ]
         , testParser
             "| indent\n   foo\n   bar\n| math\n   x^2"
-            [ Block "indent" [ Paragraph [ "foo", "bar" ] ], Block "math" [ Paragraph [ "x^2" ] ] ]
+            [ BBBlock "indent" [ BBParagraph [ "foo", "bar" ] ], BBBlock "math" [ BBParagraph [ "x^2" ] ] ]
         , testParser
             "| indent\n   foo\n   bar\n|\n   \n   baz"
-            [ Block "indent" [ Paragraph [ "foo", "bar", "", "baz" ] ] ]
+            [ BBBlock "indent" [ BBParagraph [ "foo", "bar", "", "baz" ] ] ]
         , testParser
             "| indent\n   foo\n   bar\n|\n\n   baz"
-            [ Block "indent" [ Paragraph [ "foo", "bar", "baz" ] ] ]
+            [ BBBlock "indent" [ BBParagraph [ "foo", "bar", "baz" ] ] ]
         , testParser
             "|| code\n   foo\n   bar\n\n   baz"
-            [ VerbatimBlock "code" [ "foo", "bar", "baz" ] ]
+            [ BBVerbatimBlock "code" [ "foo", "bar", "baz" ] ]
         , testParser
             "|| code\n   foo\n   bar\n   \n   baz"
-            [ VerbatimBlock "code" [ "foo", "bar", "", "baz" ]
+            [ BBVerbatimBlock "code" [ "foo", "bar", "", "baz" ]
             ]
         , testParser
             "|| code\n   foo\n   bar\n   \n   baz\nho ho ho!"
-            [ VerbatimBlock "code" [ "foo", "bar", "", "baz" ]
-            , Paragraph [ "ho ho ho!" ]
+            [ BBVerbatimBlock "code" [ "foo", "bar", "", "baz" ]
+            , BBParagraph [ "ho ho ho!" ]
             ]
         , testParser
             "ABC\nXYZ\n|| code\n   foo\n   bar\nDEF\n\nGHI"
-            [ Paragraph [ "ABC", "XYZ" ]
-            , VerbatimBlock "code" [ "foo", "bar" ]
-            , Paragraph [ "DEF", "", "GHI" ]
+            [ BBParagraph [ "ABC", "XYZ" ]
+            , BBVerbatimBlock "code" [ "foo", "bar" ]
+            , BBParagraph [ "DEF", "", "GHI" ]
             ]
         ]

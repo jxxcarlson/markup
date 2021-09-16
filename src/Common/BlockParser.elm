@@ -2,8 +2,8 @@ module Common.BlockParser exposing
     ( State
     , Step(..)
     , appendLineAtTop
+    , blockLabel
     , blockLabelAtBottomOfStack
-    , blockLabelM
     , blockLevel
     , blockLevelOfStackTop
     , initialState
@@ -18,19 +18,19 @@ module Common.BlockParser exposing
     )
 
 import Common.Debug exposing (debug1, debug2, debug3)
-import Common.Syntax as Syntax exposing (Block(..), BlockM, BlockType(..))
+import Common.Syntax as Syntax exposing (Block(..), BlockType(..))
 import List.Extra
 
 
 type alias State =
     { input : List String
-    , output : List BlockM
+    , output : List Block
     , indent : Int
     , lineNumber : Int
     , generation : Int
     , blockCount : Int
     , counter : Int
-    , stack : List BlockM
+    , stack : List Block
     }
 
 
@@ -38,7 +38,7 @@ nextState : (String -> State -> State) -> State -> Step State State
 nextState nextStateAux state =
     let
         _ =
-            debug2 "STACK" ( state.counter, List.map .content state.stack, blockLevelOfStackTop state.stack )
+            debug2 "STACK" ( state.counter, List.map Syntax.simplify state.stack, blockLevelOfStackTop state.stack )
     in
     case List.head state.input of
         Nothing ->
@@ -48,16 +48,16 @@ nextState nextStateAux state =
 
                 -- |> reverseStack
                 _ =
-                    debug1 "STACK" ( newState.counter, List.map .content newState.stack, blockLevelOfStackTop newState.stack )
+                    debug1 "STACK" ( newState.counter, List.map Syntax.simplify newState.stack, blockLevelOfStackTop newState.stack )
 
                 _ =
-                    debug1 "Reduce stack" (newState.output |> List.map .content)
+                    debug1 "Reduce stack" (newState.output |> List.map Syntax.simplify)
 
                 finalState =
                     { newState | output = newState.stack ++ newState.output |> List.reverse }
 
                 _ =
-                    finalState |> .output |> List.map .content |> debug1 "OUTPUT"
+                    finalState |> .output |> List.map Syntax.simplify |> debug1 "OUTPUT"
             in
             Done finalState
 
@@ -88,21 +88,21 @@ reduceStack state =
         Nothing ->
             state
 
-        Just ( blockM1, stack2 ) ->
-            case List.Extra.uncons stack2 of
+        Just ( block1, stack1 ) ->
+            case List.Extra.uncons stack1 of
                 Nothing ->
                     let
                         _ =
                             debug1 "reduceStack, len = " 1
                     in
-                    { state | output = reverseContentsM blockM1 :: state.output, stack = stack2 }
+                    { state | output = reverseContents block1 :: state.output, stack = stack1 }
 
-                Just ( blockM2, stack3 ) ->
+                Just ( block2, stack2 ) ->
                     let
                         _ =
-                            debug1 "reduceStack, (level(1), level(2)" ( blockLevel blockM1, blockLevel blockM2 )
+                            debug1 "reduceStack, (level(1), level(2)" ( blockLevel block1, blockLevel block2 )
                     in
-                    if blockLevel blockM1 <= blockLevel blockM2 then
+                    if blockLevel block1 <= blockLevel block2 then
                         let
                             _ =
                                 debug1 "blockLevel blockM1 <= blockLevel blockM2" True
@@ -110,31 +110,31 @@ reduceStack state =
                         state
 
                     else
-                        case blockM2.content of
-                            Block name blocks ->
+                        case block2 of
+                            Block name blocks meta ->
                                 let
                                     _ =
                                         debug1 "reduceStack Block" True
 
-                                    newBlock : BlockM
+                                    newBlock : Block
                                     newBlock =
-                                        { content = Block name (reverseContents blockM1.content :: blocks), meta = blockM2.meta }
+                                        Block name (reverseContents block1 :: blocks) meta
                                 in
-                                reduceStack { state | stack = stack3, output = newBlock :: state.output }
+                                reduceStack { state | stack = stack2, output = newBlock :: state.output }
 
-                            VerbatimBlock name blocks ->
+                            VerbatimBlock name blocks meta ->
                                 let
                                     _ =
                                         debug1 "reduceStack VerbatimBlock" True
                                 in
-                                case blockM1.content of
-                                    Paragraph strings ->
+                                case block1 of
+                                    Paragraph strings metaP ->
                                         let
-                                            newBlock : BlockM
+                                            newBlock : Block
                                             newBlock =
-                                                { content = VerbatimBlock name (List.reverse <| strings ++ blocks), meta = blockM2.meta }
+                                                VerbatimBlock name (List.reverse <| strings ++ blocks) metaP
                                         in
-                                        reduceStack { state | stack = stack3, output = newBlock :: state.output }
+                                        reduceStack { state | stack = stack2, output = newBlock :: state.output }
 
                                     _ ->
                                         state
@@ -175,12 +175,20 @@ level indentation =
     indentation // quantumOfIndentation
 
 
-blockLevel : BlockM -> Int
-blockLevel blockM =
-    Maybe.map .indent blockM.meta |> Maybe.withDefault 0 |> level
+blockLevel : Block -> Int
+blockLevel block =
+    case block of
+        Paragraph _ meta ->
+            level meta.indent
+
+        VerbatimBlock _ _ meta ->
+            level meta.indent
+
+        Block _ _ meta ->
+            level meta.indent
 
 
-blockLevelOfStackTop : List BlockM -> Int
+blockLevelOfStackTop : List Block -> Int
 blockLevelOfStackTop stack =
     case List.head stack of
         Nothing ->
@@ -193,52 +201,47 @@ blockLevelOfStackTop stack =
 typeOfBlock : Block -> BlockType
 typeOfBlock b =
     case b of
-        Paragraph _ ->
+        Paragraph _ _ ->
             P
 
-        VerbatimBlock _ _ ->
+        VerbatimBlock _ _ _ ->
             V
 
-        Block _ _ ->
+        Block _ _ _ ->
             B
 
 
 blockLabel : Block -> String
 blockLabel block =
     case block of
-        Paragraph _ ->
+        Paragraph _ _ ->
             "(no label)"
 
-        Block s _ ->
+        Block s _ _ ->
             s
 
-        VerbatimBlock s _ ->
+        VerbatimBlock s _ _ ->
             s
 
 
-blockLabelM : BlockM -> String
-blockLabelM block =
-    blockLabel block.content
-
-
-blockLabelAtTopOfStack : List BlockM -> String
+blockLabelAtTopOfStack : List Block -> String
 blockLabelAtTopOfStack stack =
     case List.head stack of
         Nothing ->
             "(no label)"
 
         Just block ->
-            blockLabelM block
+            blockLabel block
 
 
-blockLabelAtBottomOfStack : List BlockM -> String
+blockLabelAtBottomOfStack : List Block -> String
 blockLabelAtBottomOfStack stack =
     case List.head (List.reverse stack) of
         Nothing ->
             "(no label)"
 
         Just block ->
-            blockLabelM block
+            blockLabel block
 
 
 sameKindOfBlock : Block -> Block -> Bool
@@ -246,32 +249,27 @@ sameKindOfBlock a b =
     typeOfBlock a == typeOfBlock b
 
 
-blockIsLikeTopOfStack : Block -> List BlockM -> Bool
+blockIsLikeTopOfStack : Block -> List Block -> Bool
 blockIsLikeTopOfStack block blocks =
     case List.head blocks of
         Nothing ->
             False
 
-        Just blockM ->
-            sameKindOfBlock block blockM.content
+        Just block2 ->
+            sameKindOfBlock block block2
 
 
 reverseContents : Block -> Block
 reverseContents block =
     case block of
-        Paragraph strings ->
-            Paragraph (List.reverse strings)
+        Paragraph strings meta ->
+            Paragraph (List.reverse strings) meta
 
-        VerbatimBlock name strings ->
-            VerbatimBlock name (List.reverse strings)
+        VerbatimBlock name strings meta ->
+            VerbatimBlock name (List.reverse strings) meta
 
-        Block name strings ->
-            Block name (List.reverse strings)
-
-
-reverseContentsM : BlockM -> BlockM
-reverseContentsM { content, meta } =
-    { content = reverseContents content, meta = meta }
+        Block name strings meta ->
+            Block name (List.reverse strings) meta
 
 
 
@@ -283,19 +281,19 @@ reverseStack state =
     { state | stack = List.reverse state.stack }
 
 
-reduceStack_ : { stack : List BlockM, output : List BlockM } -> { stack : List BlockM, output : List BlockM }
+reduceStack_ : { stack : List Block, output : List Block } -> { stack : List Block, output : List Block }
 reduceStack_ state =
     case List.Extra.uncons state.stack of
         Nothing ->
             state
 
-        Just ( blockM1, stack2 ) ->
-            case List.Extra.uncons stack2 of
+        Just ( block1, stack1 ) ->
+            case List.Extra.uncons stack1 of
                 Nothing ->
-                    { stack = stack2, output = [ reverseContentsM blockM1 ] }
+                    { stack = stack1, output = [ reverseContents block1 ] }
 
-                Just ( blockM2, stack3 ) ->
-                    if blockLevel blockM1 <= blockLevel blockM2 then
+                Just ( block2, stack2 ) ->
+                    if blockLevel block1 <= blockLevel block2 then
                         let
                             _ =
                                 debug1 "blockLevel blockM1 <= blockLevel blockM2" True
@@ -303,27 +301,27 @@ reduceStack_ state =
                         state
 
                     else
-                        case blockM2.content of
-                            Block name blocks ->
+                        case block2 of
+                            Block name blocks meta ->
                                 let
                                     _ =
                                         debug1 "reduceStack Block" True
 
-                                    newBlock : BlockM
+                                    newBlock : Block
                                     newBlock =
-                                        { content = Block name (reverseContents blockM1.content :: blocks), meta = blockM2.meta }
+                                        Block name (reverseContents block1 :: blocks) meta
                                 in
-                                reduceStack_ { state | stack = stack3, output = newBlock :: state.output }
+                                reduceStack_ { state | stack = stack2, output = newBlock :: state.output }
 
-                            VerbatimBlock name blocks ->
-                                case blockM1.content of
-                                    Paragraph strings ->
+                            VerbatimBlock name blocks meta ->
+                                case block1 of
+                                    Paragraph strings metaP ->
                                         let
-                                            newBlock : BlockM
+                                            newBlock : Block
                                             newBlock =
-                                                { content = VerbatimBlock name (List.reverse <| strings ++ blocks), meta = blockM2.meta }
+                                                VerbatimBlock name (List.reverse <| strings ++ blocks) meta
                                         in
-                                        reduceStack_ { state | stack = stack3, output = newBlock :: state.output }
+                                        reduceStack_ { state | stack = stack2, output = newBlock :: state.output }
 
                                     _ ->
                                         state
@@ -339,9 +337,9 @@ appendLineAtTop line stack =
             stack
 
         Just block ->
-            case block.content of
-                Paragraph strings ->
-                    { content = Paragraph (line :: strings), meta = block.meta } :: List.drop 1 stack
+            case block of
+                Paragraph strings meta ->
+                    Paragraph (line :: strings) meta :: List.drop 1 stack
 
                 _ ->
                     stack
@@ -351,19 +349,41 @@ appendLineAtTop line stack =
 -- SHIFT
 
 
+replaceMeta : Syntax.Meta -> Block -> Block
+replaceMeta meta block =
+    case block of
+        Paragraph strings _ ->
+            Paragraph strings meta
+
+        VerbatimBlock name strings _ ->
+            VerbatimBlock name strings meta
+
+        Block name blocks _ ->
+            Block name blocks meta
+
+
 shift : Block -> State -> State
 shift block state =
     let
-        newBlock =
-            { content = block
-            , meta =
-                Just
-                    { start = state.lineNumber
-                    , end = state.lineNumber
-                    , indent = state.indent
-                    , id = String.fromInt state.generation ++ "." ++ String.fromInt state.blockCount
-                    }
+        newMeta =
+            { start = state.lineNumber
+            , end = state.lineNumber
+            , indent = state.indent
+            , id = String.fromInt state.generation ++ "." ++ String.fromInt state.blockCount
             }
+
+        newBlock =
+            replaceMeta newMeta block
+
+        --{ content = block
+        --, meta =
+        --    Just
+        --        { start = state.lineNumber
+        --        , end = state.lineNumber
+        --        , indent = state.indent
+        --        , id = String.fromInt state.generation ++ "." ++ String.fromInt state.blockCount
+        --        }
+        --}
     in
     { state
         | stack = newBlock :: state.stack

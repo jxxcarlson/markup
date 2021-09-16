@@ -1,25 +1,36 @@
 module Common.Syntax exposing
-    ( Block(..)
-    , BlockM
+    ( BasicBlock(..)
+    , Block(..)
     , BlockType(..)
+    , Meta
     , dummyMeta
+    , simplify
     )
 
 
+type BasicBlock
+    = BBParagraph (List String)
+    | BBVerbatimBlock String (List String)
+    | BBBlock String (List BasicBlock)
+
+
+simplify : Block -> BasicBlock
+simplify block =
+    case block of
+        Paragraph strings _ ->
+            BBParagraph strings
+
+        VerbatimBlock name strings _ ->
+            BBVerbatimBlock name strings
+
+        Block name blocks _ ->
+            BBBlock name (List.map simplify blocks)
+
+
 type Block
-    = Paragraph (List String)
-    | VerbatimBlock String (List String)
-    | Block String (List Block)
-
-
-type BlockType
-    = P
-    | V
-    | B
-
-
-type alias BlockM =
-    { content : Block, meta : Maybe Meta }
+    = Paragraph (List String) Meta
+    | VerbatimBlock String (List String) Meta
+    | Block String (List Block) Meta
 
 
 type alias Meta =
@@ -28,6 +39,12 @@ type alias Meta =
     , indent : Int
     , id : String
     }
+
+
+type BlockType
+    = P
+    | V
+    | B
 
 
 dummyMeta : Int -> Int -> Meta

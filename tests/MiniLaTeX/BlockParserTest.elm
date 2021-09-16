@@ -1,7 +1,7 @@
 module MiniLaTeX.BlockParserTest exposing (..)
 
 import Common.BlockParser
-import Common.Syntax exposing (Block(..))
+import Common.Syntax exposing (BasicBlock(..))
 import Expect exposing (Expectation)
 import MiniLaTeX.BlockParser as BlockParser
 import Test exposing (..)
@@ -23,37 +23,37 @@ suite =
     describe "The MiniLaTeX Block Parser"
         [ testParser
             "\\begin{foo}\n   ho ho ho!\n\\end{foo}"
-            [ Block "foo" [ Paragraph [ "ho ho ho!" ] ] ]
+            [ BBBlock "foo" [ BBParagraph [ "ho ho ho!" ] ] ]
         , testParser
             "aaa\nbbb\n\n\\begin{foo}\n   ho ho ho!\n\\end{foo}n\nccc\nddd"
-            [ Paragraph [ "aaa", "bbb", "" ]
-            , Block "foo" [ Paragraph [ "ho ho ho!" ] ]
-            , Paragraph [ "ccc", "ddd" ]
+            [ BBParagraph [ "aaa", "bbb", "" ]
+            , BBBlock "foo" [ BBParagraph [ "ho ho ho!" ] ]
+            , BBParagraph [ "ccc", "ddd" ]
             ]
         , testParser
             "\\begin{foo}\n   HA HA HA!\n\\end{BAR}"
-            [ Block "foo" [ Paragraph [ "HA HA HA!" ] ]
-            , Paragraph [ "Error: I was expecting an end-block labeled  foo, but found BAR" ]
+            [ BBBlock "foo" [ BBParagraph [ "HA HA HA!" ] ]
+            , BBParagraph [ "Error: I was expecting an end-block labeled  foo, but found BAR" ]
             ]
         , testParser
             "\\begin{foo}\n   ho ho ho!\n\\end{foo}\n\n\\begin{bar}\n   x^2\n\\end{bar}"
-            [ Block "foo" [ Paragraph [ "ho ho ho!" ] ], Block "bar" [ Paragraph [ "x^2" ] ] ]
+            [ BBBlock "foo" [ BBParagraph [ "ho ho ho!" ] ], BBBlock "bar" [ BBParagraph [ "x^2" ] ] ]
         , testParser
             "\\begin{foo}\n   ho ho ho!\n\n\n"
-            [ Block "foo" [ Paragraph [ "ho ho ho!" ] ] ]
+            [ BBBlock "foo" [ BBParagraph [ "ho ho ho!" ] ] ]
         , testParser
             "\\begin{foo}\n   ho ho ho!\n\n\n\\begin{bar}\n   HA HA HA!\n\\end{bar}"
-            [ Block "foo" [ Paragraph [ "ho ho ho!" ] ], Block "bar" [ Paragraph [ "HA HA HA!" ] ] ]
+            [ BBBlock "foo" [ BBParagraph [ "ho ho ho!" ] ], BBBlock "bar" [ BBParagraph [ "HA HA HA!" ] ] ]
         , testParser
             "$$\n    x^2"
-            [ VerbatimBlock "math" [ "x^2" ] ]
+            [ BBVerbatimBlock "math" [ "x^2" ] ]
         , testParser
             "$$\n    x^2\n\nHo ho ho!"
-            [ VerbatimBlock "math" [ "x^2" ], Paragraph [ "Ho ho ho!" ] ]
+            [ BBVerbatimBlock "math" [ "x^2" ], BBParagraph [ "Ho ho ho!" ] ]
         , testParser
             "$$\n    x^2\n$$"
-            [ VerbatimBlock "math" [ "x^2" ] ]
+            [ BBVerbatimBlock "math" [ "x^2" ] ]
         , testParser
             "Code:\n```\n   a[i] = a[i] + 1\n   \n   b[i] = b[i] + 1\n\nOk!"
-            [ Paragraph [ "Code:" ], VerbatimBlock "code" [ "a[i] = a[i] + 1", "", "b[i] = b[i] + 1" ], Paragraph [ "Ok!" ] ]
+            [ BBParagraph [ "Code:" ], BBVerbatimBlock "code" [ "a[i] = a[i] + 1", "", "b[i] = b[i] + 1" ], BBParagraph [ "Ok!" ] ]
         ]
