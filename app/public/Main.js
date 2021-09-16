@@ -14152,6 +14152,62 @@ var $author$project$Common$Render$codeBlock = F3(
 				]),
 			A2($elm$core$List$map, $mdgriffith$elm_ui$Element$text, lines));
 	});
+var $author$project$Common$Render$DisplayMathMode = {$: 'DisplayMathMode'};
+var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
+var $author$project$Common$Render$isDisplayMathMode = function (displayMode) {
+	if (displayMode.$ === 'InlineMathMode') {
+		return false;
+	} else {
+		return true;
+	}
+};
+var $elm$html$Html$node = $elm$virtual_dom$VirtualDom$node;
+var $elm$html$Html$Attributes$property = $elm$virtual_dom$VirtualDom$property;
+var $author$project$Common$Render$mathText_ = F3(
+	function (displayMode, selectedId, content) {
+		return A3(
+			$elm$html$Html$node,
+			'math-text',
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$Attributes$property,
+					'display',
+					$elm$json$Json$Encode$bool(
+						$author$project$Common$Render$isDisplayMathMode(displayMode))),
+					A2(
+					$elm$html$Html$Attributes$property,
+					'content',
+					$elm$json$Json$Encode$string(content))
+				]),
+			_List_Nil);
+	});
+var $elm$html$Html$Keyed$node = $elm$virtual_dom$VirtualDom$keyedNode;
+var $author$project$Common$Render$mathText = F3(
+	function (generation, displayMode, content) {
+		return $mdgriffith$elm_ui$Element$html(
+			A3(
+				$elm$html$Html$Keyed$node,
+				'span',
+				_List_fromArray(
+					[
+						A2($elm$html$Html$Attributes$style, 'margin-left', '6px')
+					]),
+				_List_fromArray(
+					[
+						_Utils_Tuple2(
+						$elm$core$String$fromInt(generation),
+						A3($author$project$Common$Render$mathText_, displayMode, 'ID', content))
+					])));
+	});
+var $author$project$Common$Render$mathBlock = F3(
+	function (generation, settings, strings) {
+		return A3(
+			$author$project$Common$Render$mathText,
+			generation,
+			$author$project$Common$Render$DisplayMathMode,
+			A2($elm$core$String$join, '\n', strings));
+	});
 var $author$project$Common$Render$verbatimBlockDict = $elm$core$Dict$fromList(
 	_List_fromArray(
 		[
@@ -14160,6 +14216,12 @@ var $author$project$Common$Render$verbatimBlockDict = $elm$core$Dict$fromList(
 			F3(
 				function (g, s, lines) {
 					return A3($author$project$Common$Render$codeBlock, g, s, lines);
+				})),
+			_Utils_Tuple2(
+			'math',
+			F3(
+				function (g, s, lines) {
+					return A3($author$project$Common$Render$mathBlock, g, s, lines);
 				}))
 		]));
 var $author$project$Common$Render$quotationBlock = F3(
