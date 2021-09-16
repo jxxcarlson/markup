@@ -51,4 +51,8 @@ suite =
         , testParser
             "$$\n    x^2\n$$"
             [ VerbatimBlock "math" [ "x^2" ] ]
+        , Test.only <|
+            testParser
+                "Code:\n```\n   a[i] = a[i] + 1\n   \n   b[i] = b[i] + 1\n\nOk!"
+                [ Paragraph [ "Code:" ], VerbatimBlock "code" [ "a[i] = a[i] + 1", "", "b[i] = b[i] + 1" ], Paragraph [ "Ok!" ] ]
         ]

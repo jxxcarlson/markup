@@ -23,7 +23,7 @@ lineType str =
 
 
 lineTypeParser =
-    Parser.oneOf [ beginBlockParser, endBlockParser, beginMathBlockParser, Line.ordinaryLineParser [], Line.emptyLineParser ]
+    Parser.oneOf [ beginCodeBlockParser, beginBlockParser, endBlockParser, beginMathBlockParser, Line.ordinaryLineParser [], Line.emptyLineParser ]
 
 
 beginMathBlockParser : Parser Line.LineType
@@ -32,6 +32,14 @@ beginMathBlockParser =
         |. Parser.symbol "$$"
     )
         |> Parser.map (\_ -> Line.BeginVerbatimBlock "math")
+
+
+beginCodeBlockParser : Parser Line.LineType
+beginCodeBlockParser =
+    (Parser.succeed String.slice
+        |. Parser.symbol "```"
+    )
+        |> Parser.map (\_ -> Line.BeginVerbatimBlock "code")
 
 
 beginBlockParser : Parser Line.LineType
