@@ -7,7 +7,7 @@ import Test exposing (..)
 
 
 rs str =
-    BlockParser.runFromString 1 str |> .output |> List.map Syntax.simplify
+    BlockParser.run 1 (String.lines str) |> .output |> List.map Syntax.simplify
 
 
 testParser input output =
