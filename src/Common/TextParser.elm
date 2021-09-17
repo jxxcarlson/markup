@@ -1,24 +1,25 @@
-module Common.TextParser exposing (..)
+module Common.TextParser exposing (parse)
 
+import Common.Render
 import Common.Syntax exposing (Block(..), Meta, Text(..), TextBlock(..), dummyMeta)
 
 
-parseText : List String -> Meta -> List Text
-parseText strings meta =
-    [ Text strings meta ]
+parse : Int -> Common.Render.Settings -> List String -> List Text
+parse generation settings strings =
+    [ Text strings (dummyMeta 0 0) ]
 
 
-parseTextInBlock : Block -> TextBlock
-parseTextInBlock block =
+parseTextInBlock : Int -> Common.Render.Settings -> Block -> TextBlock
+parseTextInBlock generation settings block =
     case block of
         Paragraph strings meta ->
-            TBParagraph (parseText strings meta) meta
+            TBParagraph (parse generation settings strings) meta
 
         VerbatimBlock name strings meta ->
-            TBVerbatimBlock name (parseText strings meta) meta
+            TBVerbatimBlock name (parse generation settings strings) meta
 
         Block name blocks meta ->
-            TBBlock name (List.map parseTextInBlock blocks) meta
+            TBBlock name (List.map (parseTextInBlock generation settings) blocks) meta
 
         Error e ->
             TBError e

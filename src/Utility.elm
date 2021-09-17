@@ -1,4 +1,4 @@
-module Utility exposing (..)
+module Utility exposing (prepare, takeUntil)
 
 {-| Consider a predicate p and a list of elements
 [a\_1, a\_2, ..., a\_n][a_1, a_2, ..., a_n]. Find the unique prefix
@@ -13,6 +13,20 @@ but the a\_i for i < k do not satisfy p. Return
     { prefix = [1,2,3], rest = [4,5,6] }
 
 -}
+
+
+prepare : List String -> List String
+prepare strings =
+    strings |> List.map reflate |> String.join " " |> String.trim |> String.split "\n"
+
+
+reflate : String -> String
+reflate str =
+    if str == "" then
+        "\n"
+
+    else
+        str
 
 
 takeUntil : (a -> Bool) -> List a -> State a

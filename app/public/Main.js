@@ -12854,6 +12854,75 @@ var $author$project$Main$fontGray = function (g) {
 var $mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
 var $mdgriffith$elm_ui$Element$alignTop = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$Top);
 var $elm$core$String$lines = _String_lines;
+var $author$project$Common$Syntax$TBBlock = F3(
+	function (a, b, c) {
+		return {$: 'TBBlock', a: a, b: b, c: c};
+	});
+var $author$project$Common$Syntax$TBError = function (a) {
+	return {$: 'TBError', a: a};
+};
+var $author$project$Common$Syntax$TBParagraph = F2(
+	function (a, b) {
+		return {$: 'TBParagraph', a: a, b: b};
+	});
+var $author$project$Common$Syntax$TBVerbatimBlock = F3(
+	function (a, b, c) {
+		return {$: 'TBVerbatimBlock', a: a, b: b, c: c};
+	});
+var $author$project$Common$Syntax$mapList = F2(
+	function (f, block) {
+		switch (block.$) {
+			case 'Paragraph':
+				var stringList = block.a;
+				var meta = block.b;
+				return A2(
+					$author$project$Common$Syntax$TBParagraph,
+					f(stringList),
+					meta);
+			case 'VerbatimBlock':
+				var name = block.a;
+				var stringList = block.b;
+				var meta = block.c;
+				return A3(
+					$author$project$Common$Syntax$TBVerbatimBlock,
+					name,
+					f(stringList),
+					meta);
+			case 'Block':
+				var name = block.a;
+				var blockList = block.b;
+				var meta = block.c;
+				return A3(
+					$author$project$Common$Syntax$TBBlock,
+					name,
+					A2(
+						$elm$core$List$map,
+						$author$project$Common$Syntax$mapList(f),
+						blockList),
+					meta);
+			default:
+				var str = block.a;
+				return $author$project$Common$Syntax$TBError(str);
+		}
+	});
+var $author$project$Common$Syntax$Text = F2(
+	function (a, b) {
+		return {$: 'Text', a: a, b: b};
+	});
+var $author$project$Common$Syntax$dummyMeta = F2(
+	function (start, indent) {
+		return {end: start, id: '76', indent: indent, start: start};
+	});
+var $author$project$Common$TextParser$parse = F3(
+	function (generation, settings, strings) {
+		return _List_fromArray(
+			[
+				A2(
+				$author$project$Common$Syntax$Text,
+				strings,
+				A2($author$project$Common$Syntax$dummyMeta, 0, 0))
+			]);
+	});
 var $author$project$Common$BlockParser$initialState = F2(
 	function (generation, input) {
 		return {blockCount: 0, counter: 0, generation: generation, indent: 0, input: input, lineNumber: 0, output: _List_Nil, stack: _List_Nil};
@@ -13715,10 +13784,6 @@ var $author$project$L1$Line$classify = function (str) {
 			A2($elm$core$String$dropLeft, leadingSpaces, str))
 	};
 };
-var $author$project$Common$Syntax$dummyMeta = F2(
-	function (start, indent) {
-		return {end: start, id: '76', indent: indent, start: start};
-	});
 var $author$project$Common$Syntax$P = {$: 'P'};
 var $author$project$Common$Syntax$V = {$: 'V'};
 var $author$project$Common$BlockParser$appendLineAtTop = F2(
@@ -13966,6 +14031,14 @@ var $author$project$L1$BlockParser$parse = F2(
 	function (generation, lines) {
 		return A2($author$project$L1$BlockParser$run, generation, lines).output;
 	});
+var $author$project$Common$API$parseL1 = F3(
+	function (generation, settings, lines) {
+		return A2(
+			$elm$core$List$map,
+			$author$project$Common$Syntax$mapList(
+				A2($author$project$Common$TextParser$parse, generation, settings)),
+			A2($author$project$L1$BlockParser$parse, generation, lines));
+	});
 var $mdgriffith$elm_ui$Internal$Model$Paragraph = {$: 'Paragraph'};
 var $mdgriffith$elm_ui$Element$paragraph = F2(
 	function (attrs, children) {
@@ -14010,11 +14083,11 @@ var $elm$core$Dict$fromList = function (assocs) {
 		$elm$core$Dict$empty,
 		assocs);
 };
-var $author$project$Common$Render$reflate = function (str) {
+var $author$project$Utility$reflate = function (str) {
 	return (str === '') ? '\n' : str;
 };
 var $elm$core$String$trim = _String_trim;
-var $author$project$Common$Render$prepare = function (strings) {
+var $author$project$Utility$prepare = function (strings) {
 	return A2(
 		$elm$core$String$split,
 		'\n',
@@ -14022,8 +14095,62 @@ var $author$project$Common$Render$prepare = function (strings) {
 			A2(
 				$elm$core$String$join,
 				' ',
-				A2($elm$core$List$map, $author$project$Common$Render$reflate, strings))));
+				A2($elm$core$List$map, $author$project$Utility$reflate, strings))));
 };
+var $author$project$Common$Render$renderText = F3(
+	function (generation, settings, text) {
+		switch (text.$) {
+			case 'Text':
+				var strings = text.a;
+				var meta = text.b;
+				return A2(
+					$mdgriffith$elm_ui$Element$column,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$spacing(24)
+						]),
+					A2(
+						$elm$core$List$map,
+						function (p) {
+							return A2(
+								$mdgriffith$elm_ui$Element$paragraph,
+								_List_fromArray(
+									[
+										$mdgriffith$elm_ui$Element$spacing(6)
+									]),
+								_List_fromArray(
+									[
+										$mdgriffith$elm_ui$Element$text(p)
+									]));
+						},
+						$author$project$Utility$prepare(strings)));
+			case 'Marked':
+				var name = text.a;
+				var textList = text.b;
+				var meta = text.c;
+				return A2(
+					$mdgriffith$elm_ui$Element$paragraph,
+					_List_Nil,
+					A2(
+						$elm$core$List$map,
+						A2($author$project$Common$Render$renderText, generation, settings),
+						textList));
+			case 'Verbatim':
+				var name = text.a;
+				var textList = text.b;
+				var meta = text.c;
+				return A2(
+					$mdgriffith$elm_ui$Element$paragraph,
+					_List_Nil,
+					A2(
+						$elm$core$List$map,
+						A2($author$project$Common$Render$renderText, generation, settings),
+						textList));
+			default:
+				var error_ = text.a;
+				return $author$project$Common$Render$error(error_);
+		}
+	});
 var $author$project$Common$Render$codeColor = A3($mdgriffith$elm_ui$Element$rgb, 0.4, 0, 0.8);
 var $mdgriffith$elm_ui$Element$Font$family = function (families) {
 	return A2(
@@ -14038,7 +14165,7 @@ var $mdgriffith$elm_ui$Internal$Model$Monospace = {$: 'Monospace'};
 var $mdgriffith$elm_ui$Element$Font$monospace = $mdgriffith$elm_ui$Internal$Model$Monospace;
 var $mdgriffith$elm_ui$Element$Font$typeface = $mdgriffith$elm_ui$Internal$Model$Typeface;
 var $author$project$Common$Render$codeBlock = F3(
-	function (generation, settings, lines) {
+	function (generation, settings, textList) {
 		return A2(
 			$mdgriffith$elm_ui$Element$column,
 			_List_fromArray(
@@ -14053,7 +14180,10 @@ var $author$project$Common$Render$codeBlock = F3(
 					$mdgriffith$elm_ui$Element$paddingEach(
 					{bottom: 0, left: 18, right: 0, top: 0})
 				]),
-			A2($elm$core$List$map, $mdgriffith$elm_ui$Element$text, lines));
+			A2(
+				$elm$core$List$map,
+				A2($author$project$Common$Render$renderText, generation, settings),
+				textList));
 	});
 var $author$project$Common$Render$DisplayMathMode = {$: 'DisplayMathMode'};
 var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
@@ -14103,13 +14233,43 @@ var $author$project$Common$Render$mathText = F3(
 						A3($author$project$Common$Render$mathText_, displayMode, 'ID', content))
 					])));
 	});
+var $author$project$Common$Syntax$textToString = function (text) {
+	switch (text.$) {
+		case 'Text':
+			var stringlist = text.a;
+			return A2(
+				$elm$core$String$join,
+				'\n',
+				$author$project$Utility$prepare(stringlist));
+		case 'Marked':
+			var textList = text.b;
+			var meta = text.c;
+			return A2(
+				$elm$core$String$join,
+				'\n',
+				A2($elm$core$List$map, $author$project$Common$Syntax$textToString, textList));
+		case 'Verbatim':
+			var textList = text.b;
+			var meta = text.c;
+			return A2(
+				$elm$core$String$join,
+				'\n',
+				A2($elm$core$List$map, $author$project$Common$Syntax$textToString, textList));
+		default:
+			var str = text.a;
+			return str;
+	}
+};
 var $author$project$Common$Render$mathBlock = F3(
-	function (generation, settings, strings) {
+	function (generation, settings, textList) {
 		return A3(
 			$author$project$Common$Render$mathText,
 			generation,
 			$author$project$Common$Render$DisplayMathMode,
-			A2($elm$core$String$join, '\n', strings));
+			A2(
+				$elm$core$String$join,
+				'\n',
+				A2($elm$core$List$map, $author$project$Common$Syntax$textToString, textList)));
 	});
 var $author$project$Common$Render$verbatimBlockDict = $elm$core$Dict$fromList(
 	_List_fromArray(
@@ -14144,8 +14304,8 @@ var $author$project$Common$Render$quotationBlock = F3(
 var $author$project$Common$Render$renderBlock = F3(
 	function (generation, settings, block) {
 		switch (block.$) {
-			case 'Paragraph':
-				var strings = block.a;
+			case 'TBParagraph':
+				var textList = block.a;
 				return A2(
 					$mdgriffith$elm_ui$Element$column,
 					_List_fromArray(
@@ -14154,20 +14314,9 @@ var $author$project$Common$Render$renderBlock = F3(
 						]),
 					A2(
 						$elm$core$List$map,
-						function (p) {
-							return A2(
-								$mdgriffith$elm_ui$Element$paragraph,
-								_List_fromArray(
-									[
-										$mdgriffith$elm_ui$Element$spacing(6)
-									]),
-								_List_fromArray(
-									[
-										$mdgriffith$elm_ui$Element$text(p)
-									]));
-						},
-						$author$project$Common$Render$prepare(strings)));
-			case 'VerbatimBlock':
+						A2($author$project$Common$Render$renderText, generation, settings),
+						textList));
+			case 'TBVerbatimBlock':
 				var name = block.a;
 				var lines = block.b;
 				var _v1 = A2($elm$core$Dict$get, name, $author$project$Common$Render$verbatimBlockDict);
@@ -14177,7 +14326,7 @@ var $author$project$Common$Render$renderBlock = F3(
 					var f = _v1.a;
 					return A3(f, generation, settings, lines);
 				}
-			case 'Block':
+			case 'TBBlock':
 				var name = block.a;
 				var blocks = block.b;
 				var _v2 = A2(
@@ -14227,7 +14376,7 @@ var $author$project$Common$API$renderL1 = F3(
 			$author$project$Common$Render$render,
 			generation,
 			settings,
-			A2($author$project$L1$BlockParser$parse, generation, lines));
+			A3($author$project$Common$API$parseL1, generation, settings, lines));
 	});
 var $author$project$Common$BlockParser$blockLabel = function (block) {
 	switch (block.$) {
@@ -14678,13 +14827,21 @@ var $author$project$Markdown$BlockParser$parse = F2(
 	function (generation, lines) {
 		return A2($author$project$Markdown$BlockParser$run, generation, lines).output;
 	});
+var $author$project$Common$API$parseMarkdown = F3(
+	function (generation, settings, lines) {
+		return A2(
+			$elm$core$List$map,
+			$author$project$Common$Syntax$mapList(
+				A2($author$project$Common$TextParser$parse, generation, settings)),
+			A2($author$project$Markdown$BlockParser$parse, generation, lines));
+	});
 var $author$project$Common$API$renderMarkdown = F3(
 	function (generation, settings, lines) {
 		return A3(
 			$author$project$Common$Render$render,
 			generation,
 			settings,
-			A2($author$project$Markdown$BlockParser$parse, generation, lines));
+			A3($author$project$Common$API$parseMarkdown, generation, settings, lines));
 	});
 var $author$project$MiniLaTeX$Line$beginBlockParser = A2(
 	$elm$parser$Parser$map,
@@ -15015,13 +15172,21 @@ var $author$project$MiniLaTeX$BlockParser$parse = F2(
 	function (generation, lines) {
 		return A2($author$project$MiniLaTeX$BlockParser$run, generation, lines).output;
 	});
+var $author$project$Common$API$parseMiniLaTeX = F3(
+	function (generation, settings, lines) {
+		return A2(
+			$elm$core$List$map,
+			$author$project$Common$Syntax$mapList(
+				A2($author$project$Common$TextParser$parse, generation, settings)),
+			A2($author$project$MiniLaTeX$BlockParser$parse, generation, lines));
+	});
 var $author$project$Common$API$renderMiniLaTeX = F3(
 	function (generation, settings, lines) {
 		return A3(
 			$author$project$Common$Render$render,
 			generation,
 			settings,
-			A2($author$project$MiniLaTeX$BlockParser$parse, generation, lines));
+			A3($author$project$Common$API$parseMiniLaTeX, generation, settings, lines));
 	});
 var $author$project$Main$render = F3(
 	function (language, count, source) {

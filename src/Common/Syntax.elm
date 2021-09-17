@@ -5,7 +5,13 @@ module Common.Syntax exposing
     , Text(..)
     , TextBlock(..)
     , dummyMeta
+    , map
+    , mapList
+    , textBlockToString
+    , textToString
     )
+
+import Utility
 
 
 type Block
@@ -15,6 +21,38 @@ type Block
     | Error String
 
 
+mapList : (List String -> List Text) -> Block -> TextBlock
+mapList f block =
+    case block of
+        Paragraph stringList meta ->
+            TBParagraph (f stringList) meta
+
+        VerbatimBlock name stringList meta ->
+            TBVerbatimBlock name (f stringList) meta
+
+        Block name blockList meta ->
+            TBBlock name (List.map (mapList f) blockList) meta
+
+        Error str ->
+            TBError str
+
+
+map : (String -> Text) -> Block -> TextBlock
+map f block =
+    case block of
+        Paragraph stringList meta ->
+            TBParagraph (List.map f stringList) meta
+
+        VerbatimBlock name stringList meta ->
+            TBVerbatimBlock name (List.map f stringList) meta
+
+        Block name blockList meta ->
+            TBBlock name (List.map (map f) blockList) meta
+
+        Error str ->
+            TBError str
+
+
 type Text
     = Text (List String) Meta
     | Marked String (List Text) Meta
@@ -22,11 +60,43 @@ type Text
     | TError String
 
 
+textToString : Text -> String
+textToString text =
+    case text of
+        Text stringlist _ ->
+            Utility.prepare stringlist |> String.join "\n"
+
+        Marked _ textList meta ->
+            List.map textToString textList |> String.join "\n"
+
+        Verbatim _ textList meta ->
+            List.map textToString textList |> String.join "\n"
+
+        TError str ->
+            str
+
+
 type TextBlock
     = TBParagraph (List Text) Meta
     | TBVerbatimBlock String (List Text) Meta
     | TBBlock String (List TextBlock) Meta
     | TBError String
+
+
+textBlockToString : TextBlock -> List String
+textBlockToString textBlock =
+    case textBlock of
+        TBParagraph textList _ ->
+            List.map textToString textList
+
+        TBVerbatimBlock _ textList _ ->
+            List.map textToString textList
+
+        TBBlock _ textBlockList _ ->
+            List.map (textBlockToString >> String.join "\n") textBlockList
+
+        TBError str ->
+            [ str ]
 
 
 type alias Meta =
