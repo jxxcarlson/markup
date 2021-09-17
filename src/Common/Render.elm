@@ -24,7 +24,7 @@ renderBlock : Int -> Settings -> Block -> Element msg
 renderBlock generation settings block =
     case block of
         Paragraph strings _ ->
-            Element.paragraph [] (List.map Element.text strings)
+            Element.column [ Element.spacing 24 ] (List.map (\p -> Element.paragraph [ Element.spacing 6 ] [ Element.text p ]) (prepare strings))
 
         VerbatimBlock name lines _ ->
             case Dict.get name verbatimBlockDict of
@@ -41,6 +41,20 @@ renderBlock generation settings block =
 
                 Just f ->
                     f generation settings blocks
+
+
+prepare : List String -> List String
+prepare strings =
+    strings |> List.map reflate |> String.join " " |> String.split "\n"
+
+
+reflate : String -> String
+reflate str =
+    if str == "" then
+        "\n"
+
+    else
+        str
 
 
 verbatimBlockDict : Dict String (Int -> Settings -> List String -> Element msg)

@@ -13977,6 +13977,18 @@ var $mdgriffith$elm_ui$Element$paragraph = F2(
 						attrs))),
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
+var $author$project$Common$Render$reflate = function (str) {
+	return (str === '') ? '\n' : str;
+};
+var $author$project$Common$Render$prepare = function (strings) {
+	return A2(
+		$elm$core$String$split,
+		'\n',
+		A2(
+			$elm$core$String$join,
+			' ',
+			A2($elm$core$List$map, $author$project$Common$Render$reflate, strings)));
+};
 var $author$project$Common$Render$codeColor = A3($mdgriffith$elm_ui$Element$rgb, 0.4, 0, 0.8);
 var $mdgriffith$elm_ui$Element$Font$family = function (families) {
 	return A2(
@@ -14100,9 +14112,26 @@ var $author$project$Common$Render$renderBlock = F3(
 			case 'Paragraph':
 				var strings = block.a;
 				return A2(
-					$mdgriffith$elm_ui$Element$paragraph,
-					_List_Nil,
-					A2($elm$core$List$map, $mdgriffith$elm_ui$Element$text, strings));
+					$mdgriffith$elm_ui$Element$column,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$spacing(24)
+						]),
+					A2(
+						$elm$core$List$map,
+						function (p) {
+							return A2(
+								$mdgriffith$elm_ui$Element$paragraph,
+								_List_fromArray(
+									[
+										$mdgriffith$elm_ui$Element$spacing(6)
+									]),
+								_List_fromArray(
+									[
+										$mdgriffith$elm_ui$Element$text(p)
+									]));
+						},
+						$author$project$Common$Render$prepare(strings)));
 			case 'VerbatimBlock':
 				var name = block.a;
 				var lines = block.b;
