@@ -1,3 +1,8 @@
 scripts:
 
-  cloc: cloc --by-file src/
+  cloc:
+    - cloc --by-file src/Common
+    - cloc --by-file src/L1
+    - cloc --by-file src/Markdown
+    - cloc --by-file src/MiniLaTeX
+
