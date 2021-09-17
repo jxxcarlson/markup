@@ -3,6 +3,7 @@ module Common.Render exposing (Settings, render)
 import Common.Syntax as Syntax exposing (Block(..))
 import Dict exposing (Dict)
 import Element exposing (Element)
+import Element.Background as Background
 import Element.Font as Font
 import Html exposing (Html)
 import Html.Attributes as HA
@@ -29,7 +30,7 @@ renderBlock generation settings block =
         VerbatimBlock name lines _ ->
             case Dict.get name verbatimBlockDict of
                 Nothing ->
-                    Element.el [] (Element.text ("Unimplemented verbatim block: " ++ name))
+                    error ("Unimplemented verbatim block: " ++ name)
 
                 Just f ->
                     f generation settings lines
@@ -37,15 +38,22 @@ renderBlock generation settings block =
         Block name blocks _ ->
             case Dict.get name blockDict of
                 Nothing ->
-                    Element.el [] (Element.text ("Unimplemented block: " ++ name))
+                    error ("Unimplemented block: " ++ name)
 
                 Just f ->
                     f generation settings blocks
 
+        Error desc ->
+            error desc
+
+
+error str =
+    Element.paragraph [ Background.color (Element.rgb255 250 217 215) ] [ Element.text str ]
+
 
 prepare : List String -> List String
 prepare strings =
-    strings |> List.map reflate |> String.join " " |> String.split "\n"
+    strings |> List.map reflate |> String.join " " |> String.trim |> String.split "\n"
 
 
 reflate : String -> String

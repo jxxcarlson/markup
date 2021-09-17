@@ -12894,9 +12894,11 @@ var $author$project$Common$BlockParser$blockLevel = function (block) {
 		case 'VerbatimBlock':
 			var meta = block.c;
 			return $author$project$Common$BlockParser$level(meta.indent);
-		default:
+		case 'Block':
 			var meta = block.c;
 			return $author$project$Common$BlockParser$level(meta.indent);
+		default:
+			return 0;
 	}
 };
 var $author$project$Common$BlockParser$blockLevelOfStackTop = function (stack) {
@@ -12961,6 +12963,9 @@ var $author$project$Common$Syntax$VerbatimBlock = F3(
 	function (a, b, c) {
 		return {$: 'VerbatimBlock', a: a, b: b, c: c};
 	});
+var $author$project$Common$Syntax$Error = function (a) {
+	return {$: 'Error', a: a};
+};
 var $author$project$Common$Syntax$Paragraph = F2(
 	function (a, b) {
 		return {$: 'Paragraph', a: a, b: b};
@@ -12983,7 +12988,7 @@ var $author$project$Common$BlockParser$reverseContents = function (block) {
 				name,
 				$elm$core$List$reverse(strings),
 				meta);
-		default:
+		case 'Block':
 			var name = block.a;
 			var strings = block.b;
 			var meta = block.c;
@@ -12992,6 +12997,9 @@ var $author$project$Common$BlockParser$reverseContents = function (block) {
 				name,
 				$elm$core$List$reverse(strings),
 				meta);
+		default:
+			var s = block.a;
+			return $author$project$Common$Syntax$Error(s);
 	}
 };
 var $elm_community$list_extra$List$Extra$uncons = function (list) {
@@ -13102,6 +13110,9 @@ var $author$project$Common$Syntax$BBBlock = F2(
 	function (a, b) {
 		return {$: 'BBBlock', a: a, b: b};
 	});
+var $author$project$Common$Syntax$BBError = function (a) {
+	return {$: 'BBError', a: a};
+};
 var $author$project$Common$Syntax$BBParagraph = function (a) {
 	return {$: 'BBParagraph', a: a};
 };
@@ -13118,13 +13129,16 @@ var $author$project$Common$Syntax$simplify = function (block) {
 			var name = block.a;
 			var strings = block.b;
 			return A2($author$project$Common$Syntax$BBVerbatimBlock, name, strings);
-		default:
+		case 'Block':
 			var name = block.a;
 			var blocks = block.b;
 			return A2(
 				$author$project$Common$Syntax$BBBlock,
 				name,
 				A2($elm$core$List$map, $author$project$Common$Syntax$simplify, blocks));
+		default:
+			var desc = block.a;
+			return $author$project$Common$Syntax$BBError(desc);
 	}
 };
 var $author$project$Common$BlockParser$nextState = F2(
@@ -13730,14 +13744,17 @@ var $author$project$Common$BlockParser$appendLineAtTop = F2(
 		}
 	});
 var $author$project$Common$Syntax$B = {$: 'B'};
+var $author$project$Common$Syntax$E = {$: 'E'};
 var $author$project$Common$BlockParser$typeOfBlock = function (b) {
 	switch (b.$) {
 		case 'Paragraph':
 			return $author$project$Common$Syntax$P;
 		case 'VerbatimBlock':
 			return $author$project$Common$Syntax$V;
-		default:
+		case 'Block':
 			return $author$project$Common$Syntax$B;
+		default:
+			return $author$project$Common$Syntax$E;
 	}
 };
 var $author$project$L1$BlockParser$handleBlankLine = F2(
@@ -13775,10 +13792,13 @@ var $author$project$Common$BlockParser$replaceMeta = F2(
 				var name = block.a;
 				var strings = block.b;
 				return A3($author$project$Common$Syntax$VerbatimBlock, name, strings, meta);
-			default:
+			case 'Block':
 				var name = block.a;
 				var blocks = block.b;
 				return A3($author$project$Common$Syntax$Block, name, blocks, meta);
+			default:
+				var s = block.a;
+				return $author$project$Common$Syntax$Error(s);
 		}
 	});
 var $author$project$Common$BlockParser$shift = F2(
@@ -13946,18 +13966,6 @@ var $author$project$L1$BlockParser$parse = F2(
 	function (generation, lines) {
 		return A2($author$project$L1$BlockParser$run, generation, lines).output;
 	});
-var $elm$core$Dict$fromList = function (assocs) {
-	return A3(
-		$elm$core$List$foldl,
-		F2(
-			function (_v0, dict) {
-				var key = _v0.a;
-				var value = _v0.b;
-				return A3($elm$core$Dict$insert, key, value, dict);
-			}),
-		$elm$core$Dict$empty,
-		assocs);
-};
 var $mdgriffith$elm_ui$Internal$Model$Paragraph = {$: 'Paragraph'};
 var $mdgriffith$elm_ui$Element$paragraph = F2(
 	function (attrs, children) {
@@ -13977,17 +13985,44 @@ var $mdgriffith$elm_ui$Element$paragraph = F2(
 						attrs))),
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
+var $author$project$Common$Render$error = function (str) {
+	return A2(
+		$mdgriffith$elm_ui$Element$paragraph,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$Background$color(
+				A3($mdgriffith$elm_ui$Element$rgb255, 250, 217, 215))
+			]),
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$text(str)
+			]));
+};
+var $elm$core$Dict$fromList = function (assocs) {
+	return A3(
+		$elm$core$List$foldl,
+		F2(
+			function (_v0, dict) {
+				var key = _v0.a;
+				var value = _v0.b;
+				return A3($elm$core$Dict$insert, key, value, dict);
+			}),
+		$elm$core$Dict$empty,
+		assocs);
+};
 var $author$project$Common$Render$reflate = function (str) {
 	return (str === '') ? '\n' : str;
 };
+var $elm$core$String$trim = _String_trim;
 var $author$project$Common$Render$prepare = function (strings) {
 	return A2(
 		$elm$core$String$split,
 		'\n',
-		A2(
-			$elm$core$String$join,
-			' ',
-			A2($elm$core$List$map, $author$project$Common$Render$reflate, strings)));
+		$elm$core$String$trim(
+			A2(
+				$elm$core$String$join,
+				' ',
+				A2($elm$core$List$map, $author$project$Common$Render$reflate, strings))));
 };
 var $author$project$Common$Render$codeColor = A3($mdgriffith$elm_ui$Element$rgb, 0.4, 0, 0.8);
 var $mdgriffith$elm_ui$Element$Font$family = function (families) {
@@ -14137,15 +14172,12 @@ var $author$project$Common$Render$renderBlock = F3(
 				var lines = block.b;
 				var _v1 = A2($elm$core$Dict$get, name, $author$project$Common$Render$verbatimBlockDict);
 				if (_v1.$ === 'Nothing') {
-					return A2(
-						$mdgriffith$elm_ui$Element$el,
-						_List_Nil,
-						$mdgriffith$elm_ui$Element$text('Unimplemented verbatim block: ' + name));
+					return $author$project$Common$Render$error('Unimplemented verbatim block: ' + name);
 				} else {
 					var f = _v1.a;
 					return A3(f, generation, settings, lines);
 				}
-			default:
+			case 'Block':
 				var name = block.a;
 				var blocks = block.b;
 				var _v2 = A2(
@@ -14153,14 +14185,14 @@ var $author$project$Common$Render$renderBlock = F3(
 					name,
 					$author$project$Common$Render$cyclic$blockDict());
 				if (_v2.$ === 'Nothing') {
-					return A2(
-						$mdgriffith$elm_ui$Element$el,
-						_List_Nil,
-						$mdgriffith$elm_ui$Element$text('Unimplemented block: ' + name));
+					return $author$project$Common$Render$error('Unimplemented block: ' + name);
 				} else {
 					var f = _v2.a;
 					return A3(f, generation, settings, blocks);
 				}
+			default:
+				var desc = block.a;
+				return $author$project$Common$Render$error(desc);
 		}
 	});
 function $author$project$Common$Render$cyclic$blockDict() {
@@ -14202,6 +14234,9 @@ var $author$project$Common$BlockParser$blockLabel = function (block) {
 		case 'Paragraph':
 			return '(no label)';
 		case 'Block':
+			var s = block.a;
+			return s;
+		case 'VerbatimBlock':
 			var s = block.a;
 			return s;
 		default:
@@ -14610,11 +14645,7 @@ var $author$project$Markdown$BlockParser$nextStateAux = F2(
 						});
 				} else {
 					var s2 = $author$project$Common$BlockParser$blockLabelAtBottomOfStack(prefix);
-					var errorMessage = A2(
-						$author$project$Common$Syntax$Paragraph,
-						_List_fromArray(
-							['Error: I was expecting an end-block labeled  ' + (s2 + (', but found ' + s))]),
-						A2($author$project$Common$Syntax$dummyMeta, 0, 0));
+					var errorMessage = $author$project$Common$Syntax$Error('Error: I was expecting an end-block labeled  ' + (s2 + (', but found ' + s)));
 					return _Utils_update(
 						state,
 						{
@@ -14951,11 +14982,7 @@ var $author$project$MiniLaTeX$BlockParser$nextStateAux = F2(
 						});
 				} else {
 					var s2 = $author$project$Common$BlockParser$blockLabelAtBottomOfStack(prefix);
-					var errorMessage = A2(
-						$author$project$Common$Syntax$Paragraph,
-						_List_fromArray(
-							['Error: I was expecting an end-block labeled  ' + (s2 + (', but found ' + s))]),
-						A2($author$project$Common$Syntax$dummyMeta, 0, 0));
+					var errorMessage = $author$project$Common$Syntax$Error('Error: I was expecting an end-block labeled  ' + (s2 + (', but found ' + (s + '. There might be an indentation error'))));
 					return _Utils_update(
 						state,
 						{

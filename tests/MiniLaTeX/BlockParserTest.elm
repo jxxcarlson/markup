@@ -1,7 +1,7 @@
 module MiniLaTeX.BlockParserTest exposing (..)
 
+import Common.BasicSyntax as Syntax exposing (BasicBlock(..))
 import Common.BlockParser
-import Common.Syntax as Syntax exposing (BasicBlock(..))
 import Expect exposing (Expectation)
 import MiniLaTeX.BlockParser as BlockParser
 import Test exposing (..)
@@ -56,8 +56,7 @@ suite =
         , testParser
             "Code:\n```\n   a[i] = a[i] + 1\n   \n   b[i] = b[i] + 1\n\nOk!"
             [ BBParagraph [ "Code:" ], BBVerbatimBlock "code" [ "a[i] = a[i] + 1", "", "b[i] = b[i] + 1" ], BBParagraph [ "Ok!" ] ]
-        , Test.only <|
-            testParser
-                "one\ntwo\n\nthree\nfour"
-                [ BBParagraph [ "one", "two" ], BBParagraph [ "three", "four" ] ]
+        , testParser
+            "one\ntwo\n\nthree\nfour"
+            [ BBParagraph [ "one", "two" ], BBParagraph [ "three", "four" ] ]
         ]

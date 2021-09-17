@@ -1,9 +1,10 @@
 module Markdown.BlockParser exposing (parse, run)
 
+import Common.BasicSyntax as Basic exposing (BasicBlock(..))
 import Common.BlockParser as BP exposing (State, Step(..), loop)
 import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Line as Line exposing (LineType(..))
-import Common.Syntax as Syntax exposing (BasicBlock(..), Block(..), BlockType(..))
+import Common.Syntax as Syntax exposing (Block(..), BlockType(..))
 import Markdown.Line as Line
 import Utility
 
@@ -81,7 +82,7 @@ nextStateAux line state =
 
                     errorMessage : Block
                     errorMessage =
-                        Paragraph [ "Error: I was expecting an end-block labeled  " ++ s2 ++ ", but found " ++ s ] (Syntax.dummyMeta 0 0)
+                        Error <| "Error: I was expecting an end-block labeled  " ++ s2 ++ ", but found " ++ s
                 in
                 { state | stack = data.stack ++ rest, output = errorMessage :: data.output ++ state.output }
 

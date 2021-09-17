@@ -1,7 +1,7 @@
 module Markdown.BlockParserTest exposing (..)
 
+import Common.BasicSyntax as Syntax exposing (BasicBlock(..))
 import Common.BlockParser
-import Common.Syntax as Syntax exposing (BasicBlock(..))
 import Expect exposing (Expectation)
 import Markdown.BlockParser as BlockParser
 import Test exposing (..)

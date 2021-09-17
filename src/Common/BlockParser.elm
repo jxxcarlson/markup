@@ -17,6 +17,7 @@ module Common.BlockParser exposing
     , typeOfBlock
     )
 
+import Common.BasicSyntax as Basic
 import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Syntax as Syntax exposing (Block(..), BlockType(..))
 import List.Extra
@@ -38,7 +39,7 @@ nextState : (String -> State -> State) -> State -> Step State State
 nextState nextStateAux state =
     let
         _ =
-            debug2 "STACK" ( state.counter, List.map Syntax.simplify state.stack, blockLevelOfStackTop state.stack )
+            debug2 "STACK" ( state.counter, List.map Basic.simplify state.stack, blockLevelOfStackTop state.stack )
     in
     case List.head state.input of
         Nothing ->
@@ -48,16 +49,16 @@ nextState nextStateAux state =
 
                 -- |> reverseStack
                 _ =
-                    debug1 "STACK" ( newState.counter, List.map Syntax.simplify newState.stack, blockLevelOfStackTop newState.stack )
+                    debug1 "STACK" ( newState.counter, List.map Basic.simplify newState.stack, blockLevelOfStackTop newState.stack )
 
                 _ =
-                    debug1 "Reduce stack" (newState.output |> List.map Syntax.simplify)
+                    debug1 "Reduce stack" (newState.output |> List.map Basic.simplify)
 
                 finalState =
                     { newState | output = newState.stack ++ newState.output |> List.reverse }
 
                 _ =
-                    finalState |> .output |> List.map Syntax.simplify |> debug1 "OUTPUT"
+                    finalState |> .output |> List.map Basic.simplify |> debug1 "OUTPUT"
             in
             Done finalState
 
@@ -187,6 +188,9 @@ blockLevel block =
         Block _ _ meta ->
             level meta.indent
 
+        Error _ ->
+            0
+
 
 blockLevelOfStackTop : List Block -> Int
 blockLevelOfStackTop stack =
@@ -210,6 +214,9 @@ typeOfBlock b =
         Block _ _ _ ->
             B
 
+        Error _ ->
+            E
+
 
 blockLabel : Block -> String
 blockLabel block =
@@ -221,6 +228,9 @@ blockLabel block =
             s
 
         VerbatimBlock s _ _ ->
+            s
+
+        Error s ->
             s
 
 
@@ -270,6 +280,9 @@ reverseContents block =
 
         Block name strings meta ->
             Block name (List.reverse strings) meta
+
+        Error s ->
+            Error s
 
 
 
@@ -361,6 +374,9 @@ replaceMeta meta block =
 
         Block name blocks _ ->
             Block name blocks meta
+
+        Error s ->
+            Error s
 
 
 shift : Block -> State -> State
