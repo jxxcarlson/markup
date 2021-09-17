@@ -5314,7 +5314,7 @@ var $elm$core$Task$perform = F2(
 var $elm$browser$Browser$element = _Browser_element;
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $author$project$Main$IncrementCounter = {$: 'IncrementCounter'};
-var $author$project$Main$Markdown = {$: 'Markdown'};
+var $author$project$Common$API$Markdown = {$: 'Markdown'};
 var $elm$core$Basics$always = F2(
 	function (a, _v0) {
 		return a;
@@ -5324,7 +5324,7 @@ var $author$project$Main$initialText = $author$project$Data$MarkdownTest$text;
 var $elm$core$Process$sleep = _Process_sleep;
 var $author$project$Main$init = function (flags) {
 	return _Utils_Tuple2(
-		{count: 0, language: $author$project$Main$Markdown, sourceText: $author$project$Main$initialText, windowHeight: flags.height, windowWidth: flags.width},
+		{count: 0, language: $author$project$Common$API$Markdown, sourceText: $author$project$Main$initialText, windowHeight: flags.height, windowWidth: flags.width},
 		A2(
 			$elm$core$Task$perform,
 			$elm$core$Basics$always($author$project$Main$IncrementCounter),
@@ -12399,7 +12399,7 @@ var $author$project$Main$inputText = function (model) {
 			text: model.sourceText
 		});
 };
-var $author$project$Main$L1 = {$: 'L1'};
+var $author$project$Common$API$L1 = {$: 'L1'};
 var $author$project$Main$LoadDocumentText = F2(
 	function (a, b) {
 		return {$: 'LoadDocumentText', a: a, b: b};
@@ -12704,7 +12704,7 @@ var $author$project$Main$l1DocButton = function (language) {
 	return A2(
 		$mdgriffith$elm_ui$Element$Input$button,
 		$author$project$Main$activeButtonStyle(
-			_Utils_eq(language, $author$project$Main$L1)),
+			_Utils_eq(language, $author$project$Common$API$L1)),
 		{
 			label: A2(
 				$mdgriffith$elm_ui$Element$el,
@@ -12716,14 +12716,14 @@ var $author$project$Main$l1DocButton = function (language) {
 					]),
 				$mdgriffith$elm_ui$Element$text('L1')),
 			onPress: $elm$core$Maybe$Just(
-				A2($author$project$Main$LoadDocumentText, $author$project$Main$L1, $author$project$Data$L1Test$text))
+				A2($author$project$Main$LoadDocumentText, $author$project$Common$API$L1, $author$project$Data$L1Test$text))
 		});
 };
 var $author$project$Main$markdownDocButton = function (language) {
 	return A2(
 		$mdgriffith$elm_ui$Element$Input$button,
 		$author$project$Main$activeButtonStyle(
-			_Utils_eq(language, $author$project$Main$Markdown)),
+			_Utils_eq(language, $author$project$Common$API$Markdown)),
 		{
 			label: A2(
 				$mdgriffith$elm_ui$Element$el,
@@ -12735,16 +12735,16 @@ var $author$project$Main$markdownDocButton = function (language) {
 					]),
 				$mdgriffith$elm_ui$Element$text('Markdown')),
 			onPress: $elm$core$Maybe$Just(
-				A2($author$project$Main$LoadDocumentText, $author$project$Main$Markdown, $author$project$Data$MarkdownTest$text))
+				A2($author$project$Main$LoadDocumentText, $author$project$Common$API$Markdown, $author$project$Data$MarkdownTest$text))
 		});
 };
-var $author$project$Main$MiniLaTeX = {$: 'MiniLaTeX'};
+var $author$project$Common$API$MiniLaTeX = {$: 'MiniLaTeX'};
 var $author$project$Data$MiniLaTeXTest$text = '\nhis is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.\n\nThis is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.\n\nTHIS IS SOME MATH:\n$$\n   \\int_0^1 x^n dx = \\frac{1}{n+1}\n$$\n\nThis is some code:\n\n```\n   a[1] = 1\n   .\n   b[i] = 2\n\nThis is a quote:\n\n\\begin{quotation}\n   Regular languages are rather inexpressive,\n   but they work great for lexers. On the opposite\n   side of expressivity spectrum are Turing machines.\n   For them, we also have a number of meta-languages\n   (like Rust), which work great for humans.\n   It’s interesting that a Turing machine is\n   equivalent to a finite state machine with\n   a pair of stacks: to get two stacks from a tape,\n   cut the tape in half where the head is. Moving\n   the head then corresponds to popping from one\n   stack and pushing to another.\n\\end{quotation}\n\n\n\n*by James Carlson*\n\n';
 var $author$project$Main$miniLaTeXDocButton = function (language) {
 	return A2(
 		$mdgriffith$elm_ui$Element$Input$button,
 		$author$project$Main$activeButtonStyle(
-			_Utils_eq(language, $author$project$Main$MiniLaTeX)),
+			_Utils_eq(language, $author$project$Common$API$MiniLaTeX)),
 		{
 			label: A2(
 				$mdgriffith$elm_ui$Element$el,
@@ -12756,7 +12756,7 @@ var $author$project$Main$miniLaTeXDocButton = function (language) {
 					]),
 				$mdgriffith$elm_ui$Element$text('MiniLaTeX')),
 			onPress: $elm$core$Maybe$Just(
-				A2($author$project$Main$LoadDocumentText, $author$project$Main$MiniLaTeX, $author$project$Data$MiniLaTeXTest$text))
+				A2($author$project$Main$LoadDocumentText, $author$project$Common$API$MiniLaTeX, $author$project$Data$MiniLaTeXTest$text))
 		});
 };
 var $mdgriffith$elm_ui$Element$row = F2(
@@ -15188,28 +15188,25 @@ var $author$project$Common$API$renderMiniLaTeX = F3(
 			settings,
 			A3($author$project$Common$API$parseMiniLaTeX, generation, settings, lines));
 	});
-var $author$project$Main$render = F3(
-	function (language, count, source) {
+var $author$project$Common$API$render = F4(
+	function (language, generation, settings, lines) {
 		switch (language.$) {
 			case 'L1':
-				return A3(
-					$author$project$Common$API$renderL1,
-					count,
-					{width: 500},
-					$elm$core$String$lines(source));
+				return A3($author$project$Common$API$renderL1, generation, settings, lines);
 			case 'Markdown':
-				return A3(
-					$author$project$Common$API$renderMarkdown,
-					count,
-					{width: 500},
-					$elm$core$String$lines(source));
+				return A3($author$project$Common$API$renderMarkdown, generation, settings, lines);
 			default:
-				return A3(
-					$author$project$Common$API$renderMiniLaTeX,
-					count,
-					{width: 500},
-					$elm$core$String$lines(source));
+				return A3($author$project$Common$API$renderMiniLaTeX, generation, settings, lines);
 		}
+	});
+var $author$project$Main$render = F3(
+	function (language, count, source) {
+		return A4(
+			$author$project$Common$API$render,
+			language,
+			count,
+			{width: 500},
+			$elm$core$String$lines(source));
 	});
 var $author$project$Main$renderedText = function (model) {
 	return A2(

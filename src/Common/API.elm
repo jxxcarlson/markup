@@ -1,12 +1,31 @@
-module Common.API exposing (renderL1, renderMarkdown, renderMiniLaTeX)
+module Common.API exposing (Language(..), render)
 
 import Common.Render exposing (Settings)
 import Common.Syntax as Syntax
 import Common.TextParser
 import Element exposing (Element)
-import L1.BlockParser as L1
+import L1.BlockParser as L1Block
 import Markdown.BlockParser as Markdown
 import MiniLaTeX.BlockParser as MiniLaTeX
+
+
+render : Language -> Int -> Settings -> List String -> List (Element msg)
+render language generation settings lines =
+    case language of
+        L1 ->
+            renderL1 generation settings lines
+
+        Markdown ->
+            renderMarkdown generation settings lines
+
+        MiniLaTeX ->
+            renderMiniLaTeX generation settings lines
+
+
+type Language
+    = L1
+    | Markdown
+    | MiniLaTeX
 
 
 parseMarkdown : Int -> Settings -> List String -> List Syntax.TextBlock
@@ -40,7 +59,7 @@ renderMiniLaTeX generation settings lines =
 parseL1 : Int -> Settings -> List String -> List Syntax.TextBlock
 parseL1 generation settings lines =
     lines
-        |> L1.parse generation
+        |> L1Block.parse generation
         |> List.map (Syntax.mapList (Common.TextParser.parse generation settings))
 
 

@@ -1,7 +1,7 @@
 module Main exposing (main)
 
 import Browser
-import Common.API as API
+import Common.API as API exposing (Language(..))
 import Data.Article2
 import Data.L1Test
 import Data.MarkdownTest
@@ -40,12 +40,6 @@ type Msg
     | ClearText
     | LoadDocumentText Language String
     | IncrementCounter
-
-
-type Language
-    = MiniLaTeX
-    | Markdown
-    | L1
 
 
 identifierToLanguage : String -> Language
@@ -223,15 +217,7 @@ renderedText model =
 
 
 render language count source =
-    case language of
-        L1 ->
-            API.renderL1 count { width = 500 } (String.lines source)
-
-        Markdown ->
-            API.renderMarkdown count { width = 500 } (String.lines source)
-
-        MiniLaTeX ->
-            API.renderMiniLaTeX count { width = 500 } (String.lines source)
+    API.render language count { width = 500 } (String.lines source)
 
 
 
