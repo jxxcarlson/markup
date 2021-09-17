@@ -5314,6 +5314,7 @@ var $elm$core$Task$perform = F2(
 var $elm$browser$Browser$element = _Browser_element;
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $author$project$Main$IncrementCounter = {$: 'IncrementCounter'};
+var $author$project$Main$Markdown = {$: 'Markdown'};
 var $elm$core$Basics$always = F2(
 	function (a, _v0) {
 		return a;
@@ -5323,7 +5324,7 @@ var $author$project$Main$initialText = $author$project$Data$MarkdownTest$text;
 var $elm$core$Process$sleep = _Process_sleep;
 var $author$project$Main$init = function (flags) {
 	return _Utils_Tuple2(
-		{count: 0, docIdentifier: 'markdown', sourceText: $author$project$Main$initialText, windowHeight: flags.height, windowWidth: flags.width},
+		{count: 0, language: $author$project$Main$Markdown, sourceText: $author$project$Main$initialText, windowHeight: flags.height, windowWidth: flags.width},
 		A2(
 			$elm$core$Task$perform,
 			$elm$core$Basics$always($author$project$Main$IncrementCounter),
@@ -5356,12 +5357,12 @@ var $author$project$Main$update = F2(
 						{count: model.count + 1, sourceText: ''}),
 					$elm$core$Platform$Cmd$none);
 			case 'LoadDocumentText':
-				var docIdentifier = msg.a;
+				var language = msg.a;
 				var text = msg.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{count: model.count + 1, docIdentifier: docIdentifier, sourceText: text}),
+						{count: model.count + 1, language: language, sourceText: text}),
 					$elm$core$Platform$Cmd$none);
 			default:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -11333,450 +11334,6 @@ var $mdgriffith$elm_ui$Element$column = F2(
 						attrs))),
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
-var $author$project$Main$LoadDocumentText = F2(
-	function (a, b) {
-		return {$: 'LoadDocumentText', a: a, b: b};
-	});
-var $mdgriffith$elm_ui$Internal$Model$Active = {$: 'Active'};
-var $mdgriffith$elm_ui$Internal$Model$PseudoSelector = F2(
-	function (a, b) {
-		return {$: 'PseudoSelector', a: a, b: b};
-	});
-var $mdgriffith$elm_ui$Internal$Flag$active = $mdgriffith$elm_ui$Internal$Flag$flag(32);
-var $mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
-	return {$: 'AlignX', a: a};
-};
-var $mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
-	return {$: 'AlignY', a: a};
-};
-var $mdgriffith$elm_ui$Internal$Model$Describe = function (a) {
-	return {$: 'Describe', a: a};
-};
-var $mdgriffith$elm_ui$Internal$Model$Nearby = F2(
-	function (a, b) {
-		return {$: 'Nearby', a: a, b: b};
-	});
-var $mdgriffith$elm_ui$Internal$Model$NoAttribute = {$: 'NoAttribute'};
-var $mdgriffith$elm_ui$Internal$Model$TransformComponent = F2(
-	function (a, b) {
-		return {$: 'TransformComponent', a: a, b: b};
-	});
-var $mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
-var $mdgriffith$elm_ui$Internal$Model$Text = function (a) {
-	return {$: 'Text', a: a};
-};
-var $elm$core$Basics$composeL = F3(
-	function (g, f, x) {
-		return g(
-			f(x));
-	});
-var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
-var $mdgriffith$elm_ui$Internal$Model$map = F2(
-	function (fn, el) {
-		switch (el.$) {
-			case 'Styled':
-				var styled = el.a;
-				return $mdgriffith$elm_ui$Internal$Model$Styled(
-					{
-						html: F2(
-							function (add, context) {
-								return A2(
-									$elm$virtual_dom$VirtualDom$map,
-									fn,
-									A2(styled.html, add, context));
-							}),
-						styles: styled.styles
-					});
-			case 'Unstyled':
-				var html = el.a;
-				return $mdgriffith$elm_ui$Internal$Model$Unstyled(
-					A2(
-						$elm$core$Basics$composeL,
-						$elm$virtual_dom$VirtualDom$map(fn),
-						html));
-			case 'Text':
-				var str = el.a;
-				return $mdgriffith$elm_ui$Internal$Model$Text(str);
-			default:
-				return $mdgriffith$elm_ui$Internal$Model$Empty;
-		}
-	});
-var $elm$virtual_dom$VirtualDom$mapAttribute = _VirtualDom_mapAttribute;
-var $mdgriffith$elm_ui$Internal$Model$mapAttrFromStyle = F2(
-	function (fn, attr) {
-		switch (attr.$) {
-			case 'NoAttribute':
-				return $mdgriffith$elm_ui$Internal$Model$NoAttribute;
-			case 'Describe':
-				var description = attr.a;
-				return $mdgriffith$elm_ui$Internal$Model$Describe(description);
-			case 'AlignX':
-				var x = attr.a;
-				return $mdgriffith$elm_ui$Internal$Model$AlignX(x);
-			case 'AlignY':
-				var y = attr.a;
-				return $mdgriffith$elm_ui$Internal$Model$AlignY(y);
-			case 'Width':
-				var x = attr.a;
-				return $mdgriffith$elm_ui$Internal$Model$Width(x);
-			case 'Height':
-				var x = attr.a;
-				return $mdgriffith$elm_ui$Internal$Model$Height(x);
-			case 'Class':
-				var x = attr.a;
-				var y = attr.b;
-				return A2($mdgriffith$elm_ui$Internal$Model$Class, x, y);
-			case 'StyleClass':
-				var flag = attr.a;
-				var style = attr.b;
-				return A2($mdgriffith$elm_ui$Internal$Model$StyleClass, flag, style);
-			case 'Nearby':
-				var location = attr.a;
-				var elem = attr.b;
-				return A2(
-					$mdgriffith$elm_ui$Internal$Model$Nearby,
-					location,
-					A2($mdgriffith$elm_ui$Internal$Model$map, fn, elem));
-			case 'Attr':
-				var htmlAttr = attr.a;
-				return $mdgriffith$elm_ui$Internal$Model$Attr(
-					A2($elm$virtual_dom$VirtualDom$mapAttribute, fn, htmlAttr));
-			default:
-				var fl = attr.a;
-				var trans = attr.b;
-				return A2($mdgriffith$elm_ui$Internal$Model$TransformComponent, fl, trans);
-		}
-	});
-var $mdgriffith$elm_ui$Internal$Model$removeNever = function (style) {
-	return A2($mdgriffith$elm_ui$Internal$Model$mapAttrFromStyle, $elm$core$Basics$never, style);
-};
-var $mdgriffith$elm_ui$Internal$Model$unwrapDecsHelper = F2(
-	function (attr, _v0) {
-		var styles = _v0.a;
-		var trans = _v0.b;
-		var _v1 = $mdgriffith$elm_ui$Internal$Model$removeNever(attr);
-		switch (_v1.$) {
-			case 'StyleClass':
-				var style = _v1.b;
-				return _Utils_Tuple2(
-					A2($elm$core$List$cons, style, styles),
-					trans);
-			case 'TransformComponent':
-				var flag = _v1.a;
-				var component = _v1.b;
-				return _Utils_Tuple2(
-					styles,
-					A2($mdgriffith$elm_ui$Internal$Model$composeTransformation, trans, component));
-			default:
-				return _Utils_Tuple2(styles, trans);
-		}
-	});
-var $mdgriffith$elm_ui$Internal$Model$unwrapDecorations = function (attrs) {
-	var _v0 = A3(
-		$elm$core$List$foldl,
-		$mdgriffith$elm_ui$Internal$Model$unwrapDecsHelper,
-		_Utils_Tuple2(_List_Nil, $mdgriffith$elm_ui$Internal$Model$Untransformed),
-		attrs);
-	var styles = _v0.a;
-	var transform = _v0.b;
-	return A2(
-		$elm$core$List$cons,
-		$mdgriffith$elm_ui$Internal$Model$Transform(transform),
-		styles);
-};
-var $mdgriffith$elm_ui$Element$mouseDown = function (decs) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$active,
-		A2(
-			$mdgriffith$elm_ui$Internal$Model$PseudoSelector,
-			$mdgriffith$elm_ui$Internal$Model$Active,
-			$mdgriffith$elm_ui$Internal$Model$unwrapDecorations(decs)));
-};
-var $mdgriffith$elm_ui$Internal$Model$PaddingStyle = F5(
-	function (a, b, c, d, e) {
-		return {$: 'PaddingStyle', a: a, b: b, c: c, d: d, e: e};
-	});
-var $mdgriffith$elm_ui$Internal$Flag$padding = $mdgriffith$elm_ui$Internal$Flag$flag(2);
-var $mdgriffith$elm_ui$Element$paddingXY = F2(
-	function (x, y) {
-		if (_Utils_eq(x, y)) {
-			var f = x;
-			return A2(
-				$mdgriffith$elm_ui$Internal$Model$StyleClass,
-				$mdgriffith$elm_ui$Internal$Flag$padding,
-				A5(
-					$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-					'p-' + $elm$core$String$fromInt(x),
-					f,
-					f,
-					f,
-					f));
-		} else {
-			var yFloat = y;
-			var xFloat = x;
-			return A2(
-				$mdgriffith$elm_ui$Internal$Model$StyleClass,
-				$mdgriffith$elm_ui$Internal$Flag$padding,
-				A5(
-					$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-					'p-' + ($elm$core$String$fromInt(x) + ('-' + $elm$core$String$fromInt(y))),
-					yFloat,
-					xFloat,
-					yFloat,
-					xFloat));
-		}
-	});
-var $mdgriffith$elm_ui$Element$rgb255 = F3(
-	function (red, green, blue) {
-		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
-	});
-var $author$project$Main$activeButtonStyle = function (isSelected) {
-	return isSelected ? _List_fromArray(
-		[
-			$mdgriffith$elm_ui$Element$Font$color(
-			A3($mdgriffith$elm_ui$Element$rgb255, 255, 255, 255)),
-			$mdgriffith$elm_ui$Element$Background$color(
-			A3($mdgriffith$elm_ui$Element$rgb255, 140, 0, 0)),
-			A2($mdgriffith$elm_ui$Element$paddingXY, 15, 8),
-			$mdgriffith$elm_ui$Element$mouseDown(
-			_List_fromArray(
-				[
-					$mdgriffith$elm_ui$Element$Background$color(
-					A3($mdgriffith$elm_ui$Element$rgb255, 255, 180, 180))
-				]))
-		]) : _List_fromArray(
-		[
-			$mdgriffith$elm_ui$Element$Font$color(
-			A3($mdgriffith$elm_ui$Element$rgb255, 255, 255, 255)),
-			$mdgriffith$elm_ui$Element$Background$color(
-			A3($mdgriffith$elm_ui$Element$rgb255, 0, 0, 160)),
-			A2($mdgriffith$elm_ui$Element$paddingXY, 15, 8),
-			$mdgriffith$elm_ui$Element$mouseDown(
-			_List_fromArray(
-				[
-					$mdgriffith$elm_ui$Element$Background$color(
-					A3($mdgriffith$elm_ui$Element$rgb255, 180, 180, 255))
-				]))
-		]);
-};
-var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
-var $elm$json$Json$Encode$bool = _Json_wrap;
-var $elm$html$Html$Attributes$boolProperty = F2(
-	function (key, bool) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$bool(bool));
-	});
-var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
-var $mdgriffith$elm_ui$Element$Input$enter = 'Enter';
-var $mdgriffith$elm_ui$Element$Input$hasFocusStyle = function (attr) {
-	if (((attr.$ === 'StyleClass') && (attr.b.$ === 'PseudoSelector')) && (attr.b.a.$ === 'Focus')) {
-		var _v1 = attr.b;
-		var _v2 = _v1.a;
-		return true;
-	} else {
-		return false;
-	}
-};
-var $mdgriffith$elm_ui$Element$Input$focusDefault = function (attrs) {
-	return A2($elm$core$List$any, $mdgriffith$elm_ui$Element$Input$hasFocusStyle, attrs) ? $mdgriffith$elm_ui$Internal$Model$NoAttribute : $mdgriffith$elm_ui$Internal$Model$htmlClass('focusable');
-};
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var $elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $mdgriffith$elm_ui$Element$Events$onClick = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Events$onClick);
-var $elm$json$Json$Decode$fail = _Json_fail;
-var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
-	return {$: 'MayPreventDefault', a: a};
-};
-var $elm$html$Html$Events$preventDefaultOn = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
-	});
-var $elm$json$Json$Decode$string = _Json_decodeString;
-var $mdgriffith$elm_ui$Element$Input$onKeyLookup = function (lookup) {
-	var decode = function (code) {
-		var _v0 = lookup(code);
-		if (_v0.$ === 'Nothing') {
-			return $elm$json$Json$Decode$fail('No key matched');
-		} else {
-			var msg = _v0.a;
-			return $elm$json$Json$Decode$succeed(msg);
-		}
-	};
-	var isKey = A2(
-		$elm$json$Json$Decode$andThen,
-		decode,
-		A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string));
-	return $mdgriffith$elm_ui$Internal$Model$Attr(
-		A2(
-			$elm$html$Html$Events$preventDefaultOn,
-			'keydown',
-			A2(
-				$elm$json$Json$Decode$map,
-				function (fired) {
-					return _Utils_Tuple2(fired, true);
-				},
-				isKey)));
-};
-var $mdgriffith$elm_ui$Internal$Flag$cursor = $mdgriffith$elm_ui$Internal$Flag$flag(21);
-var $mdgriffith$elm_ui$Element$pointer = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$cursor, $mdgriffith$elm_ui$Internal$Style$classes.cursorPointer);
-var $mdgriffith$elm_ui$Element$Input$space = ' ';
-var $elm$html$Html$Attributes$tabindex = function (n) {
-	return A2(
-		_VirtualDom_attribute,
-		'tabIndex',
-		$elm$core$String$fromInt(n));
-};
-var $mdgriffith$elm_ui$Element$Input$button = F2(
-	function (attrs, _v0) {
-		var label = _v0.label;
-		var onPress = _v0.onPress;
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asEl,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentCenterX + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.seButton + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.noTextSelection)))))),
-						A2(
-							$elm$core$List$cons,
-							$mdgriffith$elm_ui$Element$pointer,
-							A2(
-								$elm$core$List$cons,
-								$mdgriffith$elm_ui$Element$Input$focusDefault(attrs),
-								A2(
-									$elm$core$List$cons,
-									$mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$Button),
-									A2(
-										$elm$core$List$cons,
-										$mdgriffith$elm_ui$Internal$Model$Attr(
-											$elm$html$Html$Attributes$tabindex(0)),
-										function () {
-											if (onPress.$ === 'Nothing') {
-												return A2(
-													$elm$core$List$cons,
-													$mdgriffith$elm_ui$Internal$Model$Attr(
-														$elm$html$Html$Attributes$disabled(true)),
-													attrs);
-											} else {
-												var msg = onPress.a;
-												return A2(
-													$elm$core$List$cons,
-													$mdgriffith$elm_ui$Element$Events$onClick(msg),
-													A2(
-														$elm$core$List$cons,
-														$mdgriffith$elm_ui$Element$Input$onKeyLookup(
-															function (code) {
-																return _Utils_eq(code, $mdgriffith$elm_ui$Element$Input$enter) ? $elm$core$Maybe$Just(msg) : (_Utils_eq(code, $mdgriffith$elm_ui$Element$Input$space) ? $elm$core$Maybe$Just(msg) : $elm$core$Maybe$Nothing);
-															}),
-														attrs));
-											}
-										}()))))))),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
-				_List_fromArray(
-					[label])));
-	});
-var $mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
-var $mdgriffith$elm_ui$Element$centerX = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$CenterX);
-var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
-var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
-var $mdgriffith$elm_ui$Element$el = F2(
-	function (attrs, child) {
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asEl,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-					attrs)),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
-				_List_fromArray(
-					[child])));
-	});
-var $mdgriffith$elm_ui$Element$Font$size = function (i) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$fontSize,
-		$mdgriffith$elm_ui$Internal$Model$FontSize(i));
-};
-var $author$project$Data$Article2$text = '\n\n\n\n\n# Fault-tolerant Parsing\n\n[i by James Carlson, jxxcarlson@gmail.com ]\n\nFault-tolerant parsing has been studied by many ... XXXX.  The approach\ntaken here is based on Matthew Griffiths\' work in [link "elm-markup" https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/], which introduces the notion of a [i TextCursor], and work at [link "Brilliant.org" https://brilliant.org] on a domain-specific parser by the team led by Rob Simmons.\n\nFor purposes of exposition, we will discuss the main ideas in the context\nof a fault-tolerant parser for a simple markup language which we\ncall L1.   There is a pre-alpha demo at [link "jxxcarlson.github.io" https://jxxcarlson.github.io/app/L1/] with code  [link "here" https://github.com/jxxcarlson/L1].\n\nElm-markup, Brilliant.org\'s parser, and L1 are written in [link "Elm"  https://elm-lang.org], and all use the parser combinators of the [link "elm/parser" https://package.elm-lang.org/packages/elm/parser/latest/] library. The code base for the L1 parser is small, about 1400 lines, with the core TextCursor module, the largest of the bunch, weighing in at a bit over 200 lines. With this article in hand, one can use the code to understand not only the principles, but also the implementation of a fault-tolerant parser.\n\n\n## The L1 Markup Language.\n\n\nThe principal syntactic notion in L1 is the [i element:]\n\n:`[i this is italic]` => [i this is italic]\n\n: `[image https://birds/parrot.jpg]` => display an image\n\n: `[i This is a [b really] big deal]` — Elements can be nested.\n\n: `[math a^2 + b^2 = c^2]` => Display the Pythagorean formula.\n\n: `[heading2 Blue-green algae]` => section of level 2\n\nAn L1 document is a mixture of plain text and elements.\nIn addition there are certain features which may be viewed as syntactic\nsugar but which are convenient for authors.  First, section headers may\nbe written as in Markdown with leading hashmarks.  Second, inline code can be set off with backticks and inline math can be written as in LaTeX with enclosing dollar signs.  Third, there is the notion of a *block,* e.g.,\n\n|| codeblock\n| mathblock\n\\int_0^1 x^n dx\n  =\n\\frac{1}{n+1}\n\n\nAn ordinary block consists of the pipe symbol `|` at the beginning of a line, followed immediately by the name of the block.  A block must have one or more blank lines above and below.\nThis example is functionally equivalent to\n\n|| codeblock\n[mathblock \\int_0^1 x^n dx = \\frac{1}{n+1}]\n\n\nHowever, the fact that a block is terminated by a blank line makes error-handling much easier to achieve, especially in the context of interactive editing. *((Should we change this to "two or more blank lines"?  Then blocks can handle multiple paragraphs.))*\n\nIn addition to ordinary blocks, there are verbatim blocks, e.g.,\n\n|| codeblock\n|| codeblock\nenclose : String -> String -> String\nenclose a b =\n    a ++ b ++ a\n\nThe body of a verbatim block is not parsed.\n\n\n\n\n## AST for L1\n\nBelow is the type of the AST for L1 as found in module `L1.Parser.AST`. Both here and further on we give slightly simplified versions.\n\n|| codeblock\ntype Element\n    = Text String\n    | Element Name Element\n    | Verbatim VerbatimType String\n    | EList (List Element)\n\ntype Name = Name String\n\nModule `L1.Parser.Parser` exposes a function\n\n|| codeblock\nparse : String -> Element\n\n\nIt is a recursive descent parser written using parser combinators (see\n[link "elm/parser" https://package.elm-lang.org/packages/elm/parser/latest/]). Here are some examples:\n\n\n: `parse "foo"` => `Text "foo"`\n\n: `parse "[i foo]"` => `Element (Name "foo") (Text "foo")`\n\n: `parse "\'a[i] = 0\'"` => `Verbatim Code ("a[i] = 0")`\n\nIn the last example, we really mean backtick, not `\'`.\n\n## Basic notions\n\nThe kind of fault-tolerant parsing dicusse here based on three ideas:\n\n: Chunking\n\n: Expectations stack\n\n\n: Text Cursor\n\nBy chunking we mean that the source text is divided into pieces which are in principle parsable.  These can then be parsed independently, and errors in one piece will not affect errors in other pieces.\n\n An additional advantage of chunking is that it also permits one to do differential parsing and rendering.  Suppose that a document consists of pieces A B C D E. Suppose that the author makes a change to C.  Then one can arrange things so that the entire document can be rendered by re-parsing and re-rendering C.  For long documents this procedure is far faster than re-parsing and re-rendering the entire text — a task that has to be done on each character stroke.\n\nChunks in L1 are quite simple: sequences of non-blank lines delimited above an below by at least one blank line.  By blank line we mean a line whose content is a newline.\n\n\n### An Example\n\n\nTo understand the notions of expectations stack and text cursor, consider the following example:\n\n|| codeblock\nGOOD: The fish [i was] [b very] tasty.\n\n\nand its companion, which is invalid markup:\n\n|| codeblock\nBAD: The fish [i was [b very] tasty.\n\n\nOne way to handle invalid input is to stop the\nparser and emit a message such as `fatal error`, or more\ninformative and less offensive, `error at line 7, column 10`.\nBut one can do much better.  The parser can be rigged so\nas to keep going, rendering almost all of the text in an intelligent way, and signaling both the presence and nature of the error. Try out the\n [link "pre-alpha demo" https://jxxcarlson.github.io/app/L1/] to see one solution to such problems.\n\nThe GOOD example, which is valid L1 text, consists of four parts, each which can be parsed seprately: (a) `The fish`, (b) `[i was]`, (c) `[b very]`, (d) `tasty.`  The corresponding pieces in BAD example are as before, except for (b) `[i was`.  This piece is a non-parsable syntax fragment.\n\n\n\n\n### The GOOD case\n\n\nOur task now is to find a systematic way of cutting the text into pieces, as above, parsing them, then assembling the parts into a valid AST, even in the face of errors. To do this, we imagine scanning the text from left to right, taking action whenever the scanner\nencounters an open or closed bracket.  The scan point is indicated by `^`.\n\n|| codeblock\n1: ^The fish [i was] [b very] tasty.   START\n2: The fish ^[i was] [b very] tasty.   ADD\n3: The fish [i was^] [b very] tasty.   PUSH\n4: The fish [i was]^ [b very] tasty.   POP\n5: The fish [i was]  [b very^] tasty.  PUSH\n6: The fish [i was] [b very]^ tasty.   POP\n7: The fish [i was] [b very] tasty.^   ADD\n\n\nThe scanner maintains several data structures:\n\n: • the  `source` text\n\n: • the `scanpoint`, an index int the source text.\n\n: • the `parsed` text, a list of AST values\n\n: • the `complete` AST, a list of AST values to which others may be added.\n\n: • a `stack` of items where each item holds a string and some additional information,\nsuch as the location of this string in the source text, the begin symbol if any,\ne.g.  `[` ,\nand the expected end symbol if any, e.g, `Nothing` or `Just \']\'`.  This is the\nexpectations stack.\n\nThese structures are part of the `TextCursor` type.\n\nIn the example, we proceed as follows,\n\n\n: 1. All parts of the text cursor are empty/zero except `source`. The scan point has value 0, i.e, it points to the first character of the source.\n\n: 2. The scan point is moved to the next mark, the first opening bracket in the source.  The text `The fish` between the previous and current marks is free of marks and so can be parsed as `Text str` for some  string `str`.\nThe result is stored in the *completed*  field of the text cursor.\n\n: 3. The scan point is advanced once again.  Because it initially pointed at an open bracket `[`, the intervening text `i was` is pushed onto the stack.\nIn addition, the fact that we pushed text that began with an open bracket\nis recorded.  We can think of the stack item as a pair `(\'[\', "i was")`.\n\n: 4. The scan point is moved across the symbol `]` and pushed onto the stack\nas something like the pair `(\']\', ?)`.  The stack is now `[(\'[\', "i was"), (\']\', ?)]`, or in shorthand, `[]`.  The brackets match and so the top two elements can be popped, put together, parsed and stored in the list *completed.*\n\n:  The scanner knows that if items can be popped off the stack, they can be\nput together and parsed without error.\n\n: 5. Like (3), but repeated with `b very`\n\n: 6. Like (4), but this time `b very` is assembled, parsed, and added to `parsed`.\n\n: 7. The text `tasty.` is parsed and added to `completed`.\n\nAt this point the state of the text cursor is\n\n|| codeblock\ncompleted = [(tasty.), (b very), (i was), (The fish)]\nstack = [ ]\n\n\nHere `(x)` means `parse x`.  Thus `(The fish)` is really text element\n`[Text "The fish"]` and  `(i was)` is really `Element (Name "i") (Text "was")`.  The fact that the stack is empty means that all of the text was parsed. We can now commit the cursor and extract the AST by reversing the list `complete`.\n\n\n### The BAD case\n\nConsider next the BAD case.  The final state of the text cursor, now displaying location information, is\n\n|| codeblock\ncomplete = [(The fish, 0)]\nparsed = [(tasty, 24)]\nstack = [(\'[\', "i was", 9), (\'[\', "b very", 15), (\']\', ?, 22) ]\n\n\nThe [i characteristic] of the above stack is the string `"[[]"`. Look at the first character `[`, an open bracket, and scan forward to find the first matching closed bracket.  If one is found, remove it and remove the first character.  This is a *basic reduction*.  Thus we have `"[[]"` -> `"["` and the latter cannot be further reduced. By contrast, we have `"[[]]"` -> `"[]"` -> `""` and also `"[][]"` -> `"[]"` -> `""`.  Let us call the final\nresult the *residue* of the characteristic.  The residue gives information about what the error is, e.g., no error if the residue is the empty string, an unclosed open bracket if it is `"["`.\n\nWe say that a stack is [i reducible] if its characteristic is the empty string. Reducible stacks are the ones that can be assembled into a valid AST element as was done in the GOOD case.  Think of reduction as a kind of inexpensive trial assembly that guarantees that actual assembly will succeed, just as type-checking guarantees that evaluation will succeed.\n\n\nThe main problem of this article now presents itself in concrete form: [i what do we do in the case of a non-reducible stack?]  We will try the following.\n\n: 1. Drop the bottom of the stack and convert it into an "error node", e.g., `Element (Name "error"), Text ("unmatched \'[\':")`.  Add this element to `complete`.\n\n: 2. Set `scanpoint = 9`, just beyond the point of error; discard the contents of `parsed`, and set the scanning machinery in motion once again.\n\nIt may happen that converting the bottom of the stack to a valid node is insufficient:\nthe truncated stack may still be irreducible.\nIn this case the above process is repeated\nuntil scanning can be resumed or until the stack is exhausted.\nBecause the  `scanpoint` advances each time 1, 2 is invoked, termination is guaranteed.\n\nWhile the recovery procedure just described may not be optimal, it works, and in seems to give good results.  Note that there is no way to determine at the outset what might be the "correct" way to fix invalid input.  Consider our example once again: `The fish [i was [b very] tasty.`\nThe author may have meant to say any one of the following:\n\n: 1. `The fish [i was] [b very] tasty.`\n\n: 2. `The fish [i was [b very]] tasty.`\n\n: 3. `The fish [i was [b very] tasty.]`\n\nThere is no algorithm to decide among 1, 2, and 3.\nThe point is to recover in such a way that the author can examine a complete, presentable, and legible version of the parsed and rendered text that can the be corrected.\n\n\n\n## Text Cursor\n\nThere is more to be said about the text cursor, which is defined as follows.\n\n|| codeblock\ntype alias TextCursor =\n    { generation : Int\n    , verbatimPrefix : Maybe String\n    , scannerType : ScannerType\n    , scanPoint : Int\n    , sourceLength : Int\n    ---\n    , source : String\n    , parsed : List Element\n    , complete : List Element\n    , stack : List StackItem\n    ---\n    , message : String\n    }\n\n\nThe basic idea is to initialize a text cursor with some source text and with\n`scanpoint =  0` references the first character of the source.  A suitable function\n\n|| codeblock\nnextCursor : (String -> Element) -> TextCursor\n             -> Step TextCursor TextCursor\n\n\nis repeatedly applied along the lines described informally above, advancing `scanpoint` each time, cutting out and processing successive pieces of the source text until the source text is exhausted.\n\n## The nextCursor function\n\nRepeated application of a function to some kind of state can be carried with pure functions using `loop` function below,\n\n|| codeblock\nloop : state -> (state -> Step state a) -> a\nloop s nextState =\n    case nextState s of\n        Loop s_ ->\n            loop s_ nextState\n        Done b ->\n            b\n\nwhere\n\n|| codeblock\ntype Step state a\n    = Loop state\n    | Done a\n\n\nIn our case, we use\n\n|| codeblock\nnextCursor :  TextCursor -> Step TextCursor TextCursor\n\n\nwhere `nextCursor` runs the function\n\n|| codeblock\noperation : TextCursor -> Operation\n\nin order to decide which operation to perform.  The output type is\n\n|| codeblock\ntype Operation  =   Shift ShiftOperation\n                  | Reduce ReduceOperation\n\n\nwhere\n\n|| codeblock\ntype ShiftOperation\n    = PushText StringData\n    | PushData { prefix : String, isMatch : Bool }\n\nand\n\n|| codeblock\ntype ReduceOperation\n    = End\n    | Commit\n    | HandleError\n    | Add StringData\n    | Pop String\n    | ShortCircuit String\n\nThe operations on the cursor are divided into two categories, `Shift` and `Reduce`.  The former advance the `scanpoint`, that is, they [quote eat] more text, pushing it onto the text.  The latter take text off the stack, parse it, and put in on `parsed` and/or `complete`.  Consequently our parser is a member of the shift-reduce family.\n\n### References\n\n: 1. [link "Matt Griffith, elm-markup" https://package.elm-lang.org/packages/mdgriffith/elm-markup/latest/]\n\n: 2. [link "Discussion on Elm discourse" https://discourse.elm-lang.org/t/parsers-with-error-recovery/6262]\n\n: 3. [link "Error recovery with parser combinators" https://eyalkalderon.com/blog/nom-error-recovery/]\n\n\n\n\n';
-var $mdgriffith$elm_ui$Element$text = function (content) {
-	return $mdgriffith$elm_ui$Internal$Model$Text(content);
-};
-var $author$project$Main$articleButton = function (docIdentifier) {
-	return A2(
-		$mdgriffith$elm_ui$Element$Input$button,
-		$author$project$Main$activeButtonStyle(docIdentifier === 'article'),
-		{
-			label: A2(
-				$mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$centerX,
-						$mdgriffith$elm_ui$Element$centerY,
-						$mdgriffith$elm_ui$Element$Font$size(14)
-					]),
-				$mdgriffith$elm_ui$Element$text('Article')),
-			onPress: $elm$core$Maybe$Just(
-				A2($author$project$Main$LoadDocumentText, 'article', $author$project$Data$Article2$text))
-		});
-};
-var $elm$core$String$cons = _String_cons;
-var $elm$core$String$fromChar = function (_char) {
-	return A2($elm$core$String$cons, _char, '');
-};
-var $author$project$Data$Example$text = '\n\n\n# The L1 Markup Language\n\n[i by James Carlson, jxxcarlson@gmail.com ]\n\n\n[b L1] is a markup language with a syntax somewhat like Lisp, but with square brackets instead of parentheses. It is similar to and linguistically a descendant of [link "CaYaTeX" https:jxxcarlson.github.io/app/cayatex], work of this author and Nicholas Yang, but with more robust error-handling abilities.\n\nIn L1, we say `[b bold text]` to make bold text, and for italic, we say `[i italic text]`. Elements can be nested as in `[i italic text is very [b bold]]`, which renders as\n\n:[i italic text is very [b bold]]\n\nThe idea is a that the first part `f` of the expression ` [f a b c ...]` is a function,  `a`, `b`, `c`, ... are its arguments, and the expression itself is a function application.  An element like `italic` in `[i italic text]` auto-evaluates to `italic`, that is, it is self-quoted.\n\n| heading2 Conveniences\n\nIn addition to the basic syntax, there are conveniences for common constructs.\nTitles and section headings, for example, can be done as in Markdown:\n\n` # The L1 Markup Language`\n\nSuch a heading must be preceded and followed by a blank line.\n\nConveniences can always be written in the standard way, e.g., `[heading1 The L1 Markup Language]`.\n\n| heading3 Items\n\n\nItems are a convenience used to indent text:\n\n`:This is a test. [red I repeat: a test!].`\n\nwhich renders as\n\n:This is a test. [red I repeat: a test!].\n\nItems must be preceded and followed by a blank line.  The colon symbol must be in first position.\n\n| heading3 Blocks\n\nA [i block element] is an alternate way of writing an element without having to worry about it being closed by a right bracket `]`.  However, this method has much better error-handling properties.\nHere is an indentation block:\n\n|| codeblock\n| indent\nThis is a test.\nI repeat: [i a test!]\n\nIt is rendered as below:\n\n| indent\nThis is a test.\nI repeat: [i a test!]\n\nNote the pipe symbol `|` in first position, that is, at the left margin.  Because the pipe symbol cannot start a block element unless it is first position,  one can still say things like `a = (b|c)`. A  block consists of its first line, which names the block, and its body, which consists of non-blank lines followed by a blank line. The first line always has form `|name` with no space between `|` and `name.`\n\n### Verbatim blocks\n\nBelow is a block for displayed math text.  Note the double pipe symbol.  It is used for [i verbatim]\nblocks.  These are blocks whose body is not parsed, i.e., are passed on directly to the renderer.\n\n|| codeblock\n|| mathblock\n\\int_0^1 x^n dx\n  =\n\\frac{1}{n+1}\n\nIt is rendered as\n\n|| mathblock\n\\int_0^1 x^n dx\n =\n\\frac{1}{n+1}\n\n\nFor inline mathematics, one still has the familiar `$a^2 + b^2 = c^2$`, which renders as $a^2 + b^2 = c^2$.\n\n\n\nVerbatim blocks are also used for code:\n\n|| codeblock\n|| codeblock\nimport sys\n' + ($elm$core$String$fromChar(
-	_Utils_chr('\u00A0')) + ('\ncapital = float(sys.argv[1])\n...\n\nwhich is rendered as\n\n|| codeblock\nimport sys\n' + ($elm$core$String$fromChar(
-	_Utils_chr('\u00A0')) + ('\ncapital = float(sys.argv[1])\nrate = float(sys.argv[2])/100.0\nyears = int(sys.argv[3])\n' + ($elm$core$String$fromChar(
-	_Utils_chr('\u00A0')) + '\nfor i in range(0, years):\n  capital = (1 + rate)*capital\n  print "%3d %8.0f" % (i, capital)\n\nVerbatim blocks begin with a double pipe `||` and in all other respects are like ordinary blocks.\n[b Caveat:] When you have multiple paragraphs in a verbatim block, as above, the "blank" lines must contain at least one space.\n\n\nFor inline code, one can use backticks, just as in Markdown:\n\n|| codeblock\n`a[i] = 1.`\n\nThe rendered form is `a[i] = 1`\n\n\n\n\n## More Examples\n\n### Images\n\n[image width:80 placement:left https://ichef.bbci.co.uk/news/976/cpsprodpb/4FB7/production/_116970402_a20-20sahas20barve20-20parrotbill_chavan.jpg]\n\n[image width:200 placement:left https://ichef.bbci.co.uk/news/976/cpsprodpb/4FB7/production/_116970402_a20-20sahas20barve20-20parrotbill_chavan.jpg]\n\n[image https://ichef.bbci.co.uk/news/976/cpsprodpb/4FB7/production/_116970402_a20-20sahas20barve20-20parrotbill_chavan.jpg]\n\n\n\n## Errors\n\nLook at the example below, where the source text is labeled (1) and the rendered version is labeled (2).  There should be a right bracket after [i real]. The error is flagged in rendered text, but the subsequent italicized text is unaffected.  This error-tolerance is a feature which [b L1] derives from Camperdown (see the [i Article] tab).\n\n(1) `This [i is] a [b real test! [i Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque in augue eget felis rhoncus ullamcorper sed pulvinar sapien.]`\n\n\n(2) This [i is] a [b real test! [i Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque in augue eget felis rhoncus ullamcorper sed pulvinar sapien.]\n\n## Lisp-like functions\n\nThe text `[fontRGB 255 0 255 foo]` renders as\n[fontRGB 255 0 255 foo].  Think of `fontRGB` and a function whose arguments here are the elements of the list `[255 0 255 foo]`.  Functions, or more properly, functional expressions, can be nested, as in  `[fontRGB 255 0 255 foo [b bar]]` which renders as [fontRGB 255 0 255 foo [b bar]].\n\n##  Markdown-type stuff\n\nBelow are some Markdown-like examples.   Compare the source and rendered text to see what is going on.\n\n### Links\n\nUse the model below for links:\n\n|| codeblock\n[link "NYT" "https://nytimes.com"]\n\n:[link "NYT" "https://nytimes.com"]\n\n### Colors:\n\n|| codeblock\n This is [red red meat].  [gray (We shouldn\'t eat so much)]\n\n:This is [red red meat].  [gray (We shouldn\'t eat so much.)]\n\n\n\n')))));
-var $author$project$Main$exampleDocButton = function (docIdentifier) {
-	return A2(
-		$mdgriffith$elm_ui$Element$Input$button,
-		$author$project$Main$activeButtonStyle(docIdentifier === 'examples'),
-		{
-			label: A2(
-				$mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$centerX,
-						$mdgriffith$elm_ui$Element$centerY,
-						$mdgriffith$elm_ui$Element$Font$size(14)
-					]),
-				$mdgriffith$elm_ui$Element$text('Examples')),
-			onPress: $elm$core$Maybe$Just(
-				A2($author$project$Main$LoadDocumentText, 'examples', $author$project$Data$Example$text))
-		});
-};
 var $author$project$Main$InputText = function (a) {
 	return {$: 'InputText', a: a};
 };
@@ -11785,6 +11342,10 @@ var $mdgriffith$elm_ui$Element$Input$HiddenLabel = function (a) {
 };
 var $mdgriffith$elm_ui$Element$Input$labelHidden = $mdgriffith$elm_ui$Element$Input$HiddenLabel;
 var $mdgriffith$elm_ui$Element$Input$TextArea = {$: 'TextArea'};
+var $mdgriffith$elm_ui$Internal$Model$NoAttribute = {$: 'NoAttribute'};
+var $mdgriffith$elm_ui$Internal$Model$Describe = function (a) {
+	return {$: 'Describe', a: a};
+};
 var $mdgriffith$elm_ui$Internal$Model$LivePolite = {$: 'LivePolite'};
 var $mdgriffith$elm_ui$Element$Region$announce = $mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$LivePolite);
 var $mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
@@ -11866,11 +11427,20 @@ var $mdgriffith$elm_ui$Element$Input$applyLabel = F3(
 		}
 	});
 var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
 var $mdgriffith$elm_ui$Element$Input$autofill = A2(
 	$elm$core$Basics$composeL,
 	$mdgriffith$elm_ui$Internal$Model$Attr,
 	$elm$html$Html$Attributes$attribute('autocomplete'));
 var $mdgriffith$elm_ui$Internal$Model$Behind = {$: 'Behind'};
+var $mdgriffith$elm_ui$Internal$Model$Nearby = F2(
+	function (a, b) {
+		return {$: 'Nearby', a: a, b: b};
+	});
 var $mdgriffith$elm_ui$Element$createNearby = F2(
 	function (loc, element) {
 		if (element.$ === 'Empty') {
@@ -11885,6 +11455,10 @@ var $mdgriffith$elm_ui$Element$behindContent = function (element) {
 var $mdgriffith$elm_ui$Internal$Model$MoveY = function (a) {
 	return {$: 'MoveY', a: a};
 };
+var $mdgriffith$elm_ui$Internal$Model$TransformComponent = F2(
+	function (a, b) {
+		return {$: 'TransformComponent', a: a, b: b};
+	});
 var $mdgriffith$elm_ui$Internal$Flag$moveY = $mdgriffith$elm_ui$Internal$Flag$flag(26);
 var $mdgriffith$elm_ui$Element$moveUp = function (y) {
 	return A2(
@@ -11918,6 +11492,7 @@ var $mdgriffith$elm_ui$Element$Input$calcMoveToCompensateForPadding = function (
 	}
 };
 var $mdgriffith$elm_ui$Element$clip = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.clip);
+var $mdgriffith$elm_ui$Internal$Flag$cursor = $mdgriffith$elm_ui$Internal$Flag$flag(21);
 var $mdgriffith$elm_ui$Internal$Flag$borderColor = $mdgriffith$elm_ui$Internal$Flag$flag(28);
 var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
 	return A2(
@@ -11930,6 +11505,40 @@ var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
 			clr));
 };
 var $mdgriffith$elm_ui$Element$Input$darkGrey = A3($mdgriffith$elm_ui$Element$rgb, 186 / 255, 189 / 255, 182 / 255);
+var $mdgriffith$elm_ui$Internal$Model$PaddingStyle = F5(
+	function (a, b, c, d, e) {
+		return {$: 'PaddingStyle', a: a, b: b, c: c, d: d, e: e};
+	});
+var $mdgriffith$elm_ui$Internal$Flag$padding = $mdgriffith$elm_ui$Internal$Flag$flag(2);
+var $mdgriffith$elm_ui$Element$paddingXY = F2(
+	function (x, y) {
+		if (_Utils_eq(x, y)) {
+			var f = x;
+			return A2(
+				$mdgriffith$elm_ui$Internal$Model$StyleClass,
+				$mdgriffith$elm_ui$Internal$Flag$padding,
+				A5(
+					$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+					'p-' + $elm$core$String$fromInt(x),
+					f,
+					f,
+					f,
+					f));
+		} else {
+			var yFloat = y;
+			var xFloat = x;
+			return A2(
+				$mdgriffith$elm_ui$Internal$Model$StyleClass,
+				$mdgriffith$elm_ui$Internal$Flag$padding,
+				A5(
+					$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+					'p-' + ($elm$core$String$fromInt(x) + ('-' + $elm$core$String$fromInt(y))),
+					yFloat,
+					xFloat,
+					yFloat,
+					xFloat));
+		}
+	});
 var $mdgriffith$elm_ui$Element$Input$defaultTextPadding = A2($mdgriffith$elm_ui$Element$paddingXY, 12, 12);
 var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
 	return {$: 'Fill', a: a};
@@ -11999,6 +11608,15 @@ var $mdgriffith$elm_ui$Element$Input$getHeight = function (attr) {
 		return $elm$core$Maybe$Just(h);
 	} else {
 		return $elm$core$Maybe$Nothing;
+	}
+};
+var $mdgriffith$elm_ui$Element$Input$hasFocusStyle = function (attr) {
+	if (((attr.$ === 'StyleClass') && (attr.b.$ === 'PseudoSelector')) && (attr.b.a.$ === 'Focus')) {
+		var _v1 = attr.b;
+		var _v2 = _v1.a;
+		return true;
+	} else {
+		return false;
 	}
 };
 var $elm$core$List$head = function (list) {
@@ -12080,6 +11698,7 @@ var $elm$html$Html$Events$alwaysStop = function (x) {
 var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
 	return {$: 'MayStopPropagation', a: a};
 };
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
 var $elm$html$Html$Events$stopPropagationOn = F2(
 	function (event, decoder) {
 		return A2(
@@ -12091,6 +11710,7 @@ var $elm$json$Json$Decode$at = F2(
 	function (fields, decoder) {
 		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
 	});
+var $elm$json$Json$Decode$string = _Json_decodeString;
 var $elm$html$Html$Events$targetValue = A2(
 	$elm$json$Json$Decode$at,
 	_List_fromArray(
@@ -12426,6 +12046,23 @@ var $mdgriffith$elm_ui$Element$alpha = function (o) {
 			transparency));
 };
 var $mdgriffith$elm_ui$Element$Input$charcoal = A3($mdgriffith$elm_ui$Element$rgb, 136 / 255, 138 / 255, 133 / 255);
+var $mdgriffith$elm_ui$Element$el = F2(
+	function (attrs, child) {
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asEl,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+					attrs)),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				_List_fromArray(
+					[child])));
+	});
 var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
 var $mdgriffith$elm_ui$Element$Input$renderPlaceholder = F3(
 	function (_v0, forPlaceholder, on) {
@@ -12455,8 +12092,22 @@ var $mdgriffith$elm_ui$Element$Input$renderPlaceholder = F3(
 	});
 var $mdgriffith$elm_ui$Element$scrollbarY = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.scrollbarsY);
 var $elm$html$Html$span = _VirtualDom_node('span');
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $elm$html$Html$Attributes$boolProperty = F2(
+	function (key, bool) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$bool(bool));
+	});
 var $elm$html$Html$Attributes$spellcheck = $elm$html$Html$Attributes$boolProperty('spellcheck');
 var $mdgriffith$elm_ui$Element$Input$spellcheck = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Attributes$spellcheck);
+var $mdgriffith$elm_ui$Internal$Model$Text = function (a) {
+	return {$: 'Text', a: a};
+};
+var $mdgriffith$elm_ui$Element$text = function (content) {
+	return $mdgriffith$elm_ui$Internal$Model$Text(content);
+};
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $mdgriffith$elm_ui$Internal$Model$unstyled = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Unstyled, $elm$core$Basics$always);
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
@@ -12722,6 +12373,12 @@ var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
 	return {$: 'Px', a: a};
 };
 var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
+var $mdgriffith$elm_ui$Element$Font$size = function (i) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$fontSize,
+		$mdgriffith$elm_ui$Internal$Model$FontSize(i));
+};
 var $author$project$Main$inputText = function (model) {
 	return A2(
 		$mdgriffith$elm_ui$Element$Input$multiline,
@@ -12740,6 +12397,366 @@ var $author$project$Main$inputText = function (model) {
 			placeholder: $elm$core$Maybe$Nothing,
 			spellcheck: false,
 			text: model.sourceText
+		});
+};
+var $author$project$Main$L1 = {$: 'L1'};
+var $author$project$Main$LoadDocumentText = F2(
+	function (a, b) {
+		return {$: 'LoadDocumentText', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Internal$Model$Active = {$: 'Active'};
+var $mdgriffith$elm_ui$Internal$Model$PseudoSelector = F2(
+	function (a, b) {
+		return {$: 'PseudoSelector', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Internal$Flag$active = $mdgriffith$elm_ui$Internal$Flag$flag(32);
+var $mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
+	return {$: 'AlignX', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
+	return {$: 'AlignY', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
+var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
+var $mdgriffith$elm_ui$Internal$Model$map = F2(
+	function (fn, el) {
+		switch (el.$) {
+			case 'Styled':
+				var styled = el.a;
+				return $mdgriffith$elm_ui$Internal$Model$Styled(
+					{
+						html: F2(
+							function (add, context) {
+								return A2(
+									$elm$virtual_dom$VirtualDom$map,
+									fn,
+									A2(styled.html, add, context));
+							}),
+						styles: styled.styles
+					});
+			case 'Unstyled':
+				var html = el.a;
+				return $mdgriffith$elm_ui$Internal$Model$Unstyled(
+					A2(
+						$elm$core$Basics$composeL,
+						$elm$virtual_dom$VirtualDom$map(fn),
+						html));
+			case 'Text':
+				var str = el.a;
+				return $mdgriffith$elm_ui$Internal$Model$Text(str);
+			default:
+				return $mdgriffith$elm_ui$Internal$Model$Empty;
+		}
+	});
+var $elm$virtual_dom$VirtualDom$mapAttribute = _VirtualDom_mapAttribute;
+var $mdgriffith$elm_ui$Internal$Model$mapAttrFromStyle = F2(
+	function (fn, attr) {
+		switch (attr.$) {
+			case 'NoAttribute':
+				return $mdgriffith$elm_ui$Internal$Model$NoAttribute;
+			case 'Describe':
+				var description = attr.a;
+				return $mdgriffith$elm_ui$Internal$Model$Describe(description);
+			case 'AlignX':
+				var x = attr.a;
+				return $mdgriffith$elm_ui$Internal$Model$AlignX(x);
+			case 'AlignY':
+				var y = attr.a;
+				return $mdgriffith$elm_ui$Internal$Model$AlignY(y);
+			case 'Width':
+				var x = attr.a;
+				return $mdgriffith$elm_ui$Internal$Model$Width(x);
+			case 'Height':
+				var x = attr.a;
+				return $mdgriffith$elm_ui$Internal$Model$Height(x);
+			case 'Class':
+				var x = attr.a;
+				var y = attr.b;
+				return A2($mdgriffith$elm_ui$Internal$Model$Class, x, y);
+			case 'StyleClass':
+				var flag = attr.a;
+				var style = attr.b;
+				return A2($mdgriffith$elm_ui$Internal$Model$StyleClass, flag, style);
+			case 'Nearby':
+				var location = attr.a;
+				var elem = attr.b;
+				return A2(
+					$mdgriffith$elm_ui$Internal$Model$Nearby,
+					location,
+					A2($mdgriffith$elm_ui$Internal$Model$map, fn, elem));
+			case 'Attr':
+				var htmlAttr = attr.a;
+				return $mdgriffith$elm_ui$Internal$Model$Attr(
+					A2($elm$virtual_dom$VirtualDom$mapAttribute, fn, htmlAttr));
+			default:
+				var fl = attr.a;
+				var trans = attr.b;
+				return A2($mdgriffith$elm_ui$Internal$Model$TransformComponent, fl, trans);
+		}
+	});
+var $mdgriffith$elm_ui$Internal$Model$removeNever = function (style) {
+	return A2($mdgriffith$elm_ui$Internal$Model$mapAttrFromStyle, $elm$core$Basics$never, style);
+};
+var $mdgriffith$elm_ui$Internal$Model$unwrapDecsHelper = F2(
+	function (attr, _v0) {
+		var styles = _v0.a;
+		var trans = _v0.b;
+		var _v1 = $mdgriffith$elm_ui$Internal$Model$removeNever(attr);
+		switch (_v1.$) {
+			case 'StyleClass':
+				var style = _v1.b;
+				return _Utils_Tuple2(
+					A2($elm$core$List$cons, style, styles),
+					trans);
+			case 'TransformComponent':
+				var flag = _v1.a;
+				var component = _v1.b;
+				return _Utils_Tuple2(
+					styles,
+					A2($mdgriffith$elm_ui$Internal$Model$composeTransformation, trans, component));
+			default:
+				return _Utils_Tuple2(styles, trans);
+		}
+	});
+var $mdgriffith$elm_ui$Internal$Model$unwrapDecorations = function (attrs) {
+	var _v0 = A3(
+		$elm$core$List$foldl,
+		$mdgriffith$elm_ui$Internal$Model$unwrapDecsHelper,
+		_Utils_Tuple2(_List_Nil, $mdgriffith$elm_ui$Internal$Model$Untransformed),
+		attrs);
+	var styles = _v0.a;
+	var transform = _v0.b;
+	return A2(
+		$elm$core$List$cons,
+		$mdgriffith$elm_ui$Internal$Model$Transform(transform),
+		styles);
+};
+var $mdgriffith$elm_ui$Element$mouseDown = function (decs) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$active,
+		A2(
+			$mdgriffith$elm_ui$Internal$Model$PseudoSelector,
+			$mdgriffith$elm_ui$Internal$Model$Active,
+			$mdgriffith$elm_ui$Internal$Model$unwrapDecorations(decs)));
+};
+var $mdgriffith$elm_ui$Element$rgb255 = F3(
+	function (red, green, blue) {
+		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
+	});
+var $author$project$Main$activeButtonStyle = function (isSelected) {
+	return isSelected ? _List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$Font$color(
+			A3($mdgriffith$elm_ui$Element$rgb255, 255, 255, 255)),
+			$mdgriffith$elm_ui$Element$Background$color(
+			A3($mdgriffith$elm_ui$Element$rgb255, 140, 0, 0)),
+			A2($mdgriffith$elm_ui$Element$paddingXY, 15, 8),
+			$mdgriffith$elm_ui$Element$mouseDown(
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$Background$color(
+					A3($mdgriffith$elm_ui$Element$rgb255, 255, 180, 180))
+				]))
+		]) : _List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$Font$color(
+			A3($mdgriffith$elm_ui$Element$rgb255, 255, 255, 255)),
+			$mdgriffith$elm_ui$Element$Background$color(
+			A3($mdgriffith$elm_ui$Element$rgb255, 0, 0, 160)),
+			A2($mdgriffith$elm_ui$Element$paddingXY, 15, 8),
+			$mdgriffith$elm_ui$Element$mouseDown(
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$Background$color(
+					A3($mdgriffith$elm_ui$Element$rgb255, 180, 180, 255))
+				]))
+		]);
+};
+var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
+var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
+var $mdgriffith$elm_ui$Element$Input$enter = 'Enter';
+var $mdgriffith$elm_ui$Element$Input$focusDefault = function (attrs) {
+	return A2($elm$core$List$any, $mdgriffith$elm_ui$Element$Input$hasFocusStyle, attrs) ? $mdgriffith$elm_ui$Internal$Model$NoAttribute : $mdgriffith$elm_ui$Internal$Model$htmlClass('focusable');
+};
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $mdgriffith$elm_ui$Element$Events$onClick = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Events$onClick);
+var $elm$json$Json$Decode$fail = _Json_fail;
+var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
+	return {$: 'MayPreventDefault', a: a};
+};
+var $elm$html$Html$Events$preventDefaultOn = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
+	});
+var $mdgriffith$elm_ui$Element$Input$onKeyLookup = function (lookup) {
+	var decode = function (code) {
+		var _v0 = lookup(code);
+		if (_v0.$ === 'Nothing') {
+			return $elm$json$Json$Decode$fail('No key matched');
+		} else {
+			var msg = _v0.a;
+			return $elm$json$Json$Decode$succeed(msg);
+		}
+	};
+	var isKey = A2(
+		$elm$json$Json$Decode$andThen,
+		decode,
+		A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string));
+	return $mdgriffith$elm_ui$Internal$Model$Attr(
+		A2(
+			$elm$html$Html$Events$preventDefaultOn,
+			'keydown',
+			A2(
+				$elm$json$Json$Decode$map,
+				function (fired) {
+					return _Utils_Tuple2(fired, true);
+				},
+				isKey)));
+};
+var $mdgriffith$elm_ui$Element$pointer = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$cursor, $mdgriffith$elm_ui$Internal$Style$classes.cursorPointer);
+var $mdgriffith$elm_ui$Element$Input$space = ' ';
+var $elm$html$Html$Attributes$tabindex = function (n) {
+	return A2(
+		_VirtualDom_attribute,
+		'tabIndex',
+		$elm$core$String$fromInt(n));
+};
+var $mdgriffith$elm_ui$Element$Input$button = F2(
+	function (attrs, _v0) {
+		var label = _v0.label;
+		var onPress = _v0.onPress;
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asEl,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+					A2(
+						$elm$core$List$cons,
+						$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentCenterX + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.seButton + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.noTextSelection)))))),
+						A2(
+							$elm$core$List$cons,
+							$mdgriffith$elm_ui$Element$pointer,
+							A2(
+								$elm$core$List$cons,
+								$mdgriffith$elm_ui$Element$Input$focusDefault(attrs),
+								A2(
+									$elm$core$List$cons,
+									$mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$Button),
+									A2(
+										$elm$core$List$cons,
+										$mdgriffith$elm_ui$Internal$Model$Attr(
+											$elm$html$Html$Attributes$tabindex(0)),
+										function () {
+											if (onPress.$ === 'Nothing') {
+												return A2(
+													$elm$core$List$cons,
+													$mdgriffith$elm_ui$Internal$Model$Attr(
+														$elm$html$Html$Attributes$disabled(true)),
+													attrs);
+											} else {
+												var msg = onPress.a;
+												return A2(
+													$elm$core$List$cons,
+													$mdgriffith$elm_ui$Element$Events$onClick(msg),
+													A2(
+														$elm$core$List$cons,
+														$mdgriffith$elm_ui$Element$Input$onKeyLookup(
+															function (code) {
+																return _Utils_eq(code, $mdgriffith$elm_ui$Element$Input$enter) ? $elm$core$Maybe$Just(msg) : (_Utils_eq(code, $mdgriffith$elm_ui$Element$Input$space) ? $elm$core$Maybe$Just(msg) : $elm$core$Maybe$Nothing);
+															}),
+														attrs));
+											}
+										}()))))))),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				_List_fromArray(
+					[label])));
+	});
+var $mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
+var $mdgriffith$elm_ui$Element$centerX = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$CenterX);
+var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
+var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
+var $author$project$Data$L1Test$text = '\n\n\nL1 is a markup language with a syntax somewhat like Lisp,\nbut with square brackets instead of parentheses.\nIt is similar to and linguistically a descendant of\nCaYaTeX, work of this author and Nicholas Yang,\nbut with more robust error-handling abilities.\n\nSome code\n\n|| code\n   \\int_0^1 x^n dx\n      =\n   \\frac{1}{n+1}\n\nIt is rendered as\n\n|| math\n   \\int_0^1 x^n dx\n    =\n   \\frac{1}{n+1}\n\n\n';
+var $author$project$Main$l1DocButton = function (language) {
+	return A2(
+		$mdgriffith$elm_ui$Element$Input$button,
+		$author$project$Main$activeButtonStyle(
+			_Utils_eq(language, $author$project$Main$L1)),
+		{
+			label: A2(
+				$mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$centerX,
+						$mdgriffith$elm_ui$Element$centerY,
+						$mdgriffith$elm_ui$Element$Font$size(14)
+					]),
+				$mdgriffith$elm_ui$Element$text('L1')),
+			onPress: $elm$core$Maybe$Just(
+				A2($author$project$Main$LoadDocumentText, $author$project$Main$L1, $author$project$Data$L1Test$text))
+		});
+};
+var $author$project$Main$markdownDocButton = function (language) {
+	return A2(
+		$mdgriffith$elm_ui$Element$Input$button,
+		$author$project$Main$activeButtonStyle(
+			_Utils_eq(language, $author$project$Main$Markdown)),
+		{
+			label: A2(
+				$mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$centerX,
+						$mdgriffith$elm_ui$Element$centerY,
+						$mdgriffith$elm_ui$Element$Font$size(14)
+					]),
+				$mdgriffith$elm_ui$Element$text('Markdown')),
+			onPress: $elm$core$Maybe$Just(
+				A2($author$project$Main$LoadDocumentText, $author$project$Main$Markdown, $author$project$Data$MarkdownTest$text))
+		});
+};
+var $author$project$Main$MiniLaTeX = {$: 'MiniLaTeX'};
+var $author$project$Data$MiniLaTeXTest$text = '\nhis is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.\n\nThis is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.\n\nTHIS IS SOME MATH:\n$$\n   \\int_0^1 x^n dx = \\frac{1}{n+1}\n$$\n\nThis is some code:\n\n```\n   a[1] = 1\n   .\n   b[i] = 2\n\nThis is a quote:\n\n\\begin{quotation}\n   Regular languages are rather inexpressive,\n   but they work great for lexers. On the opposite\n   side of expressivity spectrum are Turing machines.\n   For them, we also have a number of meta-languages\n   (like Rust), which work great for humans.\n   It’s interesting that a Turing machine is\n   equivalent to a finite state machine with\n   a pair of stacks: to get two stacks from a tape,\n   cut the tape in half where the head is. Moving\n   the head then corresponds to popping from one\n   stack and pushing to another.\n\\end{quotation}\n\n\n\n*by James Carlson*\n\n';
+var $author$project$Main$miniLaTeXDocButton = function (language) {
+	return A2(
+		$mdgriffith$elm_ui$Element$Input$button,
+		$author$project$Main$activeButtonStyle(
+			_Utils_eq(language, $author$project$Main$MiniLaTeX)),
+		{
+			label: A2(
+				$mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$centerX,
+						$mdgriffith$elm_ui$Element$centerY,
+						$mdgriffith$elm_ui$Element$Font$size(14)
+					]),
+				$mdgriffith$elm_ui$Element$text('MiniLaTeX')),
+			onPress: $elm$core$Maybe$Just(
+				A2($author$project$Main$LoadDocumentText, $author$project$Main$MiniLaTeX, $author$project$Data$MiniLaTeXTest$text))
 		});
 };
 var $mdgriffith$elm_ui$Element$row = F2(
@@ -12778,8 +12795,9 @@ var $author$project$Main$editor = function (model) {
 					]),
 				_List_fromArray(
 					[
-						$author$project$Main$exampleDocButton(model.docIdentifier),
-						$author$project$Main$articleButton(model.docIdentifier)
+						$author$project$Main$l1DocButton(model.language),
+						$author$project$Main$miniLaTeXDocButton(model.language),
+						$author$project$Main$markdownDocButton(model.language)
 					])),
 				$author$project$Main$inputText(model)
 			]));
@@ -13160,30 +13178,11 @@ var $author$project$Common$BlockParser$nextState = F2(
 						})));
 		}
 	});
+var $author$project$Common$Line$EndBlock = function (a) {
+	return {$: 'EndBlock', a: a};
+};
 var $author$project$Common$Line$EndVerbatimBlock = function (a) {
 	return {$: 'EndVerbatimBlock', a: a};
-};
-var $author$project$Common$BlockParser$blockLabel = function (block) {
-	switch (block.$) {
-		case 'Paragraph':
-			return '(no label)';
-		case 'Block':
-			var s = block.a;
-			return s;
-		default:
-			var s = block.a;
-			return s;
-	}
-};
-var $author$project$Common$BlockParser$blockLabelAtBottomOfStack = function (stack) {
-	var _v0 = $elm$core$List$head(
-		$elm$core$List$reverse(stack));
-	if (_v0.$ === 'Nothing') {
-		return '(no label)';
-	} else {
-		var block = _v0.a;
-		return $author$project$Common$BlockParser$blockLabel(block);
-	}
 };
 var $elm$parser$Parser$Advanced$Parser = function (a) {
 	return {$: 'Parser', a: a};
@@ -13425,16 +13424,10 @@ var $author$project$Common$Line$countLeadingSpaces = function (str) {
 var $author$project$Common$Line$Problem = function (a) {
 	return {$: 'Problem', a: a};
 };
-var $author$project$Common$Line$BeginVerbatimBlock = function (a) {
-	return {$: 'BeginVerbatimBlock', a: a};
+var $author$project$Common$Line$BeginBlock = function (a) {
+	return {$: 'BeginBlock', a: a};
 };
-var $elm$parser$Parser$ExpectingSymbol = function (a) {
-	return {$: 'ExpectingSymbol', a: a};
-};
-var $elm$parser$Parser$Advanced$Token = F2(
-	function (a, b) {
-		return {$: 'Token', a: a, b: b};
-	});
+var $elm$parser$Parser$UnexpectedChar = {$: 'UnexpectedChar'};
 var $elm$parser$Parser$Advanced$AddRight = F2(
 	function (a, b) {
 		return {$: 'AddRight', a: a, b: b};
@@ -13450,6 +13443,50 @@ var $elm$parser$Parser$Advanced$fromState = F2(
 			$elm$parser$Parser$Advanced$AddRight,
 			$elm$parser$Parser$Advanced$Empty,
 			A4($elm$parser$Parser$Advanced$DeadEnd, s.row, s.col, x, s.context));
+	});
+var $elm$parser$Parser$Advanced$chompIf = F2(
+	function (isGood, expecting) {
+		return $elm$parser$Parser$Advanced$Parser(
+			function (s) {
+				var newOffset = A3($elm$parser$Parser$Advanced$isSubChar, isGood, s.offset, s.src);
+				return _Utils_eq(newOffset, -1) ? A2(
+					$elm$parser$Parser$Advanced$Bad,
+					false,
+					A2($elm$parser$Parser$Advanced$fromState, s, expecting)) : (_Utils_eq(newOffset, -2) ? A3(
+					$elm$parser$Parser$Advanced$Good,
+					true,
+					_Utils_Tuple0,
+					{col: 1, context: s.context, indent: s.indent, offset: s.offset + 1, row: s.row + 1, src: s.src}) : A3(
+					$elm$parser$Parser$Advanced$Good,
+					true,
+					_Utils_Tuple0,
+					{col: s.col + 1, context: s.context, indent: s.indent, offset: newOffset, row: s.row, src: s.src}));
+			});
+	});
+var $elm$parser$Parser$chompIf = function (isGood) {
+	return A2($elm$parser$Parser$Advanced$chompIf, isGood, $elm$parser$Parser$UnexpectedChar);
+};
+var $elm$parser$Parser$Advanced$getOffset = $elm$parser$Parser$Advanced$Parser(
+	function (s) {
+		return A3($elm$parser$Parser$Advanced$Good, false, s.offset, s);
+	});
+var $elm$parser$Parser$getOffset = $elm$parser$Parser$Advanced$getOffset;
+var $elm$parser$Parser$Advanced$getSource = $elm$parser$Parser$Advanced$Parser(
+	function (s) {
+		return A3($elm$parser$Parser$Advanced$Good, false, s.src, s);
+	});
+var $elm$parser$Parser$getSource = $elm$parser$Parser$Advanced$getSource;
+var $elm$parser$Parser$Advanced$keeper = F2(
+	function (parseFunc, parseArg) {
+		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$apL, parseFunc, parseArg);
+	});
+var $elm$parser$Parser$keeper = $elm$parser$Parser$Advanced$keeper;
+var $elm$parser$Parser$ExpectingSymbol = function (a) {
+	return {$: 'ExpectingSymbol', a: a};
+};
+var $elm$parser$Parser$Advanced$Token = F2(
+	function (a, b) {
+		return {$: 'Token', a: a, b: b};
 	});
 var $elm$parser$Parser$Advanced$isSubString = _Parser_isSubString;
 var $elm$parser$Parser$Advanced$token = function (_v0) {
@@ -13480,36 +13517,77 @@ var $elm$parser$Parser$symbol = function (str) {
 			str,
 			$elm$parser$Parser$ExpectingSymbol(str)));
 };
-var $author$project$Markdown$Line$beginCodeBlockParser = A2(
+var $author$project$L1$Line$beginBlockParser = A2(
 	$elm$parser$Parser$map,
-	function (_v0) {
-		return $author$project$Common$Line$BeginVerbatimBlock('code');
+	function (s) {
+		return $author$project$Common$Line$BeginBlock(s);
 	},
 	A2(
-		$elm$parser$Parser$ignorer,
-		$elm$parser$Parser$succeed($elm$core$String$slice),
-		$elm$parser$Parser$symbol('```')));
-var $author$project$Markdown$Line$beginMathBlockParser = A2(
-	$elm$parser$Parser$map,
-	function (_v0) {
-		return $author$project$Common$Line$BeginVerbatimBlock('math');
-	},
-	A2(
-		$elm$parser$Parser$ignorer,
-		$elm$parser$Parser$succeed($elm$core$String$slice),
-		$elm$parser$Parser$symbol('$$')));
-var $author$project$Common$Line$BeginBlock = function (a) {
-	return {$: 'BeginBlock', a: a};
+		$elm$parser$Parser$keeper,
+		A2(
+			$elm$parser$Parser$keeper,
+			A2(
+				$elm$parser$Parser$keeper,
+				A2(
+					$elm$parser$Parser$ignorer,
+					A2(
+						$elm$parser$Parser$ignorer,
+						$elm$parser$Parser$succeed($elm$core$String$slice),
+						$elm$parser$Parser$symbol('|')),
+					$elm$parser$Parser$chompIf(
+						function (c) {
+							return _Utils_eq(
+								c,
+								_Utils_chr(' '));
+						})),
+				A2(
+					$elm$parser$Parser$ignorer,
+					$elm$parser$Parser$getOffset,
+					$elm$parser$Parser$chompWhile(
+						function (c) {
+							return !_Utils_eq(
+								c,
+								_Utils_chr(' '));
+						}))),
+			$elm$parser$Parser$getOffset),
+		$elm$parser$Parser$getSource));
+var $author$project$Common$Line$BeginVerbatimBlock = function (a) {
+	return {$: 'BeginVerbatimBlock', a: a};
 };
-var $author$project$Markdown$Line$beginQuotationBlockParser = A2(
+var $author$project$L1$Line$beginVerbatimBlockParser = A2(
 	$elm$parser$Parser$map,
-	function (_v0) {
-		return $author$project$Common$Line$BeginBlock('quotation');
+	function (s) {
+		return $author$project$Common$Line$BeginVerbatimBlock(s);
 	},
 	A2(
-		$elm$parser$Parser$ignorer,
-		$elm$parser$Parser$succeed($elm$core$String$slice),
-		$elm$parser$Parser$symbol('>')));
+		$elm$parser$Parser$keeper,
+		A2(
+			$elm$parser$Parser$keeper,
+			A2(
+				$elm$parser$Parser$keeper,
+				A2(
+					$elm$parser$Parser$ignorer,
+					A2(
+						$elm$parser$Parser$ignorer,
+						$elm$parser$Parser$succeed($elm$core$String$slice),
+						$elm$parser$Parser$symbol('||')),
+					$elm$parser$Parser$chompIf(
+						function (c) {
+							return _Utils_eq(
+								c,
+								_Utils_chr(' '));
+						})),
+				A2(
+					$elm$parser$Parser$ignorer,
+					$elm$parser$Parser$getOffset,
+					$elm$parser$Parser$chompWhile(
+						function (c) {
+							return !_Utils_eq(
+								c,
+								_Utils_chr(' '));
+						}))),
+			$elm$parser$Parser$getOffset),
+		$elm$parser$Parser$getSource));
 var $author$project$Common$Line$BlankLine = {$: 'BlankLine'};
 var $elm$parser$Parser$ExpectingEnd = {$: 'ExpectingEnd'};
 var $elm$parser$Parser$Advanced$end = function (x) {
@@ -13574,29 +13652,6 @@ var $elm$parser$Parser$Advanced$oneOf = function (parsers) {
 };
 var $elm$parser$Parser$oneOf = $elm$parser$Parser$Advanced$oneOf;
 var $author$project$Common$Line$OrdinaryLine = {$: 'OrdinaryLine'};
-var $elm$parser$Parser$UnexpectedChar = {$: 'UnexpectedChar'};
-var $elm$parser$Parser$Advanced$chompIf = F2(
-	function (isGood, expecting) {
-		return $elm$parser$Parser$Advanced$Parser(
-			function (s) {
-				var newOffset = A3($elm$parser$Parser$Advanced$isSubChar, isGood, s.offset, s.src);
-				return _Utils_eq(newOffset, -1) ? A2(
-					$elm$parser$Parser$Advanced$Bad,
-					false,
-					A2($elm$parser$Parser$Advanced$fromState, s, expecting)) : (_Utils_eq(newOffset, -2) ? A3(
-					$elm$parser$Parser$Advanced$Good,
-					true,
-					_Utils_Tuple0,
-					{col: 1, context: s.context, indent: s.indent, offset: s.offset + 1, row: s.row + 1, src: s.src}) : A3(
-					$elm$parser$Parser$Advanced$Good,
-					true,
-					_Utils_Tuple0,
-					{col: s.col + 1, context: s.context, indent: s.indent, offset: newOffset, row: s.row, src: s.src}));
-			});
-	});
-var $elm$parser$Parser$chompIf = function (isGood) {
-	return A2($elm$parser$Parser$Advanced$chompIf, isGood, $elm$parser$Parser$UnexpectedChar);
-};
 var $elm$core$List$member = F2(
 	function (x, xs) {
 		return A2(
@@ -13617,17 +13672,20 @@ var $author$project$Common$Line$ordinaryLineParser = function (blockStartChars) 
 				return !A2($elm$core$List$member, c, blockStartChars);
 			}));
 };
-var $author$project$Markdown$Line$lineTypeParser = $elm$parser$Parser$oneOf(
+var $author$project$L1$Line$lineTypeParser = $elm$parser$Parser$oneOf(
 	_List_fromArray(
 		[
-			$author$project$Markdown$Line$beginCodeBlockParser,
-			$author$project$Markdown$Line$beginMathBlockParser,
-			$author$project$Markdown$Line$beginQuotationBlockParser,
-			$author$project$Common$Line$ordinaryLineParser(_List_Nil),
-			$author$project$Common$Line$emptyLineParser
+			$author$project$Common$Line$ordinaryLineParser(
+			_List_fromArray(
+				[
+					_Utils_chr('|')
+				])),
+			$author$project$Common$Line$emptyLineParser,
+			$author$project$L1$Line$beginVerbatimBlockParser,
+			$author$project$L1$Line$beginBlockParser
 		]));
-var $author$project$Markdown$Line$lineType = function (str) {
-	var _v0 = A2($elm$parser$Parser$run, $author$project$Markdown$Line$lineTypeParser, str);
+var $author$project$L1$Line$lineType = function (str) {
+	var _v0 = A2($elm$parser$Parser$run, $author$project$L1$Line$lineTypeParser, str);
 	if (_v0.$ === 'Ok') {
 		var type_ = _v0.a;
 		return type_;
@@ -13635,11 +13693,11 @@ var $author$project$Markdown$Line$lineType = function (str) {
 		return $author$project$Common$Line$Problem('unrecognized type');
 	}
 };
-var $author$project$Markdown$Line$classify = function (str) {
+var $author$project$L1$Line$classify = function (str) {
 	var leadingSpaces = $author$project$Common$Line$countLeadingSpaces(str);
 	return {
 		indent: leadingSpaces,
-		lineType: $author$project$Markdown$Line$lineType(
+		lineType: $author$project$L1$Line$lineType(
 			A2($elm$core$String$dropLeft, leadingSpaces, str))
 	};
 };
@@ -13682,7 +13740,7 @@ var $author$project$Common$BlockParser$typeOfBlock = function (b) {
 			return $author$project$Common$Syntax$B;
 	}
 };
-var $author$project$Markdown$BlockParser$handleBlankLine = F2(
+var $author$project$L1$BlockParser$handleBlankLine = F2(
 	function (indent, state) {
 		if (_Utils_eq(
 			$author$project$Common$BlockParser$level(indent),
@@ -13691,10 +13749,10 @@ var $author$project$Markdown$BlockParser$handleBlankLine = F2(
 			if (_v0.$ === 'Nothing') {
 				return state;
 			} else {
-				var block = _v0.a;
+				var blockM = _v0.a;
 				return A2(
 					$elm$core$List$member,
-					$author$project$Common$BlockParser$typeOfBlock(block),
+					$author$project$Common$BlockParser$typeOfBlock(blockM),
 					_List_fromArray(
 						[$author$project$Common$Syntax$P, $author$project$Common$Syntax$V])) ? _Utils_update(
 					state,
@@ -13704,7 +13762,7 @@ var $author$project$Markdown$BlockParser$handleBlankLine = F2(
 					}) : state;
 			}
 		} else {
-			return $author$project$Common$BlockParser$reduceStack(state);
+			return state;
 		}
 	});
 var $author$project$Common$BlockParser$replaceMeta = F2(
@@ -13739,6 +13797,476 @@ var $author$project$Common$BlockParser$shift = F2(
 				lineNumber: state.lineNumber + 1,
 				stack: A2($elm$core$List$cons, newBlock, state.stack)
 			});
+	});
+var $author$project$L1$BlockParser$handleOrdinaryLine = F3(
+	function (indent, line, state) {
+		if (_Utils_cmp(
+			$author$project$Common$BlockParser$level(indent),
+			$author$project$Common$BlockParser$blockLevelOfStackTop(state.stack)) > -1) {
+			var _v0 = $elm$core$List$head(state.stack);
+			if (_v0.$ === 'Nothing') {
+				return A2(
+					$author$project$Common$BlockParser$shift,
+					A2(
+						$author$project$Common$Syntax$Paragraph,
+						_List_fromArray(
+							[
+								A2($elm$core$String$dropLeft, indent, line)
+							]),
+						A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
+					_Utils_update(
+						state,
+						{indent: indent}));
+			} else {
+				var block = _v0.a;
+				return _Utils_eq(
+					$author$project$Common$BlockParser$typeOfBlock(block),
+					$author$project$Common$Syntax$P) ? _Utils_update(
+					state,
+					{
+						indent: indent,
+						stack: A2(
+							$author$project$Common$BlockParser$appendLineAtTop,
+							A2($elm$core$String$dropLeft, indent, line),
+							state.stack)
+					}) : A2(
+					$author$project$Common$BlockParser$shift,
+					A2(
+						$author$project$Common$Syntax$Paragraph,
+						_List_fromArray(
+							[
+								A2($elm$core$String$dropLeft, indent, line)
+							]),
+						A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
+					_Utils_update(
+						state,
+						{indent: indent}));
+			}
+		} else {
+			return A2(
+				$author$project$Common$BlockParser$shift,
+				A2(
+					$author$project$Common$Syntax$Paragraph,
+					_List_fromArray(
+						[line]),
+					A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
+				$author$project$Common$BlockParser$reduceStack(
+					_Utils_update(
+						state,
+						{indent: indent})));
+		}
+	});
+var $author$project$L1$BlockParser$reduce = F2(
+	function (lineType, state) {
+		return state;
+	});
+var $author$project$L1$BlockParser$nextStateAux = F2(
+	function (line, state) {
+		var lineType = $author$project$L1$Line$classify(line);
+		var indent = lineType.indent;
+		var _v0 = lineType.lineType;
+		switch (_v0.$) {
+			case 'BeginBlock':
+				var s = _v0.a;
+				return (_Utils_cmp(
+					$author$project$Common$BlockParser$level(indent),
+					$author$project$Common$BlockParser$blockLevelOfStackTop(state.stack)) < 1) ? A2(
+					$author$project$Common$BlockParser$shift,
+					A3(
+						$author$project$Common$Syntax$Block,
+						s,
+						_List_Nil,
+						A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
+					$author$project$Common$BlockParser$reduceStack(
+						_Utils_update(
+							state,
+							{indent: indent}))) : A2(
+					$author$project$Common$BlockParser$shift,
+					A3(
+						$author$project$Common$Syntax$Block,
+						s,
+						_List_Nil,
+						A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
+					_Utils_update(
+						state,
+						{indent: indent}));
+			case 'BeginVerbatimBlock':
+				var s = _v0.a;
+				return (_Utils_cmp(
+					$author$project$Common$BlockParser$level(indent),
+					$author$project$Common$BlockParser$blockLevelOfStackTop(state.stack)) < 1) ? A2(
+					$author$project$Common$BlockParser$shift,
+					A3(
+						$author$project$Common$Syntax$VerbatimBlock,
+						s,
+						_List_Nil,
+						A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
+					$author$project$Common$BlockParser$reduceStack(
+						_Utils_update(
+							state,
+							{indent: indent}))) : A2(
+					$author$project$Common$BlockParser$shift,
+					A3(
+						$author$project$Common$Syntax$VerbatimBlock,
+						s,
+						_List_Nil,
+						A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
+					_Utils_update(
+						state,
+						{indent: indent}));
+			case 'OrdinaryLine':
+				return A3($author$project$L1$BlockParser$handleOrdinaryLine, indent, line, state);
+			case 'BlankLine':
+				return A2($author$project$L1$BlockParser$handleBlankLine, indent, state);
+			case 'EndBlock':
+				var s = _v0.a;
+				return A2(
+					$author$project$L1$BlockParser$reduce,
+					$author$project$Common$Line$EndBlock(s),
+					state);
+			case 'EndVerbatimBlock':
+				var s = _v0.a;
+				return A2(
+					$author$project$L1$BlockParser$reduce,
+					$author$project$Common$Line$EndVerbatimBlock(s),
+					state);
+			default:
+				var s = _v0.a;
+				return state;
+		}
+	});
+var $author$project$L1$BlockParser$run = F2(
+	function (generation, input) {
+		return A2(
+			$author$project$Common$BlockParser$loop,
+			A2($author$project$Common$BlockParser$initialState, generation, input),
+			$author$project$Common$BlockParser$nextState($author$project$L1$BlockParser$nextStateAux));
+	});
+var $author$project$L1$BlockParser$parse = F2(
+	function (generation, lines) {
+		return A2($author$project$L1$BlockParser$run, generation, lines).output;
+	});
+var $elm$core$Dict$fromList = function (assocs) {
+	return A3(
+		$elm$core$List$foldl,
+		F2(
+			function (_v0, dict) {
+				var key = _v0.a;
+				var value = _v0.b;
+				return A3($elm$core$Dict$insert, key, value, dict);
+			}),
+		$elm$core$Dict$empty,
+		assocs);
+};
+var $mdgriffith$elm_ui$Internal$Model$Paragraph = {$: 'Paragraph'};
+var $mdgriffith$elm_ui$Element$paragraph = F2(
+	function (attrs, children) {
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asParagraph,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$Paragraph),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					A2(
+						$elm$core$List$cons,
+						$mdgriffith$elm_ui$Element$spacing(5),
+						attrs))),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
+	});
+var $author$project$Common$Render$codeColor = A3($mdgriffith$elm_ui$Element$rgb, 0.4, 0, 0.8);
+var $mdgriffith$elm_ui$Element$Font$family = function (families) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$fontFamily,
+		A2(
+			$mdgriffith$elm_ui$Internal$Model$FontFamily,
+			A3($elm$core$List$foldl, $mdgriffith$elm_ui$Internal$Model$renderFontClassName, 'ff-', families),
+			families));
+};
+var $mdgriffith$elm_ui$Internal$Model$Monospace = {$: 'Monospace'};
+var $mdgriffith$elm_ui$Element$Font$monospace = $mdgriffith$elm_ui$Internal$Model$Monospace;
+var $mdgriffith$elm_ui$Element$Font$typeface = $mdgriffith$elm_ui$Internal$Model$Typeface;
+var $author$project$Common$Render$codeBlock = F3(
+	function (generation, settings, lines) {
+		return A2(
+			$mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$Font$family(
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$Font$typeface('Inconsolata'),
+							$mdgriffith$elm_ui$Element$Font$monospace
+						])),
+					$mdgriffith$elm_ui$Element$Font$color($author$project$Common$Render$codeColor),
+					$mdgriffith$elm_ui$Element$paddingEach(
+					{bottom: 0, left: 18, right: 0, top: 0})
+				]),
+			A2($elm$core$List$map, $mdgriffith$elm_ui$Element$text, lines));
+	});
+var $author$project$Common$Render$DisplayMathMode = {$: 'DisplayMathMode'};
+var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
+var $author$project$Common$Render$isDisplayMathMode = function (displayMode) {
+	if (displayMode.$ === 'InlineMathMode') {
+		return false;
+	} else {
+		return true;
+	}
+};
+var $elm$html$Html$node = $elm$virtual_dom$VirtualDom$node;
+var $elm$html$Html$Attributes$property = $elm$virtual_dom$VirtualDom$property;
+var $author$project$Common$Render$mathText_ = F3(
+	function (displayMode, selectedId, content) {
+		return A3(
+			$elm$html$Html$node,
+			'math-text',
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$Attributes$property,
+					'display',
+					$elm$json$Json$Encode$bool(
+						$author$project$Common$Render$isDisplayMathMode(displayMode))),
+					A2(
+					$elm$html$Html$Attributes$property,
+					'content',
+					$elm$json$Json$Encode$string(content))
+				]),
+			_List_Nil);
+	});
+var $elm$html$Html$Keyed$node = $elm$virtual_dom$VirtualDom$keyedNode;
+var $author$project$Common$Render$mathText = F3(
+	function (generation, displayMode, content) {
+		return $mdgriffith$elm_ui$Element$html(
+			A3(
+				$elm$html$Html$Keyed$node,
+				'span',
+				_List_fromArray(
+					[
+						A2($elm$html$Html$Attributes$style, 'margin-left', '6px')
+					]),
+				_List_fromArray(
+					[
+						_Utils_Tuple2(
+						$elm$core$String$fromInt(generation),
+						A3($author$project$Common$Render$mathText_, displayMode, 'ID', content))
+					])));
+	});
+var $author$project$Common$Render$mathBlock = F3(
+	function (generation, settings, strings) {
+		return A3(
+			$author$project$Common$Render$mathText,
+			generation,
+			$author$project$Common$Render$DisplayMathMode,
+			A2($elm$core$String$join, '\n', strings));
+	});
+var $author$project$Common$Render$verbatimBlockDict = $elm$core$Dict$fromList(
+	_List_fromArray(
+		[
+			_Utils_Tuple2(
+			'code',
+			F3(
+				function (g, s, lines) {
+					return A3($author$project$Common$Render$codeBlock, g, s, lines);
+				})),
+			_Utils_Tuple2(
+			'math',
+			F3(
+				function (g, s, lines) {
+					return A3($author$project$Common$Render$mathBlock, g, s, lines);
+				}))
+		]));
+var $author$project$Common$Render$quotationBlock = F3(
+	function (generation, settings, blocks) {
+		return A2(
+			$mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$paddingEach(
+					{bottom: 0, left: 18, right: 0, top: 0})
+				]),
+			A2(
+				$elm$core$List$map,
+				A2($author$project$Common$Render$renderBlock, generation, settings),
+				blocks));
+	});
+var $author$project$Common$Render$renderBlock = F3(
+	function (generation, settings, block) {
+		switch (block.$) {
+			case 'Paragraph':
+				var strings = block.a;
+				return A2(
+					$mdgriffith$elm_ui$Element$paragraph,
+					_List_Nil,
+					A2($elm$core$List$map, $mdgriffith$elm_ui$Element$text, strings));
+			case 'VerbatimBlock':
+				var name = block.a;
+				var lines = block.b;
+				var _v1 = A2($elm$core$Dict$get, name, $author$project$Common$Render$verbatimBlockDict);
+				if (_v1.$ === 'Nothing') {
+					return A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_Nil,
+						$mdgriffith$elm_ui$Element$text('Unimplemented verbatim block: ' + name));
+				} else {
+					var f = _v1.a;
+					return A3(f, generation, settings, lines);
+				}
+			default:
+				var name = block.a;
+				var blocks = block.b;
+				var _v2 = A2(
+					$elm$core$Dict$get,
+					name,
+					$author$project$Common$Render$cyclic$blockDict());
+				if (_v2.$ === 'Nothing') {
+					return A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_Nil,
+						$mdgriffith$elm_ui$Element$text('Unimplemented block: ' + name));
+				} else {
+					var f = _v2.a;
+					return A3(f, generation, settings, blocks);
+				}
+		}
+	});
+function $author$project$Common$Render$cyclic$blockDict() {
+	return $elm$core$Dict$fromList(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'quotation',
+				F3(
+					function (g, s, blocks) {
+						return A3($author$project$Common$Render$quotationBlock, g, s, blocks);
+					}))
+			]));
+}
+try {
+	var $author$project$Common$Render$blockDict = $author$project$Common$Render$cyclic$blockDict();
+	$author$project$Common$Render$cyclic$blockDict = function () {
+		return $author$project$Common$Render$blockDict;
+	};
+} catch ($) {
+	throw 'Some top-level definitions from `Common.Render` are causing infinite recursion:\n\n  ┌─────┐\n  │    blockDict\n  │     ↓\n  │    quotationBlock\n  │     ↓\n  │    renderBlock\n  └─────┘\n\nThese errors are very tricky, so read https://elm-lang.org/0.19.1/bad-recursion to learn how to fix it!';}
+var $author$project$Common$Render$render = F3(
+	function (generation, settings, blocks) {
+		return A2(
+			$elm$core$List$map,
+			A2($author$project$Common$Render$renderBlock, generation, settings),
+			blocks);
+	});
+var $author$project$Common$API$renderL1 = F3(
+	function (generation, settings, lines) {
+		return A3(
+			$author$project$Common$Render$render,
+			generation,
+			settings,
+			A2($author$project$L1$BlockParser$parse, generation, lines));
+	});
+var $author$project$Common$BlockParser$blockLabel = function (block) {
+	switch (block.$) {
+		case 'Paragraph':
+			return '(no label)';
+		case 'Block':
+			var s = block.a;
+			return s;
+		default:
+			var s = block.a;
+			return s;
+	}
+};
+var $author$project$Common$BlockParser$blockLabelAtBottomOfStack = function (stack) {
+	var _v0 = $elm$core$List$head(
+		$elm$core$List$reverse(stack));
+	if (_v0.$ === 'Nothing') {
+		return '(no label)';
+	} else {
+		var block = _v0.a;
+		return $author$project$Common$BlockParser$blockLabel(block);
+	}
+};
+var $author$project$Markdown$Line$beginCodeBlockParser = A2(
+	$elm$parser$Parser$map,
+	function (_v0) {
+		return $author$project$Common$Line$BeginVerbatimBlock('code');
+	},
+	A2(
+		$elm$parser$Parser$ignorer,
+		$elm$parser$Parser$succeed($elm$core$String$slice),
+		$elm$parser$Parser$symbol('```')));
+var $author$project$Markdown$Line$beginMathBlockParser = A2(
+	$elm$parser$Parser$map,
+	function (_v0) {
+		return $author$project$Common$Line$BeginVerbatimBlock('math');
+	},
+	A2(
+		$elm$parser$Parser$ignorer,
+		$elm$parser$Parser$succeed($elm$core$String$slice),
+		$elm$parser$Parser$symbol('$$')));
+var $author$project$Markdown$Line$beginQuotationBlockParser = A2(
+	$elm$parser$Parser$map,
+	function (_v0) {
+		return $author$project$Common$Line$BeginBlock('quotation');
+	},
+	A2(
+		$elm$parser$Parser$ignorer,
+		$elm$parser$Parser$succeed($elm$core$String$slice),
+		$elm$parser$Parser$symbol('>')));
+var $author$project$Markdown$Line$lineTypeParser = $elm$parser$Parser$oneOf(
+	_List_fromArray(
+		[
+			$author$project$Markdown$Line$beginCodeBlockParser,
+			$author$project$Markdown$Line$beginMathBlockParser,
+			$author$project$Markdown$Line$beginQuotationBlockParser,
+			$author$project$Common$Line$ordinaryLineParser(_List_Nil),
+			$author$project$Common$Line$emptyLineParser
+		]));
+var $author$project$Markdown$Line$lineType = function (str) {
+	var _v0 = A2($elm$parser$Parser$run, $author$project$Markdown$Line$lineTypeParser, str);
+	if (_v0.$ === 'Ok') {
+		var type_ = _v0.a;
+		return type_;
+	} else {
+		return $author$project$Common$Line$Problem('unrecognized type');
+	}
+};
+var $author$project$Markdown$Line$classify = function (str) {
+	var leadingSpaces = $author$project$Common$Line$countLeadingSpaces(str);
+	return {
+		indent: leadingSpaces,
+		lineType: $author$project$Markdown$Line$lineType(
+			A2($elm$core$String$dropLeft, leadingSpaces, str))
+	};
+};
+var $author$project$Markdown$BlockParser$handleBlankLine = F2(
+	function (indent, state) {
+		if (_Utils_eq(
+			$author$project$Common$BlockParser$level(indent),
+			$author$project$Common$BlockParser$level(state.indent))) {
+			var _v0 = $elm$core$List$head(state.stack);
+			if (_v0.$ === 'Nothing') {
+				return state;
+			} else {
+				var block = _v0.a;
+				return A2(
+					$elm$core$List$member,
+					$author$project$Common$BlockParser$typeOfBlock(block),
+					_List_fromArray(
+						[$author$project$Common$Syntax$P, $author$project$Common$Syntax$V])) ? _Utils_update(
+					state,
+					{
+						indent: indent,
+						stack: A2($author$project$Common$BlockParser$appendLineAtTop, '', state.stack)
+					}) : state;
+			}
+		} else {
+			return $author$project$Common$BlockParser$reduceStack(state);
+		}
 	});
 var $author$project$Markdown$BlockParser$handleOrdinaryLine = F3(
 	function (indent, line, state) {
@@ -14090,220 +14618,6 @@ var $author$project$Markdown$BlockParser$parse = F2(
 	function (generation, lines) {
 		return A2($author$project$Markdown$BlockParser$run, generation, lines).output;
 	});
-var $elm$core$Dict$fromList = function (assocs) {
-	return A3(
-		$elm$core$List$foldl,
-		F2(
-			function (_v0, dict) {
-				var key = _v0.a;
-				var value = _v0.b;
-				return A3($elm$core$Dict$insert, key, value, dict);
-			}),
-		$elm$core$Dict$empty,
-		assocs);
-};
-var $mdgriffith$elm_ui$Internal$Model$Paragraph = {$: 'Paragraph'};
-var $mdgriffith$elm_ui$Element$paragraph = F2(
-	function (attrs, children) {
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asParagraph,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$Paragraph),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Element$spacing(5),
-						attrs))),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-	});
-var $author$project$Common$Render$codeColor = A3($mdgriffith$elm_ui$Element$rgb, 0.4, 0, 0.8);
-var $mdgriffith$elm_ui$Element$Font$family = function (families) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$fontFamily,
-		A2(
-			$mdgriffith$elm_ui$Internal$Model$FontFamily,
-			A3($elm$core$List$foldl, $mdgriffith$elm_ui$Internal$Model$renderFontClassName, 'ff-', families),
-			families));
-};
-var $mdgriffith$elm_ui$Internal$Model$Monospace = {$: 'Monospace'};
-var $mdgriffith$elm_ui$Element$Font$monospace = $mdgriffith$elm_ui$Internal$Model$Monospace;
-var $mdgriffith$elm_ui$Element$Font$typeface = $mdgriffith$elm_ui$Internal$Model$Typeface;
-var $author$project$Common$Render$codeBlock = F3(
-	function (generation, settings, lines) {
-		return A2(
-			$mdgriffith$elm_ui$Element$column,
-			_List_fromArray(
-				[
-					$mdgriffith$elm_ui$Element$Font$family(
-					_List_fromArray(
-						[
-							$mdgriffith$elm_ui$Element$Font$typeface('Inconsolata'),
-							$mdgriffith$elm_ui$Element$Font$monospace
-						])),
-					$mdgriffith$elm_ui$Element$Font$color($author$project$Common$Render$codeColor),
-					$mdgriffith$elm_ui$Element$paddingEach(
-					{bottom: 0, left: 18, right: 0, top: 0})
-				]),
-			A2($elm$core$List$map, $mdgriffith$elm_ui$Element$text, lines));
-	});
-var $author$project$Common$Render$DisplayMathMode = {$: 'DisplayMathMode'};
-var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
-var $author$project$Common$Render$isDisplayMathMode = function (displayMode) {
-	if (displayMode.$ === 'InlineMathMode') {
-		return false;
-	} else {
-		return true;
-	}
-};
-var $elm$html$Html$node = $elm$virtual_dom$VirtualDom$node;
-var $elm$html$Html$Attributes$property = $elm$virtual_dom$VirtualDom$property;
-var $author$project$Common$Render$mathText_ = F3(
-	function (displayMode, selectedId, content) {
-		return A3(
-			$elm$html$Html$node,
-			'math-text',
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$Attributes$property,
-					'display',
-					$elm$json$Json$Encode$bool(
-						$author$project$Common$Render$isDisplayMathMode(displayMode))),
-					A2(
-					$elm$html$Html$Attributes$property,
-					'content',
-					$elm$json$Json$Encode$string(content))
-				]),
-			_List_Nil);
-	});
-var $elm$html$Html$Keyed$node = $elm$virtual_dom$VirtualDom$keyedNode;
-var $author$project$Common$Render$mathText = F3(
-	function (generation, displayMode, content) {
-		return $mdgriffith$elm_ui$Element$html(
-			A3(
-				$elm$html$Html$Keyed$node,
-				'span',
-				_List_fromArray(
-					[
-						A2($elm$html$Html$Attributes$style, 'margin-left', '6px')
-					]),
-				_List_fromArray(
-					[
-						_Utils_Tuple2(
-						$elm$core$String$fromInt(generation),
-						A3($author$project$Common$Render$mathText_, displayMode, 'ID', content))
-					])));
-	});
-var $author$project$Common$Render$mathBlock = F3(
-	function (generation, settings, strings) {
-		return A3(
-			$author$project$Common$Render$mathText,
-			generation,
-			$author$project$Common$Render$DisplayMathMode,
-			A2($elm$core$String$join, '\n', strings));
-	});
-var $author$project$Common$Render$verbatimBlockDict = $elm$core$Dict$fromList(
-	_List_fromArray(
-		[
-			_Utils_Tuple2(
-			'code',
-			F3(
-				function (g, s, lines) {
-					return A3($author$project$Common$Render$codeBlock, g, s, lines);
-				})),
-			_Utils_Tuple2(
-			'math',
-			F3(
-				function (g, s, lines) {
-					return A3($author$project$Common$Render$mathBlock, g, s, lines);
-				}))
-		]));
-var $author$project$Common$Render$quotationBlock = F3(
-	function (generation, settings, blocks) {
-		return A2(
-			$mdgriffith$elm_ui$Element$column,
-			_List_fromArray(
-				[
-					$mdgriffith$elm_ui$Element$paddingEach(
-					{bottom: 0, left: 18, right: 0, top: 0})
-				]),
-			A2(
-				$elm$core$List$map,
-				A2($author$project$Common$Render$renderBlock, generation, settings),
-				blocks));
-	});
-var $author$project$Common$Render$renderBlock = F3(
-	function (generation, settings, block) {
-		switch (block.$) {
-			case 'Paragraph':
-				var strings = block.a;
-				return A2(
-					$mdgriffith$elm_ui$Element$paragraph,
-					_List_Nil,
-					A2($elm$core$List$map, $mdgriffith$elm_ui$Element$text, strings));
-			case 'VerbatimBlock':
-				var name = block.a;
-				var lines = block.b;
-				var _v1 = A2($elm$core$Dict$get, name, $author$project$Common$Render$verbatimBlockDict);
-				if (_v1.$ === 'Nothing') {
-					return A2(
-						$mdgriffith$elm_ui$Element$el,
-						_List_Nil,
-						$mdgriffith$elm_ui$Element$text('Unimplemented verbatim block: ' + name));
-				} else {
-					var f = _v1.a;
-					return A3(f, generation, settings, lines);
-				}
-			default:
-				var name = block.a;
-				var blocks = block.b;
-				var _v2 = A2(
-					$elm$core$Dict$get,
-					name,
-					$author$project$Common$Render$cyclic$blockDict());
-				if (_v2.$ === 'Nothing') {
-					return A2(
-						$mdgriffith$elm_ui$Element$el,
-						_List_Nil,
-						$mdgriffith$elm_ui$Element$text('Unimplemented block: ' + name));
-				} else {
-					var f = _v2.a;
-					return A3(f, generation, settings, blocks);
-				}
-		}
-	});
-function $author$project$Common$Render$cyclic$blockDict() {
-	return $elm$core$Dict$fromList(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'quotation',
-				F3(
-					function (g, s, blocks) {
-						return A3($author$project$Common$Render$quotationBlock, g, s, blocks);
-					}))
-			]));
-}
-try {
-	var $author$project$Common$Render$blockDict = $author$project$Common$Render$cyclic$blockDict();
-	$author$project$Common$Render$cyclic$blockDict = function () {
-		return $author$project$Common$Render$blockDict;
-	};
-} catch ($) {
-	throw 'Some top-level definitions from `Common.Render` are causing infinite recursion:\n\n  ┌─────┐\n  │    blockDict\n  │     ↓\n  │    quotationBlock\n  │     ↓\n  │    renderBlock\n  └─────┘\n\nThese errors are very tricky, so read https://elm-lang.org/0.19.1/bad-recursion to learn how to fix it!';}
-var $author$project$Common$Render$render = F3(
-	function (generation, settings, blocks) {
-		return A2(
-			$elm$core$List$map,
-			A2($author$project$Common$Render$renderBlock, generation, settings),
-			blocks);
-	});
 var $author$project$Common$API$renderMarkdown = F3(
 	function (generation, settings, lines) {
 		return A3(
@@ -14311,6 +14625,370 @@ var $author$project$Common$API$renderMarkdown = F3(
 			generation,
 			settings,
 			A2($author$project$Markdown$BlockParser$parse, generation, lines));
+	});
+var $author$project$MiniLaTeX$Line$beginBlockParser = A2(
+	$elm$parser$Parser$map,
+	function (s) {
+		return $author$project$Common$Line$BeginBlock(s);
+	},
+	A2(
+		$elm$parser$Parser$keeper,
+		A2(
+			$elm$parser$Parser$keeper,
+			A2(
+				$elm$parser$Parser$keeper,
+				A2(
+					$elm$parser$Parser$ignorer,
+					$elm$parser$Parser$succeed($elm$core$String$slice),
+					$elm$parser$Parser$symbol('\\begin{')),
+				A2(
+					$elm$parser$Parser$ignorer,
+					$elm$parser$Parser$getOffset,
+					$elm$parser$Parser$chompWhile(
+						function (c) {
+							return !_Utils_eq(
+								c,
+								_Utils_chr('}'));
+						}))),
+			$elm$parser$Parser$getOffset),
+		$elm$parser$Parser$getSource));
+var $author$project$MiniLaTeX$Line$beginCodeBlockParser = A2(
+	$elm$parser$Parser$map,
+	function (_v0) {
+		return $author$project$Common$Line$BeginVerbatimBlock('code');
+	},
+	A2(
+		$elm$parser$Parser$ignorer,
+		$elm$parser$Parser$succeed($elm$core$String$slice),
+		$elm$parser$Parser$symbol('```')));
+var $author$project$MiniLaTeX$Line$beginMathBlockParser = A2(
+	$elm$parser$Parser$map,
+	function (_v0) {
+		return $author$project$Common$Line$BeginVerbatimBlock('math');
+	},
+	A2(
+		$elm$parser$Parser$ignorer,
+		$elm$parser$Parser$succeed($elm$core$String$slice),
+		$elm$parser$Parser$symbol('$$')));
+var $author$project$MiniLaTeX$Line$endBlockParser = A2(
+	$elm$parser$Parser$map,
+	function (s) {
+		return $author$project$Common$Line$EndBlock(s);
+	},
+	A2(
+		$elm$parser$Parser$keeper,
+		A2(
+			$elm$parser$Parser$keeper,
+			A2(
+				$elm$parser$Parser$keeper,
+				A2(
+					$elm$parser$Parser$ignorer,
+					$elm$parser$Parser$succeed($elm$core$String$slice),
+					$elm$parser$Parser$symbol('\\end{')),
+				A2(
+					$elm$parser$Parser$ignorer,
+					$elm$parser$Parser$getOffset,
+					$elm$parser$Parser$chompWhile(
+						function (c) {
+							return !_Utils_eq(
+								c,
+								_Utils_chr('}'));
+						}))),
+			$elm$parser$Parser$getOffset),
+		$elm$parser$Parser$getSource));
+var $author$project$MiniLaTeX$Line$lineTypeParser = $elm$parser$Parser$oneOf(
+	_List_fromArray(
+		[
+			$author$project$MiniLaTeX$Line$beginCodeBlockParser,
+			$author$project$MiniLaTeX$Line$beginBlockParser,
+			$author$project$MiniLaTeX$Line$endBlockParser,
+			$author$project$MiniLaTeX$Line$beginMathBlockParser,
+			$author$project$Common$Line$ordinaryLineParser(_List_Nil),
+			$author$project$Common$Line$emptyLineParser
+		]));
+var $author$project$MiniLaTeX$Line$lineType = function (str) {
+	var _v0 = A2($elm$parser$Parser$run, $author$project$MiniLaTeX$Line$lineTypeParser, str);
+	if (_v0.$ === 'Ok') {
+		var type_ = _v0.a;
+		return type_;
+	} else {
+		return $author$project$Common$Line$Problem('unrecognized type');
+	}
+};
+var $author$project$MiniLaTeX$Line$classify = function (str) {
+	var leadingSpaces = $author$project$Common$Line$countLeadingSpaces(str);
+	return {
+		indent: leadingSpaces,
+		lineType: $author$project$MiniLaTeX$Line$lineType(
+			A2($elm$core$String$dropLeft, leadingSpaces, str))
+	};
+};
+var $author$project$MiniLaTeX$BlockParser$handleBlankLine = F2(
+	function (indent, state) {
+		if (_Utils_eq(
+			$author$project$Common$BlockParser$level(indent),
+			$author$project$Common$BlockParser$level(state.indent))) {
+			var _v0 = $elm$core$List$head(state.stack);
+			if (_v0.$ === 'Nothing') {
+				return state;
+			} else {
+				var block = _v0.a;
+				return A2(
+					$elm$core$List$member,
+					$author$project$Common$BlockParser$typeOfBlock(block),
+					_List_fromArray(
+						[$author$project$Common$Syntax$P, $author$project$Common$Syntax$V])) ? _Utils_update(
+					state,
+					{
+						indent: indent,
+						stack: A2($author$project$Common$BlockParser$appendLineAtTop, '', state.stack)
+					}) : state;
+			}
+		} else {
+			return $author$project$Common$BlockParser$reduceStack(state);
+		}
+	});
+var $author$project$MiniLaTeX$BlockParser$handleOrdinaryLine = F3(
+	function (indent, line, state) {
+		if (_Utils_cmp(
+			$author$project$Common$BlockParser$level(indent),
+			$author$project$Common$BlockParser$blockLevelOfStackTop(state.stack)) > -1) {
+			var _v0 = $elm$core$List$head(state.stack);
+			if (_v0.$ === 'Nothing') {
+				return A2(
+					$author$project$Common$BlockParser$shift,
+					A2(
+						$author$project$Common$Syntax$Paragraph,
+						_List_fromArray(
+							[
+								A2($elm$core$String$dropLeft, indent, line)
+							]),
+						A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
+					_Utils_update(
+						state,
+						{indent: indent}));
+			} else {
+				var block = _v0.a;
+				return _Utils_eq(
+					$author$project$Common$BlockParser$typeOfBlock(block),
+					$author$project$Common$Syntax$P) ? _Utils_update(
+					state,
+					{
+						indent: indent,
+						stack: A2(
+							$author$project$Common$BlockParser$appendLineAtTop,
+							A2($elm$core$String$dropLeft, indent, line),
+							state.stack)
+					}) : A2(
+					$author$project$Common$BlockParser$shift,
+					A2(
+						$author$project$Common$Syntax$Paragraph,
+						_List_fromArray(
+							[
+								A2($elm$core$String$dropLeft, indent, line)
+							]),
+						A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
+					_Utils_update(
+						state,
+						{indent: indent}));
+			}
+		} else {
+			return A2(
+				$author$project$Common$BlockParser$shift,
+				A2(
+					$author$project$Common$Syntax$Paragraph,
+					_List_fromArray(
+						[line]),
+					A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
+				$author$project$Common$BlockParser$reduceStack(
+					_Utils_update(
+						state,
+						{indent: indent})));
+		}
+	});
+var $author$project$MiniLaTeX$BlockParser$reduce = F2(
+	function (lineType, state) {
+		return state;
+	});
+var $author$project$MiniLaTeX$BlockParser$nextStateAux = F2(
+	function (line, state) {
+		var lineType = $author$project$MiniLaTeX$Line$classify(line);
+		var indent = lineType.indent;
+		var _v0 = lineType.lineType;
+		switch (_v0.$) {
+			case 'BeginBlock':
+				var s = _v0.a;
+				return (_Utils_cmp(
+					$author$project$Common$BlockParser$level(indent),
+					$author$project$Common$BlockParser$blockLevelOfStackTop(state.stack)) < 1) ? A2(
+					$author$project$Common$BlockParser$shift,
+					A3(
+						$author$project$Common$Syntax$Block,
+						s,
+						_List_Nil,
+						A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
+					$author$project$Common$BlockParser$reduceStack(
+						_Utils_update(
+							state,
+							{indent: indent}))) : A2(
+					$author$project$Common$BlockParser$shift,
+					A3(
+						$author$project$Common$Syntax$Block,
+						s,
+						_List_Nil,
+						A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
+					_Utils_update(
+						state,
+						{indent: indent}));
+			case 'BeginVerbatimBlock':
+				var s = _v0.a;
+				if (_Utils_cmp(
+					$author$project$Common$BlockParser$level(indent),
+					$author$project$Common$BlockParser$blockLevelOfStackTop(state.stack)) < 1) {
+					var yada = A2(
+						$author$project$Utility$takeUntil,
+						function (a) {
+							return _Utils_eq(
+								$author$project$Common$BlockParser$blockLabel(a),
+								s) && _Utils_eq(
+								$author$project$Common$BlockParser$blockLevel(a),
+								$author$project$Common$BlockParser$level(indent));
+						},
+						state.stack);
+					var _v1 = A2($author$project$Common$Debug$debug1, '(BeginVerbatimBlock)', s);
+					var _v2 = A2(
+						$author$project$Common$Debug$debug2,
+						'yada.prefix, bottom label',
+						$author$project$Common$BlockParser$blockLabelAtBottomOfStack(yada.prefix));
+					return _Utils_eq(
+						$author$project$Common$BlockParser$blockLabelAtBottomOfStack(yada.prefix),
+						s) ? $author$project$Common$BlockParser$reduceStack(
+						_Utils_update(
+							state,
+							{indent: indent})) : A2(
+						$author$project$Common$BlockParser$shift,
+						A3(
+							$author$project$Common$Syntax$VerbatimBlock,
+							s,
+							_List_Nil,
+							A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
+						$author$project$Common$BlockParser$reduceStack(
+							_Utils_update(
+								state,
+								{indent: indent})));
+				} else {
+					return A2(
+						$author$project$Common$BlockParser$shift,
+						A3(
+							$author$project$Common$Syntax$VerbatimBlock,
+							s,
+							_List_Nil,
+							A2($author$project$Common$Syntax$dummyMeta, 0, 0)),
+						_Utils_update(
+							state,
+							{indent: indent}));
+				}
+			case 'OrdinaryLine':
+				return A3($author$project$MiniLaTeX$BlockParser$handleOrdinaryLine, indent, line, state);
+			case 'BlankLine':
+				return A2($author$project$MiniLaTeX$BlockParser$handleBlankLine, indent, state);
+			case 'EndBlock':
+				var s = _v0.a;
+				var _v3 = A2(
+					$author$project$Utility$takeUntil,
+					function (a) {
+						return _Utils_eq(
+							$author$project$Common$BlockParser$blockLabel(a),
+							s) && _Utils_eq(
+							$author$project$Common$BlockParser$blockLevel(a),
+							$author$project$Common$BlockParser$level(indent));
+					},
+					state.stack);
+				var prefix = _v3.prefix;
+				var rest = _v3.rest;
+				var data = A2(
+					$author$project$Common$Debug$debug1,
+					'data (1), Endblock',
+					$author$project$Common$BlockParser$reduceStack_(
+						{output: _List_Nil, stack: prefix}));
+				if (_Utils_eq(
+					s,
+					$author$project$Common$BlockParser$blockLabelAtBottomOfStack(prefix))) {
+					return _Utils_update(
+						state,
+						{
+							output: _Utils_ap(data.output, state.output),
+							stack: _Utils_ap(data.stack, rest)
+						});
+				} else {
+					var s2 = $author$project$Common$BlockParser$blockLabelAtBottomOfStack(prefix);
+					var errorMessage = A2(
+						$author$project$Common$Syntax$Paragraph,
+						_List_fromArray(
+							['Error: I was expecting an end-block labeled  ' + (s2 + (', but found ' + s))]),
+						A2($author$project$Common$Syntax$dummyMeta, 0, 0));
+					return _Utils_update(
+						state,
+						{
+							output: A2(
+								$elm$core$List$cons,
+								errorMessage,
+								_Utils_ap(data.output, state.output)),
+							stack: _Utils_ap(data.stack, rest)
+						});
+				}
+			case 'EndVerbatimBlock':
+				var s = _v0.a;
+				return A2(
+					$author$project$MiniLaTeX$BlockParser$reduce,
+					$author$project$Common$Line$EndVerbatimBlock(s),
+					state);
+			default:
+				var s = _v0.a;
+				return state;
+		}
+	});
+var $author$project$MiniLaTeX$BlockParser$run = F2(
+	function (generation, input) {
+		return A2(
+			$author$project$Common$BlockParser$loop,
+			A2($author$project$Common$BlockParser$initialState, generation, input),
+			$author$project$Common$BlockParser$nextState($author$project$MiniLaTeX$BlockParser$nextStateAux));
+	});
+var $author$project$MiniLaTeX$BlockParser$parse = F2(
+	function (generation, lines) {
+		return A2($author$project$MiniLaTeX$BlockParser$run, generation, lines).output;
+	});
+var $author$project$Common$API$renderMiniLaTeX = F3(
+	function (generation, settings, lines) {
+		return A3(
+			$author$project$Common$Render$render,
+			generation,
+			settings,
+			A2($author$project$MiniLaTeX$BlockParser$parse, generation, lines));
+	});
+var $author$project$Main$render = F3(
+	function (language, count, source) {
+		switch (language.$) {
+			case 'L1':
+				return A3(
+					$author$project$Common$API$renderL1,
+					count,
+					{width: 500},
+					$elm$core$String$lines(source));
+			case 'Markdown':
+				return A3(
+					$author$project$Common$API$renderMarkdown,
+					count,
+					{width: 500},
+					$elm$core$String$lines(source));
+			default:
+				return A3(
+					$author$project$Common$API$renderMiniLaTeX,
+					count,
+					{width: 500},
+					$elm$core$String$lines(source));
+		}
 	});
 var $author$project$Main$renderedText = function (model) {
 	return A2(
@@ -14331,11 +15009,7 @@ var $author$project$Main$renderedText = function (model) {
 				$mdgriffith$elm_ui$Element$Background$color(
 				A3($mdgriffith$elm_ui$Element$rgb255, 255, 240, 240))
 			]),
-		A3(
-			$author$project$Common$API$renderMarkdown,
-			0,
-			{width: 500},
-			$elm$core$String$lines(model.sourceText)));
+		A3($author$project$Main$render, model.language, model.count, model.sourceText));
 };
 var $author$project$Main$wordCount = function (str) {
 	return $elm$core$List$length(

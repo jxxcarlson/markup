@@ -2,10 +2,10 @@ module Main exposing (main)
 
 import Browser
 import Common.API as API
-import Data.Article
 import Data.Article2
-import Data.Example
+import Data.L1Test
 import Data.MarkdownTest
+import Data.MiniLaTeXTest
 import Element exposing (..)
 import Element.Background as Background
 import Element.Font as Font
@@ -27,7 +27,7 @@ main =
 
 type alias Model =
     { sourceText : String
-    , docIdentifier : String
+    , language : Language
     , count : Int
     , windowHeight : Int
     , windowWidth : Int
@@ -38,8 +38,30 @@ type Msg
     = NoOp
     | InputText String
     | ClearText
-    | LoadDocumentText String String
+    | LoadDocumentText Language String
     | IncrementCounter
+
+
+type Language
+    = MiniLaTeX
+    | Markdown
+    | L1
+
+
+identifierToLanguage : String -> Language
+identifierToLanguage str =
+    case str of
+        "l1doc" ->
+            L1
+
+        "minilatexDoc" ->
+            MiniLaTeX
+
+        "markdownDoc" ->
+            Markdown
+
+        _ ->
+            Markdown
 
 
 type alias Flags =
@@ -53,7 +75,7 @@ initialText =
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( { sourceText = initialText
-      , docIdentifier = "markdown"
+      , language = Markdown
       , count = 0
       , windowHeight = flags.height
       , windowWidth = flags.width
@@ -95,8 +117,8 @@ update msg model =
             , Cmd.none
             )
 
-        LoadDocumentText docIdentifier text ->
-            ( { model | sourceText = text, docIdentifier = docIdentifier, count = model.count + 1 }, Cmd.none )
+        LoadDocumentText language text ->
+            ( { model | sourceText = text, language = language, count = model.count + 1 }, Cmd.none )
 
         IncrementCounter ->
             ( model, Cmd.none )
@@ -142,8 +164,9 @@ mainColumn model =
 editor model =
     column [ spacing 8, moveUp 9 ]
         [ row [ spacing 12 ]
-            [ exampleDocButton model.docIdentifier
-            , articleButton model.docIdentifier
+            [ l1DocButton model.language
+            , miniLaTeXDocButton model.language
+            , markdownDocButton model.language
             ]
         , inputText model
         ]
@@ -196,7 +219,19 @@ renderedText model =
         , alignTop
         , Background.color (Element.rgb255 255 240 240)
         ]
-        (API.renderMarkdown 0 { width = 500 } (String.lines model.sourceText))
+        (render model.language model.count model.sourceText)
+
+
+render language count source =
+    case language of
+        L1 ->
+            API.renderL1 count { width = 500 } (String.lines source)
+
+        Markdown ->
+            API.renderMarkdown count { width = 500 } (String.lines source)
+
+        MiniLaTeX ->
+            API.renderMiniLaTeX count { width = 500 } (String.lines source)
 
 
 
@@ -238,19 +273,27 @@ clearTextButton =
         }
 
 
-exampleDocButton : String -> Element Msg
-exampleDocButton docIdentifier =
-    Input.button (activeButtonStyle (docIdentifier == "examples"))
-        { onPress = Just (LoadDocumentText "examples" Data.Example.text)
-        , label = el [ centerX, centerY, Font.size 14 ] (text "Examples")
+l1DocButton : Language -> Element Msg
+l1DocButton language =
+    Input.button (activeButtonStyle (language == L1))
+        { onPress = Just (LoadDocumentText L1 Data.L1Test.text)
+        , label = el [ centerX, centerY, Font.size 14 ] (text "L1")
         }
 
 
-articleButton : String -> Element Msg
-articleButton docIdentifier =
-    Input.button (activeButtonStyle (docIdentifier == "article"))
-        { onPress = Just (LoadDocumentText "article" Data.Article2.text)
-        , label = el [ centerX, centerY, Font.size 14 ] (text "Article")
+markdownDocButton : Language -> Element Msg
+markdownDocButton language =
+    Input.button (activeButtonStyle (language == Markdown))
+        { onPress = Just (LoadDocumentText Markdown Data.MarkdownTest.text)
+        , label = el [ centerX, centerY, Font.size 14 ] (text "Markdown")
+        }
+
+
+miniLaTeXDocButton : Language -> Element Msg
+miniLaTeXDocButton language =
+    Input.button (activeButtonStyle (language == MiniLaTeX))
+        { onPress = Just (LoadDocumentText MiniLaTeX Data.MiniLaTeXTest.text)
+        , label = el [ centerX, centerY, Font.size 14 ] (text "MiniLaTeX")
         }
 
 

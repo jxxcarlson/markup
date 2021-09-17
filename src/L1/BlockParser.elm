@@ -1,10 +1,15 @@
-module L1.BlockParser exposing (run, runFromString)
+module L1.BlockParser exposing (parse, run)
 
 import Common.BlockParser as BP exposing (State, Step(..), loop)
 import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Line as Line exposing (LineType(..))
 import Common.Syntax as Syntax exposing (BasicBlock(..), Block(..), BlockType(..))
 import L1.Line as Line
+
+
+parse : Int -> List String -> List Block
+parse generation lines =
+    lines |> run generation |> .output
 
 
 runFromString : Int -> String -> State
