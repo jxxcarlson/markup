@@ -1,6 +1,8 @@
 scripts:
 
-  cloc:
+  cloc: cloc --by-file src
+
+  clocs:
     - cloc --by-file src/Common
     - cloc --by-file src/L1
     - cloc --by-file src/Markdown

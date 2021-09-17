@@ -13106,39 +13106,39 @@ var $author$project$Common$BlockParser$reduceStack = function (state) {
 		}
 	}
 };
-var $author$project$Common$Syntax$BBBlock = F2(
+var $author$project$Common$BasicSyntax$BBBlock = F2(
 	function (a, b) {
 		return {$: 'BBBlock', a: a, b: b};
 	});
-var $author$project$Common$Syntax$BBError = function (a) {
+var $author$project$Common$BasicSyntax$BBError = function (a) {
 	return {$: 'BBError', a: a};
 };
-var $author$project$Common$Syntax$BBParagraph = function (a) {
+var $author$project$Common$BasicSyntax$BBParagraph = function (a) {
 	return {$: 'BBParagraph', a: a};
 };
-var $author$project$Common$Syntax$BBVerbatimBlock = F2(
+var $author$project$Common$BasicSyntax$BBVerbatimBlock = F2(
 	function (a, b) {
 		return {$: 'BBVerbatimBlock', a: a, b: b};
 	});
-var $author$project$Common$Syntax$simplify = function (block) {
+var $author$project$Common$BasicSyntax$simplify = function (block) {
 	switch (block.$) {
 		case 'Paragraph':
 			var strings = block.a;
-			return $author$project$Common$Syntax$BBParagraph(strings);
+			return $author$project$Common$BasicSyntax$BBParagraph(strings);
 		case 'VerbatimBlock':
 			var name = block.a;
 			var strings = block.b;
-			return A2($author$project$Common$Syntax$BBVerbatimBlock, name, strings);
+			return A2($author$project$Common$BasicSyntax$BBVerbatimBlock, name, strings);
 		case 'Block':
 			var name = block.a;
 			var blocks = block.b;
 			return A2(
-				$author$project$Common$Syntax$BBBlock,
+				$author$project$Common$BasicSyntax$BBBlock,
 				name,
-				A2($elm$core$List$map, $author$project$Common$Syntax$simplify, blocks));
+				A2($elm$core$List$map, $author$project$Common$BasicSyntax$simplify, blocks));
 		default:
 			var desc = block.a;
-			return $author$project$Common$Syntax$BBError(desc);
+			return $author$project$Common$BasicSyntax$BBError(desc);
 	}
 };
 var $author$project$Common$BlockParser$nextState = F2(
@@ -13148,7 +13148,7 @@ var $author$project$Common$BlockParser$nextState = F2(
 			'STACK',
 			_Utils_Tuple3(
 				state.counter,
-				A2($elm$core$List$map, $author$project$Common$Syntax$simplify, state.stack),
+				A2($elm$core$List$map, $author$project$Common$BasicSyntax$simplify, state.stack),
 				$author$project$Common$BlockParser$blockLevelOfStackTop(state.stack)));
 		var _v1 = $elm$core$List$head(state.input);
 		if (_v1.$ === 'Nothing') {
@@ -13167,16 +13167,16 @@ var $author$project$Common$BlockParser$nextState = F2(
 				'STACK',
 				_Utils_Tuple3(
 					newState.counter,
-					A2($elm$core$List$map, $author$project$Common$Syntax$simplify, newState.stack),
+					A2($elm$core$List$map, $author$project$Common$BasicSyntax$simplify, newState.stack),
 					$author$project$Common$BlockParser$blockLevelOfStackTop(newState.stack)));
 			var _v3 = A2(
 				$author$project$Common$Debug$debug1,
 				'Reduce stack',
-				A2($elm$core$List$map, $author$project$Common$Syntax$simplify, newState.output));
+				A2($elm$core$List$map, $author$project$Common$BasicSyntax$simplify, newState.output));
 			var _v4 = A2(
 				$author$project$Common$Debug$debug1,
 				'OUTPUT',
-				A2($elm$core$List$map, $author$project$Common$Syntax$simplify, finalState.output));
+				A2($elm$core$List$map, $author$project$Common$BasicSyntax$simplify, finalState.output));
 			return $author$project$Common$BlockParser$Done(finalState);
 		} else {
 			var line = _v1.a;
