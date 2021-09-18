@@ -1,4 +1,11 @@
-module Common.API exposing (Language(..), compile)
+module Markup.API exposing (compile, Language(..), Settings)
+
+{-| The function Markup.API.compile will transform source text in any
+one of three markup languages (L1, Markdown, MiniLaTeX) to `Html msg`.
+
+@docs compile, Language, Settings
+
+-}
 
 import Common.Render exposing (Settings)
 import Common.Syntax as Syntax
@@ -9,6 +16,7 @@ import Markdown.BlockParser as Markdown
 import MiniLaTeX.BlockParser as MiniLaTeX
 
 
+{-| -}
 compile : Language -> Int -> Settings -> List String -> List (Element msg)
 compile language generation settings lines =
     case language of
@@ -22,10 +30,16 @@ compile language generation settings lines =
             compileMiniLaTeX generation settings lines
 
 
+{-| -}
 type Language
     = L1
     | Markdown
     | MiniLaTeX
+
+
+{-| -}
+type alias Settings =
+    { width : Int }
 
 
 compileMarkdown : Int -> Settings -> List String -> List (Element msg)

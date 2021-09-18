@@ -1,7 +1,6 @@
 module Main exposing (main)
 
 import Browser
-import Common.API as API exposing (Language(..))
 import Data.Article2
 import Data.L1Test
 import Data.MarkdownTest
@@ -12,6 +11,7 @@ import Element.Font as Font
 import Element.Input as Input
 import File.Download as Download
 import Html exposing (Html)
+import Markup.API as API exposing (Language(..))
 import Process
 import Task
 
