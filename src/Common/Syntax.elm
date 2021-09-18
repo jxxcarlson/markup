@@ -14,11 +14,53 @@ module Common.Syntax exposing
 import Utility
 
 
+
+-- TYPES
+
+
 type Block
     = Paragraph (List String) Meta
     | VerbatimBlock String (List String) Meta
     | Block String (List Block) Meta
     | Error String
+
+
+type Text
+    = Text (List String) Meta
+    | Marked String (List Text) Meta
+    | Verbatim String (List Text) Meta
+    | TError String
+
+
+type TextBlock
+    = TBParagraph (List Text) Meta
+    | TBVerbatimBlock String (List Text) Meta
+    | TBBlock String (List TextBlock) Meta
+    | TBError String
+
+
+type alias Meta =
+    { start : Int
+    , end : Int
+    , indent : Int
+    , id : String
+    }
+
+
+type BlockType
+    = P
+    | V
+    | B
+    | E
+
+
+dummyMeta : Int -> Int -> Meta
+dummyMeta start indent =
+    { start = start, end = start, indent = indent, id = "76" }
+
+
+
+-- FUNCTIONS
 
 
 mapList : (List String -> List Text) -> Block -> TextBlock
@@ -53,36 +95,6 @@ map f block =
             TBError str
 
 
-type Text
-    = Text (List String) Meta
-    | Marked String (List Text) Meta
-    | Verbatim String (List Text) Meta
-    | TError String
-
-
-textToString : Text -> String
-textToString text =
-    case text of
-        Text stringlist _ ->
-            Utility.prepare stringlist |> String.join "\n"
-
-        Marked _ textList meta ->
-            List.map textToString textList |> String.join "\n"
-
-        Verbatim _ textList meta ->
-            List.map textToString textList |> String.join "\n"
-
-        TError str ->
-            str
-
-
-type TextBlock
-    = TBParagraph (List Text) Meta
-    | TBVerbatimBlock String (List Text) Meta
-    | TBBlock String (List TextBlock) Meta
-    | TBError String
-
-
 textBlockToString : TextBlock -> List String
 textBlockToString textBlock =
     case textBlock of
@@ -99,21 +111,17 @@ textBlockToString textBlock =
             [ str ]
 
 
-type alias Meta =
-    { start : Int
-    , end : Int
-    , indent : Int
-    , id : String
-    }
+textToString : Text -> String
+textToString text =
+    case text of
+        Text stringlist _ ->
+            Utility.prepare stringlist |> String.join "\n"
 
+        Marked _ textList meta ->
+            List.map textToString textList |> String.join "\n"
 
-type BlockType
-    = P
-    | V
-    | B
-    | E
+        Verbatim _ textList meta ->
+            List.map textToString textList |> String.join "\n"
 
-
-dummyMeta : Int -> Int -> Meta
-dummyMeta start indent =
-    { start = start, end = start, indent = indent, id = "76" }
+        TError str ->
+            str

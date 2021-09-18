@@ -12853,7 +12853,6 @@ var $author$project$Main$fontGray = function (g) {
 };
 var $mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
 var $mdgriffith$elm_ui$Element$alignTop = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$Top);
-var $elm$core$String$lines = _String_lines;
 var $author$project$Common$Syntax$TBBlock = F3(
 	function (a, b, c) {
 		return {$: 'TBBlock', a: a, b: b, c: c};
@@ -14031,14 +14030,6 @@ var $author$project$L1$BlockParser$parse = F2(
 	function (generation, lines) {
 		return A2($author$project$L1$BlockParser$run, generation, lines).output;
 	});
-var $author$project$Common$API$parseL1 = F3(
-	function (generation, settings, lines) {
-		return A2(
-			$elm$core$List$map,
-			$author$project$Common$Syntax$mapList(
-				A2($author$project$Common$TextParser$parse, generation, settings)),
-			A2($author$project$L1$BlockParser$parse, generation, lines));
-	});
 var $mdgriffith$elm_ui$Internal$Model$Paragraph = {$: 'Paragraph'};
 var $mdgriffith$elm_ui$Element$paragraph = F2(
 	function (attrs, children) {
@@ -14370,13 +14361,17 @@ var $author$project$Common$Render$render = F3(
 			A2($author$project$Common$Render$renderBlock, generation, settings),
 			blocks);
 	});
-var $author$project$Common$API$renderL1 = F3(
+var $author$project$Common$API$compileL1 = F3(
 	function (generation, settings, lines) {
 		return A3(
 			$author$project$Common$Render$render,
 			generation,
 			settings,
-			A3($author$project$Common$API$parseL1, generation, settings, lines));
+			A2(
+				$elm$core$List$map,
+				$author$project$Common$Syntax$mapList(
+					A2($author$project$Common$TextParser$parse, generation, settings)),
+				A2($author$project$L1$BlockParser$parse, generation, lines)));
 	});
 var $author$project$Common$BlockParser$blockLabel = function (block) {
 	switch (block.$) {
@@ -14827,21 +14822,17 @@ var $author$project$Markdown$BlockParser$parse = F2(
 	function (generation, lines) {
 		return A2($author$project$Markdown$BlockParser$run, generation, lines).output;
 	});
-var $author$project$Common$API$parseMarkdown = F3(
-	function (generation, settings, lines) {
-		return A2(
-			$elm$core$List$map,
-			$author$project$Common$Syntax$mapList(
-				A2($author$project$Common$TextParser$parse, generation, settings)),
-			A2($author$project$Markdown$BlockParser$parse, generation, lines));
-	});
-var $author$project$Common$API$renderMarkdown = F3(
+var $author$project$Common$API$compileMarkdown = F3(
 	function (generation, settings, lines) {
 		return A3(
 			$author$project$Common$Render$render,
 			generation,
 			settings,
-			A3($author$project$Common$API$parseMarkdown, generation, settings, lines));
+			A2(
+				$elm$core$List$map,
+				$author$project$Common$Syntax$mapList(
+					A2($author$project$Common$TextParser$parse, generation, settings)),
+				A2($author$project$Markdown$BlockParser$parse, generation, lines)));
 	});
 var $author$project$MiniLaTeX$Line$beginBlockParser = A2(
 	$elm$parser$Parser$map,
@@ -15172,37 +15163,34 @@ var $author$project$MiniLaTeX$BlockParser$parse = F2(
 	function (generation, lines) {
 		return A2($author$project$MiniLaTeX$BlockParser$run, generation, lines).output;
 	});
-var $author$project$Common$API$parseMiniLaTeX = F3(
-	function (generation, settings, lines) {
-		return A2(
-			$elm$core$List$map,
-			$author$project$Common$Syntax$mapList(
-				A2($author$project$Common$TextParser$parse, generation, settings)),
-			A2($author$project$MiniLaTeX$BlockParser$parse, generation, lines));
-	});
-var $author$project$Common$API$renderMiniLaTeX = F3(
+var $author$project$Common$API$compileMiniLaTeX = F3(
 	function (generation, settings, lines) {
 		return A3(
 			$author$project$Common$Render$render,
 			generation,
 			settings,
-			A3($author$project$Common$API$parseMiniLaTeX, generation, settings, lines));
+			A2(
+				$elm$core$List$map,
+				$author$project$Common$Syntax$mapList(
+					A2($author$project$Common$TextParser$parse, generation, settings)),
+				A2($author$project$MiniLaTeX$BlockParser$parse, generation, lines)));
 	});
-var $author$project$Common$API$render = F4(
+var $author$project$Common$API$compile = F4(
 	function (language, generation, settings, lines) {
 		switch (language.$) {
 			case 'L1':
-				return A3($author$project$Common$API$renderL1, generation, settings, lines);
+				return A3($author$project$Common$API$compileL1, generation, settings, lines);
 			case 'Markdown':
-				return A3($author$project$Common$API$renderMarkdown, generation, settings, lines);
+				return A3($author$project$Common$API$compileMarkdown, generation, settings, lines);
 			default:
-				return A3($author$project$Common$API$renderMiniLaTeX, generation, settings, lines);
+				return A3($author$project$Common$API$compileMiniLaTeX, generation, settings, lines);
 		}
 	});
+var $elm$core$String$lines = _String_lines;
 var $author$project$Main$render = F3(
 	function (language, count, source) {
 		return A4(
-			$author$project$Common$API$render,
+			$author$project$Common$API$compile,
 			language,
 			count,
 			{width: 500},

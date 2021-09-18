@@ -217,7 +217,7 @@ renderedText model =
 
 
 render language count source =
-    API.render language count { width = 500 } (String.lines source)
+    API.compile language count { width = 500 } (String.lines source)
 
 
 
