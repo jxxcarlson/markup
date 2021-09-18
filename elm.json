@@ -1,6 +1,6 @@
 {
     "type": "package",
-    "name": "jxxcarlson/chunker",
+    "name": "jxxcarlson/markup",
     "summary": "A chunker for fault-tolerant parsing",
     "license": "MIT",
     "version": "1.0.0",
