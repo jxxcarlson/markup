@@ -1,4 +1,4 @@
-module Common.TextParser exposing (parse)
+module Common.Text.Parser exposing (parse)
 
 import Common.Render
 import Common.Syntax exposing (Block(..), Meta, Text(..), TextBlock(..), dummyMeta)

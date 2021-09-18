@@ -9,7 +9,7 @@ one of three markup languages (L1, Markdown, MiniLaTeX) to `Html msg`.
 
 import Common.Render exposing (Settings)
 import Common.Syntax as Syntax
-import Common.TextParser
+import Common.Text.Parser
 import Element exposing (Element)
 import L1.BlockParser as L1Block
 import Markdown.BlockParser as Markdown
@@ -46,7 +46,7 @@ compileMarkdown : Int -> Settings -> List String -> List (Element msg)
 compileMarkdown generation settings lines =
     lines
         |> Markdown.parse generation
-        |> List.map (Syntax.mapList (Common.TextParser.parse generation settings))
+        |> List.map (Syntax.mapList (Common.Text.Parser.parse generation settings))
         |> Common.Render.render generation settings
 
 
@@ -54,7 +54,7 @@ compileMiniLaTeX : Int -> Settings -> List String -> List (Element msg)
 compileMiniLaTeX generation settings lines =
     lines
         |> MiniLaTeX.parse generation
-        |> List.map (Syntax.mapList (Common.TextParser.parse generation settings))
+        |> List.map (Syntax.mapList (Common.Text.Parser.parse generation settings))
         |> Common.Render.render generation settings
 
 
@@ -62,5 +62,5 @@ compileL1 : Int -> Settings -> List String -> List (Element msg)
 compileL1 generation settings lines =
     lines
         |> L1Block.parse generation
-        |> List.map (Syntax.mapList (Common.TextParser.parse generation settings))
+        |> List.map (Syntax.mapList (Common.Text.Parser.parse generation settings))
         |> Common.Render.render generation settings
