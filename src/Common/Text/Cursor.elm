@@ -1,8 +1,11 @@
-module Common.Text.Cursor exposing (TextCursor, advance, init)
+module Common.Text.Cursor exposing (Step(..), TextCursor, advance, init, nextCursor)
 
 import Common.Library.ParserTools as ParserTools
 import Common.Syntax as Syntax exposing (Text(..))
 import Common.Text.Configuration as Configuration exposing (Configuration)
+import Common.Text.Error exposing (Context(..), Problem(..))
+import Common.Text.Rule as Rule exposing (Rule, Rules)
+import Dict exposing (Dict)
 import Parser.Advanced
 
 
@@ -71,7 +74,50 @@ advance config cursor =
             { cursor | stringData = stringData |> Debug.log "STRING DATA", scanPoint = cursor.scanPoint + stringData.finish - stringData.start }
 
 
+nextCursor : Rules -> TextCursor -> Step TextCursor TextCursor
+nextCursor rules cursor =
+    let
+        textToProcess : String
+        textToProcess =
+            String.dropLeft cursor.scanPoint cursor.source
+    in
+    case String.uncons textToProcess of
+        Nothing ->
+            Done cursor
 
+        Just ( leadingChar, restOfText ) ->
+            let
+                rule =
+                    Rule.get rules leadingChar
+
+                _ =
+                    rule.name |> Debug.log "RULE"
+            in
+            case ParserTools.getText rule.start rule.continue textToProcess of
+                Err _ ->
+                    Done cursor
+
+                Ok stringData ->
+                    let
+                        scanPoint =
+                            cursor.scanPoint + stringData.finish - stringData.start
+
+                        stopStr =
+                            String.slice scanPoint (scanPoint + 1) cursor.source
+
+                        action =
+                            Rule.getAction stopStr rule
+
+                        _ =
+                            ( scanPoint, stopStr, action ) |> Debug.log "(ScanPoint, StopStr, Action)"
+                    in
+                    Loop { cursor | stringData = stringData, scanPoint = scanPoint }
+
+
+
+--case stringData of
+--
+--Loop { cursor | scanPoint = cursor.scanPoint + stringData.finish - stringData.start }
 -- LOOP
 
 
