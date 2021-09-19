@@ -40,6 +40,16 @@ defaultRule =
     }
 
 
+getRule : { dict : Dict Char Rule, default : Rule } -> Char -> Rule
+getRule ruleData char =
+    case Dict.get char ruleData.dict of
+        Nothing ->
+            ruleData.default
+
+        Just rule ->
+            rule
+
+
 miniLaTeXRuleDict : Dict Char Rule
 miniLaTeXRuleDict =
     Dict.fromList miniLaTeXRules
