@@ -1,4 +1,4 @@
-module Common.Text.Rule exposing (Rule, Rules, get, getAction, miniLaTeXRules)
+module Common.Text.Rule exposing (Action(..), Rule, Rules, get, getAction, miniLaTeXRules)
 
 import Dict exposing (Dict)
 

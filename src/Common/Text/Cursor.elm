@@ -1,10 +1,10 @@
-module Common.Text.Cursor exposing (Step(..), TextCursor, advance, init, nextCursor)
+module Common.Text.Cursor exposing (Step(..), TextCursor, init, nextCursor)
 
 import Common.Library.ParserTools as ParserTools
 import Common.Syntax as Syntax exposing (Text(..))
 import Common.Text.Configuration as Configuration exposing (Configuration)
 import Common.Text.Error exposing (Context(..), Problem(..))
-import Common.Text.Rule as Rule exposing (Rule, Rules)
+import Common.Text.Rule as Rule exposing (Action(..), Rule, Rules)
 import Dict exposing (Dict)
 import Parser.Advanced
 
@@ -23,55 +23,29 @@ type alias TextCursor =
     , scannerType : ScannerType
     , source : String
     , stringData : ParserTools.StringData
-    , parsed : List Text
+    , committed : List Text
     , stack : List Text
+    , generation : Int
+    , count : Int
     }
 
 
-init : Int -> String -> TextCursor
-init scanPoint str =
+init : Int -> Int -> Int -> String -> TextCursor
+init generation count scanPoint str =
     { scanPoint = scanPoint
     , scannerType = NormalScan
     , source = str
     , stringData = { content = "", start = 0, finish = 0 }
-    , parsed = []
+    , committed = []
     , stack = []
+    , generation = generation
+    , count = count
     }
 
 
 type ScannerType
     = NormalScan
     | VerbatimScan Char
-
-
-{-|
-
-    Find the longest prefix of the source text beginning at the scan point
-    that does not contain any delimiters. Store that prefix and its start
-    and finish positions in cursor.stringData and advance the scanPointer
-    by the length of the prefix found.
-
--}
-advance : Configuration -> TextCursor -> TextCursor
-advance config cursor =
-    let
-        textToProcess =
-            String.dropLeft cursor.scanPoint cursor.source
-
-        predicate =
-            case cursor.scannerType of
-                NormalScan ->
-                    \c -> not (List.member c config.delimiters)
-
-                VerbatimScan verbatimChar ->
-                    \c -> c /= verbatimChar
-    in
-    case ParserTools.getText predicate predicate textToProcess of
-        Err _ ->
-            cursor
-
-        Ok stringData ->
-            { cursor | stringData = stringData |> Debug.log "STRING DATA", scanPoint = cursor.scanPoint + stringData.finish - stringData.start }
 
 
 nextCursor : Rules -> TextCursor -> Step TextCursor TextCursor
@@ -99,6 +73,9 @@ nextCursor rules cursor =
 
                 Ok stringData ->
                     let
+                        _ =
+                            Debug.log "stringData.content" stringData.content
+
                         scanPoint =
                             cursor.scanPoint + stringData.finish - stringData.start
 
@@ -108,10 +85,38 @@ nextCursor rules cursor =
                         action =
                             Rule.getAction stopStr rule
 
+                        meta =
+                            { start = cursor.scanPoint
+                            , end = cursor.scanPoint + stringData.finish - stringData.start
+                            , indent = 0
+                            , id = String.fromInt cursor.generation ++ "." ++ String.fromInt cursor.count
+                            }
+
+                        ( committed, stack ) =
+                            case action of
+                                CommitText ->
+                                    ( Text [ stringData.content ] meta :: cursor.committed, cursor.stack )
+
+                                CommitMarked ->
+                                    ( Marked (String.dropLeft 1 stringData.content) [] meta :: cursor.committed, cursor.stack )
+
+                                ShiftMarked ->
+                                    ( cursor.committed, Marked (String.dropLeft 1 stringData.content) [] meta :: cursor.stack )
+
+                                _ ->
+                                    ( cursor.committed, cursor.stack )
+
                         _ =
                             ( scanPoint, stopStr, action ) |> Debug.log "(ScanPoint, StopStr, Action)"
                     in
-                    Loop { cursor | stringData = stringData, scanPoint = scanPoint }
+                    Loop
+                        { cursor
+                            | stringData = stringData
+                            , committed = committed
+                            , stack = stack
+                            , scanPoint = scanPoint
+                            , count = cursor.count + 1
+                        }
 
 
 
