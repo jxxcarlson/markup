@@ -10,6 +10,7 @@ rs str =
     BlockParser.run 1 (String.lines str) |> .output |> List.map Syntax.simplify
 
 
+testParser : String -> List BasicBlock -> Test
 testParser input output =
     test input <|
         \_ ->
