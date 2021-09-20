@@ -3,20 +3,21 @@ module Common.Text.Rule exposing (Action(..), Rule, Rules, get, getAction, miniL
 import Dict exposing (Dict)
 
 
+type alias Rule =
+    { name : String
+    , start : Char -> Bool
+    , continue : Char -> Bool
+    , endCharLength : Int
+    , expect : List { stop : List String, action : Action }
+    }
+
+
 type Action
     = CommitText
     | CommitMarked
     | ShiftMarked
     | ShiftArg
     | ErrorAction
-
-
-type alias Rule =
-    { name : String
-    , start : Char -> Bool
-    , continue : Char -> Bool
-    , expect : List { stop : List String, action : Action }
-    }
 
 
 getAction : String -> Rule -> Action
@@ -61,6 +62,7 @@ defaultRule =
     { name = "alpha"
     , start = \c -> not (List.member c (' ' :: miniLaTexDelimiters))
     , continue = \c -> not (List.member c miniLaTexDelimiters)
+    , endCharLength = 0
     , expect = [ { stop = miniLaTexDelimitersStr, action = CommitText } ]
     }
 
@@ -78,6 +80,7 @@ miniLaTeXRuleList =
       , { name = "macro"
         , start = \c -> c == '\\'
         , continue = \c -> not (c == ' ' || c == '{')
+        , endCharLength = 0
         , expect =
             [ { stop = [ " ", "" ], action = CommitMarked }
             , { stop = [ "{" ], action = ShiftMarked }
@@ -88,6 +91,7 @@ miniLaTeXRuleList =
       , { name = "blank"
         , start = \c -> c == ' '
         , continue = \c -> not (List.member c miniLaTexDelimiters)
+        , endCharLength = 0
         , expect =
             [ { stop = miniLaTexDelimitersStr, action = CommitText }
             ]
@@ -97,6 +101,7 @@ miniLaTeXRuleList =
       , { name = "argBegin"
         , start = \c -> c == '{'
         , continue = \c -> c /= '}'
+        , endCharLength = 1 -- adjust for '}' at end of arg
         , expect =
             [ { stop = [ "}" ], action = ShiftArg }
             ]
