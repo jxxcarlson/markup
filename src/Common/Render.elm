@@ -21,11 +21,10 @@ type alias Settings =
 renderText : Int -> Settings -> Text -> Element msg
 renderText generation settings text =
     case text of
-        Text strings meta ->
-            Element.column [ Element.spacing 24 ] (List.map (\p -> Element.paragraph [ Element.spacing 6 ] [ Element.text p ]) [ strings ])
+        Text string meta ->
+            Element.el [] (Element.text string)
 
         Marked name textList meta ->
-            -- Element.paragraph [] (List.map (renderText generation settings) textList)
             Element.el [] (renderMarked name generation settings textList)
 
         Verbatim name textList meta ->
