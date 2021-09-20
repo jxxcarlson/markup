@@ -4,12 +4,17 @@ module Data.MarkdownTest exposing (text)
 text =
     """
 
+# Markdown test
+
+It was a  *very* bold proposal.
 
 This is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.
 
 This is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.
 
-THIS IS SOME MATH:
+
+## Math
+
 $$
    \\int_0^1 x^n dx = \\frac{1}{n+1}
 
@@ -20,6 +25,8 @@ This is some code:
    .
    b[i] = 2
 
+
+## Quotation
 
 This is a quote:
 

@@ -26,7 +26,8 @@ suite =
             [ BBBlock "foo" [ BBParagraph [ "ho ho ho!" ] ] ]
         , testParser
             "aaa\nbbb\n\n\\begin{foo}\n   ho ho ho!\n\\end{foo}n\nccc\nddd"
-            [ BBParagraph [ "aaa", "bbb", "" ]
+            [ BBParagraph [ "bbb", "aaa" ]
+            , BBParagraph []
             , BBBlock "foo" [ BBParagraph [ "ho ho ho!" ] ]
             , BBParagraph [ "ccc", "ddd" ]
             ]

@@ -1,7 +1,7 @@
-module Common.Render exposing (Settings, render, renderText)
+module Common.Render exposing (Settings, render)
 
-import Common.RenderText
 import Common.Syntax as Syntax exposing (Block(..), Text(..), TextBlock(..))
+import Common.Text
 import Dict exposing (Dict)
 import Element exposing (Element)
 import Element.Background as Background
@@ -16,34 +16,6 @@ import Utility
 
 type alias Settings =
     { width : Int }
-
-
-renderText : Int -> Settings -> Text -> Element msg
-renderText generation settings text =
-    case text of
-        Text string meta ->
-            Element.el [] (Element.text string)
-
-        Marked name textList meta ->
-            Element.el [] (renderMarked name generation settings textList)
-
-        Verbatim name textList meta ->
-            Element.paragraph [] (List.map (renderText generation settings) textList)
-
-        Arg _ _ ->
-            Element.none
-
-        TError error_ ->
-            error error_
-
-
-renderMarked name generation settings textList =
-    case Dict.get name markupDict of
-        Nothing ->
-            notImplemented name
-
-        Just f ->
-            f generation settings textList
 
 
 
@@ -61,7 +33,7 @@ renderBlock generation settings block =
         TBParagraph textList _ ->
             Element.paragraph
                 []
-                (List.map (renderText generation settings) textList)
+                (List.map (Common.Text.render generation settings) textList)
 
         TBVerbatimBlock name lines _ ->
             case Dict.get name verbatimBlockDict of
@@ -100,30 +72,6 @@ blockDict =
     Dict.fromList
         [ ( "quotation", \g s blocks -> quotationBlock g s blocks )
         ]
-
-
-markupDict : Dict String (Int -> Settings -> List Text -> Element msg)
-markupDict =
-    Dict.fromList
-        [ ( "strong", \g s textList -> strong g s textList )
-        , ( "italic", \g s textList -> italic g s textList )
-        , ( "red", \g s textList -> red g s textList )
-        ]
-
-
-strong : Int -> Settings -> List Text -> Element msg
-strong g s textList =
-    Element.paragraph [ Font.bold ] (List.map (renderText g s) textList)
-
-
-italic : Int -> Settings -> List Text -> Element msg
-italic g s textList =
-    Element.paragraph [ Font.italic, Element.paddingEach { left = 0, right = 2, top = 0, bottom = 0 } ] (List.map (renderText g s) textList)
-
-
-red : Int -> Settings -> List Text -> Element msg
-red g s textList =
-    Element.paragraph [ Font.color (Element.rgb255 200 0 0) ] (List.map (renderText g s) textList)
 
 
 codeBlock : Int -> Settings -> List String -> Element msg

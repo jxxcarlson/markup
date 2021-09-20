@@ -104,16 +104,36 @@ handleBlankLine indent state =
     if BP.level indent == BP.level state.indent then
         case List.head state.stack of
             Nothing ->
+                let
+                    _ =
+                        debug3 "handleBlankLine" 1
+                in
                 state
 
             Just block ->
-                if List.member (BP.typeOfBlock block) [ P, V ] then
+                let
+                    _ =
+                        debug3 "handleBlankLine" 2
+                in
+                if List.member (BP.typeOfBlock block) [ V ] then
+                    let
+                        _ =
+                            debug3 "handleBlankLine" 2.1
+                    in
                     { state | stack = BP.appendLineAtTop "" state.stack, indent = indent }
 
                 else
-                    state
+                    let
+                        _ =
+                            debug3 "handleBlankLine" ( 2.2, state.stack )
+                    in
+                    { state | stack = [], output = Syntax.Paragraph [] (Syntax.dummyMeta 0 0) :: List.reverse state.stack ++ state.output }
 
     else
+        let
+            _ =
+                debug3 "handleBlankLine" 3
+        in
         BP.reduceStack state
 
 

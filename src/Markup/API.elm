@@ -17,6 +17,7 @@ import Common.Text.Parser
 import Element exposing (Element)
 import L1.BlockParser as L1Block
 import Markdown.BlockParser as Markdown
+import Markdown.Rule
 import MiniLaTeX.BlockParser as MiniLaTeX
 import MiniLaTeX.Rule
 
@@ -51,7 +52,7 @@ compileMarkdown : Int -> Settings -> List String -> List (Element msg)
 compileMarkdown generation settings lines =
     lines
         |> Markdown.parse generation
-        |> List.map (Syntax.map2 (Common.Text.Parser.dummyParse generation settings))
+        |> List.map (Syntax.map2 markdownParseLoop)
         |> Common.Render.render generation settings
 
 
@@ -73,6 +74,11 @@ parseMiniLaTeX generation settings lines =
 miniLaTeXParseLoop : String -> List Text
 miniLaTeXParseLoop input =
     Cursor.parseLoop MiniLaTeX.Rule.miniLaTeXRules (Cursor.init 0 0 0 input) |> .committed |> List.reverse
+
+
+markdownParseLoop : String -> List Text
+markdownParseLoop input =
+    Cursor.parseLoop Markdown.Rule.markdownRules (Cursor.init 0 0 0 input) |> .committed |> List.reverse
 
 
 compileL1 : Int -> Settings -> List String -> List (Element msg)

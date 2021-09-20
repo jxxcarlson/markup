@@ -8,6 +8,7 @@ type alias Rule =
     , start : Char -> Bool
     , continue : Char -> Bool
     , endCharLength : Int
+    , dropLeadingChars : Int
     , expect : List { stop : List String, action : Action }
     }
 

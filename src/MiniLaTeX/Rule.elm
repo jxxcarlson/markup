@@ -20,6 +20,7 @@ defaultRule =
     , start = \c -> not (List.member c (' ' :: miniLaTexDelimiters))
     , continue = \c -> not (List.member c miniLaTexDelimiters)
     , endCharLength = 0
+    , dropLeadingChars = 1
     , expect = [ { stop = miniLaTexDelimitersStr, action = ShiftText } ]
     }
 
@@ -38,6 +39,7 @@ miniLaTeXRuleList =
         , start = \c -> c == '\\'
         , continue = \c -> not (c == ' ' || c == '{')
         , endCharLength = 0
+        , dropLeadingChars = 1
         , expect =
             [ { stop = [ " ", "" ], action = CommitMarked }
             , { stop = [ "{" ], action = ShiftMarked }
@@ -49,6 +51,7 @@ miniLaTeXRuleList =
         , start = \c -> c == ' '
         , continue = \c -> not (List.member c miniLaTexDelimiters)
         , endCharLength = 0
+        , dropLeadingChars = 1
         , expect =
             [ { stop = miniLaTexDelimitersStr, action = CommitText }
             ]
@@ -59,6 +62,7 @@ miniLaTeXRuleList =
         , start = \c -> c == '{'
         , continue = \c -> False
         , endCharLength = 0 -- adjust for '}' at end of arg
+        , dropLeadingChars = 1
         , expect =
             [ { stop = [ "}" ], action = ShiftArg }
             ]
@@ -69,6 +73,7 @@ miniLaTeXRuleList =
         , start = \c -> c == '}'
         , continue = \c -> False
         , endCharLength = 0 -- adjust for '}' at end of arg
+        , dropLeadingChars = 1
         , expect =
             [ { stop = [ "}" ], action = ReduceArg }
             ]

@@ -119,11 +119,11 @@ nextCursor rules cursor =
                                 CommitText ->
                                     let
                                         newStack =
-                                            contractStackRepeatedly cursor.stack
+                                            contractStackRepeatedly cursor.stack |> debug2 "newStack"
 
                                         -- TODO: we have to handle the case of length newStack > 1, which is an error state
                                     in
-                                    ( Text stringData.content meta :: (newStack ++ cursor.committed), [] )
+                                    ( contractStack <| Text stringData.content meta :: (newStack ++ cursor.committed), [] )
 
                                 CommitMarked ->
                                     ( Marked (String.dropLeft 1 stringData.content) [] meta :: cursor.committed, cursor.stack )
@@ -136,7 +136,7 @@ nextCursor rules cursor =
                                         ( cursor.committed, Text stringData.content meta :: cursor.stack )
 
                                 ShiftMarked ->
-                                    ( cursor.committed, Marked (String.dropLeft 1 stringData.content) [] meta :: cursor.stack )
+                                    ( cursor.committed, Marked (String.dropLeft rule.dropLeadingChars stringData.content) [] meta :: cursor.stack )
 
                                 ShiftArg ->
                                     ( cursor.committed, Arg [] meta :: cursor.stack )
@@ -185,24 +185,83 @@ contract text1 text2 =
         ( Marked name textList1 meta1, Arg textList2 meta2 ) ->
             Just <| Arg (Marked name textList1 meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
 
+        ( Text str meta1, Marked name textList2 meta2 ) ->
+            Just <| Marked name (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
+
         ( _, _ ) ->
+            Nothing
+
+
+contract3 : Text -> Text -> Text -> Maybe Text
+contract3 text1 text2 text3 =
+    let
+        _ =
+            debug3 "Here is contract" 3
+
+        _ =
+            debug3 "text1" text1
+
+        _ =
+            debug3 "text3" text3
+    in
+    case ( text1, text3 ) of
+        ( Marked a [] meta1, Marked b [] meta3 ) ->
+            let
+                _ =
+                    debug3 "(a,b)" ( a, b )
+            in
+            if a == b then
+                let
+                    _ =
+                        debug3 "Here is contract" 3.1
+                in
+                Just <| Marked a [ text2 ] { start = meta1.start, end = meta3.end, indent = 0, id = meta3.id }
+
+            else
+                let
+                    _ =
+                        debug3 "Here is contract" 3.2
+                in
+                Nothing
+
+        _ ->
+            let
+                _ =
+                    debug3 "Here is contract" 3.3
+            in
             Nothing
 
 
 contractStack : List Text -> List Text
 contractStack stack =
+    let
+        _ =
+            debug3 "contractStack, stack" stack
+    in
     case stack of
+        text1 :: text2 :: text3 :: rest ->
+            case contract3 text1 text2 text3 of
+                Nothing ->
+                    stack
+
+                Just text_ ->
+                    let
+                        _ =
+                            Debug.log "ACTION" "contract stack, scanPoint"
+                    in
+                    text_ :: rest
+
         text1 :: text2 :: rest ->
             case contract text1 text2 of
                 Nothing ->
                     stack
 
-                Just text3 ->
+                Just text_ ->
                     let
                         _ =
                             Debug.log "ACTION" "contract stack, scanPoint"
                     in
-                    text3 :: rest
+                    text_ :: rest
 
         _ ->
             stack
@@ -218,17 +277,29 @@ contractStack stack =
 contractStackRepeatedly : List Text -> List Text
 contractStackRepeatedly stack =
     (case stack of
+        text1 :: text2 :: text3 :: rest ->
+            case contract3 text1 text2 text3 of
+                Nothing ->
+                    stack
+
+                Just text_ ->
+                    let
+                        _ =
+                            Debug.log "ACTION" "contract stack, scanPoint"
+                    in
+                    text_ :: rest
+
         text1 :: text2 :: rest ->
             case contract text1 text2 of
                 Nothing ->
                     stack
 
-                Just text3 ->
+                Just text_ ->
                     let
                         _ =
                             Debug.log "ACTION" "contract stack, scanPoint"
                     in
-                    contractStackRepeatedly (text3 :: rest)
+                    contractStackRepeatedly (text_ :: rest)
 
         _ ->
             stack
