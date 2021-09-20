@@ -12,7 +12,7 @@ type BasicBlock
 
 type BasicTextBlock
     = TBBParagraph (List Text)
-    | TBBVerbatimBlock String (List Text)
+    | TBBVerbatimBlock String (List String)
     | TBBBlock String (List BasicTextBlock)
     | TBBError String
 

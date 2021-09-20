@@ -22,16 +22,29 @@ renderText : Int -> Settings -> Text -> Element msg
 renderText generation settings text =
     case text of
         Text strings meta ->
-            Element.column [ Element.spacing 24 ] (List.map (\p -> Element.paragraph [ Element.spacing 6 ] [ Element.text p ]) (Utility.prepare strings))
+            Element.column [ Element.spacing 24 ] (List.map (\p -> Element.paragraph [ Element.spacing 6 ] [ Element.text p ]) [ strings ])
 
         Marked name textList meta ->
-            Element.paragraph [] (List.map (renderText generation settings) textList)
+            -- Element.paragraph [] (List.map (renderText generation settings) textList)
+            Element.el [] (renderMarked name generation settings textList)
 
         Verbatim name textList meta ->
             Element.paragraph [] (List.map (renderText generation settings) textList)
 
+        Arg _ _ ->
+            Element.none
+
         TError error_ ->
             error error_
+
+
+renderMarked name generation settings textList =
+    case Dict.get name markupDict of
+        Nothing ->
+            notImplemented name
+
+        Just f ->
+            f generation settings textList
 
 
 
@@ -47,8 +60,11 @@ renderBlock : Int -> Settings -> TextBlock -> Element msg
 renderBlock generation settings block =
     case block of
         TBParagraph textList _ ->
-            Element.column
-                [ Element.spacing 24 ]
+            --Element.column
+            --    [ Element.spacing 24 ]
+            --    (List.map (renderText generation settings) textList)
+            Element.paragraph
+                []
                 (List.map (renderText generation settings) textList)
 
         TBVerbatimBlock name lines _ ->
@@ -75,11 +91,11 @@ error str =
     Element.paragraph [ Background.color (Element.rgb255 250 217 215) ] [ Element.text str ]
 
 
-verbatimBlockDict : Dict String (Int -> Settings -> List Syntax.Text -> Element msg)
+verbatimBlockDict : Dict String (Int -> Settings -> List String -> Element msg)
 verbatimBlockDict =
     Dict.fromList
         [ ( "code", \g s lines -> codeBlock g s lines )
-        , ( "math", \g s lines -> mathBlock g s lines )
+        , ( "math", \g s lines -> mathBlock g s (List.reverse lines) )
         ]
 
 
@@ -90,7 +106,19 @@ blockDict =
         ]
 
 
-codeBlock : Int -> Settings -> List Syntax.Text -> Element msg
+markupDict : Dict String (Int -> Settings -> List Text -> Element msg)
+markupDict =
+    Dict.fromList
+        [ ( "strong", \g s textList -> strong g s textList )
+        ]
+
+
+strong : Int -> Settings -> List Text -> Element msg
+strong g s textList =
+    Element.paragraph [ Font.bold ] (List.map (renderText g s) textList)
+
+
+codeBlock : Int -> Settings -> List String -> Element msg
 codeBlock generation settings textList =
     Element.column
         [ Font.family
@@ -100,12 +128,12 @@ codeBlock generation settings textList =
         , Font.color codeColor
         , Element.paddingEach { left = 18, right = 0, top = 0, bottom = 0 }
         ]
-        (List.map (renderText generation settings) textList)
+        (List.map (\t -> Element.el [] (Element.text t)) textList)
 
 
-mathBlock : Int -> Settings -> List Syntax.Text -> Element msg
+mathBlock : Int -> Settings -> List String -> Element msg
 mathBlock generation settings textList =
-    mathText generation DisplayMathMode (String.join "\n" (List.map Syntax.textToString textList))
+    mathText generation DisplayMathMode (String.join "\n" textList)
 
 
 quotationBlock : Int -> Settings -> List Syntax.TextBlock -> Element msg

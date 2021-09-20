@@ -3,7 +3,6 @@ module Common.Text.Cursor exposing (Step(..), TextCursor, init, nextCursor, pars
 import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Library.ParserTools as ParserTools
 import Common.Syntax as Syntax exposing (Text(..))
-import Common.Text.Configuration as Configuration exposing (Configuration)
 import Common.Text.Error exposing (Context(..), Problem(..))
 import Common.Text.Rule as Rule exposing (Action(..), Rule, Rules)
 import Dict exposing (Dict)

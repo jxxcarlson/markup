@@ -6,6 +6,7 @@ module Common.Syntax exposing
     , TextBlock(..)
     , dummyMeta
     , map
+    , map2
     , mapList
     , textBlockToString
     , textToString
@@ -35,9 +36,25 @@ type Text
 
 type TextBlock
     = TBParagraph (List Text) Meta
-    | TBVerbatimBlock String (List Text) Meta
+    | TBVerbatimBlock String (List String) Meta
     | TBBlock String (List TextBlock) Meta
     | TBError String
+
+
+map2 : (String -> List Text) -> Block -> TextBlock
+map2 f block =
+    case block of
+        Paragraph stringList meta ->
+            TBParagraph (List.map f stringList |> List.concat) meta
+
+        VerbatimBlock name stringList meta ->
+            TBVerbatimBlock name stringList meta
+
+        Block name blockList meta ->
+            TBBlock name (List.map (map2 f) blockList) meta
+
+        Error str ->
+            TBError str
 
 
 type alias Meta =
@@ -71,7 +88,7 @@ mapList f block =
             TBParagraph (f stringList) meta
 
         VerbatimBlock name stringList meta ->
-            TBVerbatimBlock name (f stringList) meta
+            TBVerbatimBlock name stringList meta
 
         Block name blockList meta ->
             TBBlock name (List.map (mapList f) blockList) meta
@@ -87,7 +104,7 @@ map f block =
             TBParagraph (List.map f stringList) meta
 
         VerbatimBlock name stringList meta ->
-            TBVerbatimBlock name (List.map f stringList) meta
+            TBVerbatimBlock name stringList meta
 
         Block name blockList meta ->
             TBBlock name (List.map (map f) blockList) meta
@@ -103,7 +120,7 @@ textBlockToString textBlock =
             List.map textToString textList
 
         TBVerbatimBlock _ textList _ ->
-            List.map textToString textList
+            textList
 
         TBBlock _ textBlockList _ ->
             List.map (textBlockToString >> String.join "\n") textBlockList

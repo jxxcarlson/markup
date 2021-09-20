@@ -3,7 +3,11 @@ module Data.MiniLaTeXTest exposing (text)
 
 text =
     """
-his is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.
+\\strong{Bold stuff!}
+
+This is a very \\strong{bold} move.
+
+This is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.
 
 This is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.
 
