@@ -145,8 +145,8 @@ noFocus =
 mainColumn : Model -> Element Msg
 mainColumn model =
     column (mainColumnStyle model)
-        [ column [ spacing 48, width (px appWidth_), height (px (appHeight_ model)) ]
-            [ title "L1 Demo App"
+        [ column [ spacing 8, width (px appWidth_), height (px (appHeight_ model)) ]
+            [ title "L3 Demo App"
             , column [ spacing 12 ]
                 [ row [ spacing 12 ] [ editor model, rhs model ]
                 ]
@@ -203,7 +203,7 @@ wordCountElement str =
 renderedText : Model -> Element Msg
 renderedText model =
     column
-        [ spacing 18
+        [ spacing 8
         , paddingXY 24 36
         , width (px panelWidth_)
         , height (px (panelHeight_ model))

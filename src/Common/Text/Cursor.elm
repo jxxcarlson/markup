@@ -51,7 +51,14 @@ type ScannerType
 
 parseLoop : Rules -> TextCursor -> TextCursor
 parseLoop rules initialCursor =
-    loop initialCursor (nextCursor rules)
+    if initialCursor.source == "" then
+        { initialCursor
+            | stack = []
+            , committed = [ Text "" { start = initialCursor.scanPoint, end = initialCursor.scanPoint, indent = 0, id = String.fromInt initialCursor.generation } ]
+        }
+
+    else
+        loop initialCursor (nextCursor rules)
 
 
 nextCursor : Rules -> TextCursor -> Step TextCursor TextCursor

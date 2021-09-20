@@ -28,7 +28,7 @@ nextStateAux : String -> State -> State
 nextStateAux line state =
     let
         lineType =
-            Line.classify line
+            Line.classify line |> debug3 "lineType"
 
         indent =
             lineType.indent
@@ -104,21 +104,63 @@ nextStateAux line state =
 -- HANDLERS
 
 
-handleBlankLine indent state =
+handleBlankLine1 indent state =
     -- TODO: finish up
     if BP.level indent == BP.level state.indent then
         case List.head state.stack of
             Nothing ->
+                let
+                    _ =
+                        debug3 "handleBlankLine" Nothing
+                in
                 state
 
             Just block ->
-                if List.member (BP.typeOfBlock block) [ P, V ] then
+                if List.member (BP.typeOfBlock block) [ V ] then
                     { state | stack = BP.appendLineAtTop "" state.stack, indent = indent }
 
                 else
                     state
 
     else
+        BP.reduceStack state
+
+
+handleBlankLine indent state =
+    -- TODO: finish up
+    if BP.level indent == BP.level state.indent then
+        case List.head state.stack of
+            Nothing ->
+                let
+                    _ =
+                        debug3 "handleBlankLine" 1
+                in
+                state
+
+            Just block ->
+                let
+                    _ =
+                        debug3 "handleBlankLine" 2
+                in
+                if List.member (BP.typeOfBlock block) [ V ] then
+                    let
+                        _ =
+                            debug3 "handleBlankLine" 2.1
+                    in
+                    { state | stack = BP.appendLineAtTop "" state.stack, indent = indent }
+
+                else
+                    let
+                        _ =
+                            debug3 "handleBlankLine" ( 2.2, state.stack )
+                    in
+                    { state | stack = [], output = Syntax.Paragraph [] (Syntax.dummyMeta 0 0) :: List.reverse state.stack ++ state.output }
+
+    else
+        let
+            _ =
+                debug3 "handleBlankLine" 3
+        in
         BP.reduceStack state
 
 

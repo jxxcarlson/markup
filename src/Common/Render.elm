@@ -59,9 +59,6 @@ renderBlock : Int -> Settings -> TextBlock -> Element msg
 renderBlock generation settings block =
     case block of
         TBParagraph textList _ ->
-            --Element.column
-            --    [ Element.spacing 24 ]
-            --    (List.map (renderText generation settings) textList)
             Element.paragraph
                 []
                 (List.map (renderText generation settings) textList)
