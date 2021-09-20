@@ -28,6 +28,7 @@ type Block
 type Text
     = Text (List String) Meta
     | Marked String (List Text) Meta
+    | Arg (List Text) Meta
     | Verbatim String (List Text) Meta
     | TError String
 
@@ -56,7 +57,7 @@ type BlockType
 
 dummyMeta : Int -> Int -> Meta
 dummyMeta start indent =
-    { start = start, end = start, indent = indent, id = "76" }
+    { start = start, end = start, indent = indent, id = "1.2" }
 
 
 
@@ -117,10 +118,13 @@ textToString text =
         Text stringlist _ ->
             Utility.prepare stringlist |> String.join "\n"
 
-        Marked _ textList meta ->
+        Marked _ textList _ ->
             List.map textToString textList |> String.join "\n"
 
-        Verbatim _ textList meta ->
+        Arg textList _ ->
+            List.map textToString textList |> String.join "\n"
+
+        Verbatim _ textList _ ->
             List.map textToString textList |> String.join "\n"
 
         TError str ->
