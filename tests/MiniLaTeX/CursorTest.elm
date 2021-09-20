@@ -1,11 +1,11 @@
-module Common.CursorTest exposing (..)
+module MiniLaTeX.CursorTest exposing (..)
 
 import Common.Library.ParserTools as ParserTools
 import Common.Syntax as Syntax exposing (Meta, Text(..))
 import Common.Text.Configuration as Configuration
 import Common.Text.Cursor as Cursor
-import Common.Text.Rule as Rule
 import Expect exposing (Expectation)
+import MiniLaTeX.Rule as Rule
 import Set
 import Test exposing (..)
 
@@ -73,10 +73,9 @@ suiteParseLoop =
                 ]
                 { end = 13, id = "0.0", indent = 0, start = 0 }
             ]
-        , Test.only <|
-            testParseLoopCommitted "(4)"
-                "\\foo{\\bar{baz}}"
-                [ Marked "foo" [ Marked "bar" [ Text "baz" { end = 13, id = "0.4", indent = 0, start = 10 } ] { end = 13, id = "0.2", indent = 0, start = 5 } ] { end = 13, id = "0.0", indent = 0, start = 0 } ]
+        , testParseLoopCommitted "(4)"
+            "\\foo{\\bar{baz}}"
+            [ Marked "foo" [ Marked "bar" [ Text "baz" { end = 13, id = "0.4", indent = 0, start = 10 } ] { end = 13, id = "0.2", indent = 0, start = 5 } ] { end = 13, id = "0.0", indent = 0, start = 0 } ]
         ]
 
 
