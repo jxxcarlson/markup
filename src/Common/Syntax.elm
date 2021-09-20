@@ -26,7 +26,7 @@ type Block
 
 
 type Text
-    = Text (List String) Meta
+    = Text String Meta
     | Marked String (List Text) Meta
     | Arg (List Text) Meta
     | Verbatim String (List Text) Meta
@@ -115,8 +115,8 @@ textBlockToString textBlock =
 textToString : Text -> String
 textToString text =
     case text of
-        Text stringlist _ ->
-            Utility.prepare stringlist |> String.join "\n"
+        Text string _ ->
+            string
 
         Marked _ textList _ ->
             List.map textToString textList |> String.join "\n"

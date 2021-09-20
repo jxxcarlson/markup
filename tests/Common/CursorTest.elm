@@ -58,26 +58,25 @@ suiteParseLoop : Test
 suiteParseLoop =
     describe "the parseLoop function for MiniLaTeX"
         [ testParseLoopCommitted "(1)"
-            "simple text \\foo"
-            [ Text [ "simple text " ] { end = 12, id = "0.0", indent = 0, start = 0 }
-            , Marked "foo" [] { end = 16, id = "0.1", indent = 0, start = 12 }
+            "abc \\foo"
+            [ Text "abc " { end = 4, id = "0.0", indent = 0, start = 0 }
+            , Marked "foo" [] { end = 8, id = "0.1", indent = 0, start = 4 }
             ]
-        , testParseLoopStack "(2)"
+        , testParseLoopCommitted "(2)"
             "\\foo{bar}"
-            [ Marked "foo" [ Text [ "bar" ] { end = 8, id = "0.1", indent = 0, start = 4 } ] { end = 8, id = "0.0", indent = 0, start = 0 }
+            [ Marked "foo" [ Text "bar" { end = 8, id = "0.2", indent = 0, start = 5 } ] { end = 8, id = "0.0", indent = 0, start = 0 } ]
+        , testParseLoopCommitted "(3)"
+            "\\foo{bar}{baz}"
+            [ Marked "foo"
+                [ Text "baz" { end = 13, id = "0.5", indent = 0, start = 10 }
+                , Text "bar" { end = 8, id = "0.2", indent = 0, start = 5 }
+                ]
+                { end = 13, id = "0.0", indent = 0, start = 0 }
             ]
         , Test.only <|
-            testParseLoopStack "(3)"
-                "\\foo{bar}{baz}"
-                [ Marked "foo"
-                    [ Text [ "baz" ] { end = 14, id = "0.2", indent = 0, start = 9 }
-                    , Text [ "bar" ] { end = 9, id = "0.1", indent = 0, start = 4 }
-                    ]
-                    { end = 14, id = "0.0", indent = 0, start = 0 }
-                ]
-        , testParseLoopStack "(4)"
-            "\\foo{\\bar{baz}}"
-            []
+            testParseLoopCommitted "(4)"
+                "\\foo{\\bar{baz}}"
+                [ Marked "foo" [ Marked "bar" [ Text "baz" { end = 13, id = "0.4", indent = 0, start = 10 } ] { end = 13, id = "0.2", indent = 0, start = 5 } ] { end = 13, id = "0.0", indent = 0, start = 0 } ]
         ]
 
 
@@ -91,7 +90,7 @@ suiteMiniLaTeXNextCursor =
         , testNextCursorCommittedMiniLaTeX "(5)"
             0
             "simple text \\foo"
-            [ Text [ "simple text " ] { start = 0, end = 12, indent = 0, id = "0.0" } ]
+            [ Text "simple text " { start = 0, end = 12, indent = 0, id = "0.0" } ]
         , testNextCursorCommittedMiniLaTeX "(6)"
             12
             "simple text \\foo"

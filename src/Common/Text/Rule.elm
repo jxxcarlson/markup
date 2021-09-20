@@ -15,8 +15,10 @@ type alias Rule =
 type Action
     = CommitText
     | CommitMarked
+    | ShiftText
     | ShiftMarked
     | ShiftArg
+    | ReduceArg
     | ErrorAction
 
 
@@ -63,7 +65,7 @@ defaultRule =
     , start = \c -> not (List.member c (' ' :: miniLaTexDelimiters))
     , continue = \c -> not (List.member c miniLaTexDelimiters)
     , endCharLength = 0
-    , expect = [ { stop = miniLaTexDelimitersStr, action = CommitText } ]
+    , expect = [ { stop = miniLaTexDelimitersStr, action = ShiftText } ]
     }
 
 
@@ -100,10 +102,20 @@ miniLaTeXRuleList =
     , ( '{'
       , { name = "argBegin"
         , start = \c -> c == '{'
-        , continue = \c -> c /= '}'
-        , endCharLength = 1 -- adjust for '}' at end of arg
+        , continue = \c -> False
+        , endCharLength = 0 -- adjust for '}' at end of arg
         , expect =
             [ { stop = [ "}" ], action = ShiftArg }
+            ]
+        }
+      )
+    , ( '}'
+      , { name = "argEnd"
+        , start = \c -> c == '}'
+        , continue = \c -> False
+        , endCharLength = 0 -- adjust for '}' at end of arg
+        , expect =
+            [ { stop = [ "}" ], action = ReduceArg }
             ]
         }
       )
