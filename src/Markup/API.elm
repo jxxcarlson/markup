@@ -72,7 +72,7 @@ parseMiniLaTeX generation settings lines =
 
 miniLaTeXParseLoop : String -> List Text
 miniLaTeXParseLoop input =
-    Cursor.parseLoop MiniLaTeX.Rule.miniLaTeXRules (Cursor.init 0 0 0 input) |> .committed
+    Cursor.parseLoop MiniLaTeX.Rule.miniLaTeXRules (Cursor.init 0 0 0 input) |> .committed |> List.reverse
 
 
 compileL1 : Int -> Settings -> List String -> List (Element msg)

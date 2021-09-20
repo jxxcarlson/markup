@@ -110,7 +110,13 @@ nextCursor rules cursor =
                         ( committed, stack ) =
                             case action of
                                 CommitText ->
-                                    ( Text stringData.content meta :: cursor.committed, cursor.stack )
+                                    let
+                                        newStack =
+                                            contractStackRepeatedly cursor.stack
+
+                                        -- TODO: we have to handle the case of length newStack > 1, which is an error state
+                                    in
+                                    ( Text stringData.content meta :: (newStack ++ cursor.committed), [] )
 
                                 CommitMarked ->
                                     ( Marked (String.dropLeft 1 stringData.content) [] meta :: cursor.committed, cursor.stack )
@@ -195,9 +201,16 @@ contractStack stack =
             stack
 
 
+
+--
+--contractStackRepeatedly : List Text -> List Text
+--contractStackRepeatedly stack =
+--    stack |> contractStackRepeatedly
+
+
 contractStackRepeatedly : List Text -> List Text
 contractStackRepeatedly stack =
-    case stack of
+    (case stack of
         text1 :: text2 :: rest ->
             case contract text1 text2 of
                 Nothing ->
@@ -212,6 +225,8 @@ contractStackRepeatedly stack =
 
         _ ->
             stack
+    )
+        |> List.reverse
 
 
 

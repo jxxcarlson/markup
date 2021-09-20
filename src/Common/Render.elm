@@ -95,7 +95,7 @@ verbatimBlockDict : Dict String (Int -> Settings -> List String -> Element msg)
 verbatimBlockDict =
     Dict.fromList
         [ ( "code", \g s lines -> codeBlock g s lines )
-        , ( "math", \g s lines -> mathBlock g s (List.reverse lines) )
+        , ( "math", \g s lines -> mathBlock g s lines )
         ]
 
 

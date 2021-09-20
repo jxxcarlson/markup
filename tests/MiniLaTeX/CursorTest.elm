@@ -85,6 +85,12 @@ suiteParseLoop =
         , testParseLoopCommitted "(4)"
             "\\foo{\\bar{baz}}"
             [ Marked "foo" [ Marked "bar" [ Text "baz" { end = 13, id = "0.4", indent = 0, start = 10 } ] { end = 13, id = "0.2", indent = 0, start = 5 } ] { end = 13, id = "0.0", indent = 0, start = 0 } ]
+        , testParseLoopCommitted "(6)"
+            "very \\strong{bold} move"
+            [ Text "very " { end = 5, id = "0.0", indent = 0, start = 0 }
+            , Marked "strong" [ Text "bold" { end = 17, id = "0.3", indent = 0, start = 13 } ] { end = 17, id = "0.1", indent = 0, start = 5 }
+            , Text " move" { end = 23, id = "0.5", indent = 0, start = 18 }
+            ]
         ]
 
 
@@ -108,45 +114,3 @@ suiteMiniLaTeXNextCursor =
             "simple text \\foo{bar} baz"
             [ Marked "foo" [] { start = 12, end = 16, indent = 0, id = "0.0" } ]
         ]
-
-
-
---
---suiteConfiguration : Test
---suiteConfiguration =
---    Test.skip <|
---        describe "Configuration"
---            [ test "MiniLaTeX Configuration, beginSymbols" <|
---                \_ ->
---                    Configuration.configure Configuration.miniLaTeXExpectations
---                        |> .beginSymbols
---                        |> Expect.equal [ "\\{code}", "\\{", "{", "$", "`" ]
---            , test "MiniLaTeX Configuration, endSymbols" <|
---                \_ ->
---                    Configuration.configure Configuration.miniLaTeXExpectations
---                        |> .endSymbols
---                        |> Expect.equal [ "}", "$", "`" ]
---            , test "MiniLaTeX Configuration, beginChars" <|
---                \_ ->
---                    Configuration.configure Configuration.miniLaTeXExpectations
---                        |> .beginChars
---                        |> Expect.equal [ '\\', '{', '$', '`' ]
---            , test "MiniLaTeX Configuration, endChars" <|
---                \_ ->
---                    Configuration.configure Configuration.miniLaTeXExpectations
---                        |> .endChars
---                        |> Set.fromList
---                        |> Expect.equal ([ '}', '$', '`' ] |> Set.fromList)
---            , test "MiniLaTeX Configuration, delimiters" <|
---                \_ ->
---                    Configuration.configure Configuration.miniLaTeXExpectations
---                        |> .delimiters
---                        |> Set.fromList
---                        |> Expect.equal ([ '\\', '{', '}', '$', '`' ] |> Set.fromList)
---            , test "MiniLaTeX Configuration, verbatimChars" <|
---                \_ ->
---                    Configuration.configure Configuration.miniLaTeXExpectations
---                        |> .verbatimChars
---                        |> Set.fromList
---                        |> Expect.equal ([ '$', '`' ] |> Set.fromList)
---            ]
