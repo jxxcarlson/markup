@@ -25,6 +25,20 @@ testNextCursorStackMiniLaTeX label scanPoint input output =
     test label <| \_ -> Cursor.nextCursor Rule.miniLaTeXRules (Cursor.init 0 0 scanPoint input) |> mapStepCursor .stack |> Expect.equal output
 
 
+testParseLoopCommitted : String -> String -> List Text -> Test
+testParseLoopCommitted label input output =
+    test label <| \_ -> Cursor.parseLoop Rule.miniLaTeXRules (Cursor.init 0 0 0 input) |> .committed |> List.reverse |> Expect.equal output
+
+
+testParseLoopStack : String -> String -> List Text -> Test
+testParseLoopStack label input output =
+    test label <| \_ -> Cursor.parseLoop Rule.miniLaTeXRules (Cursor.init 0 0 0 input) |> .stack |> Expect.equal output
+
+
+
+-- |> .parsed |> Expect.equal output
+
+
 stringDataContent : Cursor.Step Cursor.TextCursor Cursor.TextCursor -> String
 stringDataContent stepTC =
     mapStepCursor (.stringData >> .content) stepTC
@@ -38,6 +52,33 @@ mapStepCursor f stepTC =
 
         Cursor.Loop tc ->
             f tc
+
+
+suiteParseLoop : Test
+suiteParseLoop =
+    describe "the parseLoop function for MiniLaTeX"
+        [ testParseLoopCommitted "(1)"
+            "simple text \\foo"
+            [ Text [ "simple text " ] { end = 12, id = "0.0", indent = 0, start = 0 }
+            , Marked "foo" [] { end = 16, id = "0.1", indent = 0, start = 12 }
+            ]
+        , testParseLoopStack "(2)"
+            "\\foo{bar}"
+            [ Marked "foo" [ Text [ "bar" ] { end = 8, id = "0.1", indent = 0, start = 4 } ] { end = 8, id = "0.0", indent = 0, start = 0 }
+            ]
+        , Test.only <|
+            testParseLoopStack "(3)"
+                "\\foo{bar}{baz}"
+                [ Marked "foo"
+                    [ Text [ "baz" ] { end = 14, id = "0.2", indent = 0, start = 9 }
+                    , Text [ "bar" ] { end = 9, id = "0.1", indent = 0, start = 4 }
+                    ]
+                    { end = 14, id = "0.0", indent = 0, start = 0 }
+                ]
+        , testParseLoopStack "(4)"
+            "\\foo{\\bar{baz}}"
+            []
+        ]
 
 
 suiteMiniLaTeXNextCursor : Test
@@ -55,11 +96,10 @@ suiteMiniLaTeXNextCursor =
             12
             "simple text \\foo"
             [ Marked "foo" [] { start = 12, end = 16, indent = 0, id = "0.0" } ]
-        , Test.only <|
-            testNextCursorStackMiniLaTeX "(7)"
-                12
-                "simple text \\foo{bar} baz"
-                [ Marked "foo" [] { start = 12, end = 16, indent = 0, id = "0.0" } ]
+        , testNextCursorStackMiniLaTeX "(7)"
+            12
+            "simple text \\foo{bar} baz"
+            [ Marked "foo" [] { start = 12, end = 16, indent = 0, id = "0.0" } ]
         ]
 
 
