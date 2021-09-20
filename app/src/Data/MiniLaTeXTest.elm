@@ -7,6 +7,8 @@ text =
 
 This is a very \\strong{bold} move.
 
+Yes, a \\italic{\\red{very}} bold move indeed!
+
 This is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.
 
 This is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.

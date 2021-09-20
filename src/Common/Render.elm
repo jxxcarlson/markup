@@ -106,12 +106,24 @@ markupDict : Dict String (Int -> Settings -> List Text -> Element msg)
 markupDict =
     Dict.fromList
         [ ( "strong", \g s textList -> strong g s textList )
+        , ( "italic", \g s textList -> italic g s textList )
+        , ( "red", \g s textList -> red g s textList )
         ]
 
 
 strong : Int -> Settings -> List Text -> Element msg
 strong g s textList =
     Element.paragraph [ Font.bold ] (List.map (renderText g s) textList)
+
+
+italic : Int -> Settings -> List Text -> Element msg
+italic g s textList =
+    Element.paragraph [ Font.italic, Element.paddingEach { left = 0, right = 2, top = 0, bottom = 0 } ] (List.map (renderText g s) textList)
+
+
+red : Int -> Settings -> List Text -> Element msg
+red g s textList =
+    Element.paragraph [ Font.color (Element.rgb255 200 0 0) ] (List.map (renderText g s) textList)
 
 
 codeBlock : Int -> Settings -> List String -> Element msg
@@ -122,7 +134,7 @@ codeBlock generation settings textList =
             , Font.monospace
             ]
         , Font.color codeColor
-        , Element.paddingEach { left = 18, right = 0, top = 0, bottom = 0 }
+        , Element.paddingEach { left = 18, right = 0, top = 0, bottom = 8 }
         ]
         (List.map (\t -> Element.el [] (Element.text t)) textList)
 
@@ -135,7 +147,7 @@ mathBlock generation settings textList =
 quotationBlock : Int -> Settings -> List Syntax.TextBlock -> Element msg
 quotationBlock generation settings blocks =
     Element.column
-        [ Element.paddingEach { left = 18, right = 0, top = 0, bottom = 0 }
+        [ Element.paddingEach { left = 18, right = 0, top = 0, bottom = 8 }
         ]
         (List.map (renderBlock generation settings) blocks)
 
