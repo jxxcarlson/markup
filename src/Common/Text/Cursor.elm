@@ -1,4 +1,4 @@
-module Common.Text.Cursor exposing (Step(..), TextCursor, init, nextCursor)
+module Common.Text.Cursor exposing (Step(..), TextCursor, init, nextCursor, parseLoop)
 
 import Common.Library.ParserTools as ParserTools
 import Common.Syntax as Syntax exposing (Text(..))
@@ -48,6 +48,11 @@ type ScannerType
     | VerbatimScan Char
 
 
+parseLoop : Rules -> TextCursor -> TextCursor
+parseLoop rules initialCursor =
+    loop initialCursor (nextCursor rules)
+
+
 nextCursor : Rules -> TextCursor -> Step TextCursor TextCursor
 nextCursor rules cursor =
     let
@@ -77,7 +82,7 @@ nextCursor rules cursor =
                             Debug.log "stringData.content" stringData.content
 
                         scanPoint =
-                            cursor.scanPoint + stringData.finish - stringData.start
+                            cursor.scanPoint + stringData.finish - stringData.start + rule.endCharLength
 
                         stopStr =
                             String.slice scanPoint (scanPoint + 1) cursor.source
@@ -87,7 +92,7 @@ nextCursor rules cursor =
 
                         meta =
                             { start = cursor.scanPoint
-                            , end = cursor.scanPoint + stringData.finish - stringData.start
+                            , end = cursor.scanPoint + stringData.finish - stringData.start + rule.endCharLength
                             , indent = 0
                             , id = String.fromInt cursor.generation ++ "." ++ String.fromInt cursor.count
                             }
@@ -103,6 +108,9 @@ nextCursor rules cursor =
                                 ShiftMarked ->
                                     ( cursor.committed, Marked (String.dropLeft 1 stringData.content) [] meta :: cursor.stack )
 
+                                ShiftArg ->
+                                    ( cursor.committed, Arg [ Text [ String.dropLeft 1 stringData.content ] meta ] meta :: cursor.stack )
+
                                 _ ->
                                     ( cursor.committed, cursor.stack )
 
@@ -113,10 +121,39 @@ nextCursor rules cursor =
                         { cursor
                             | stringData = stringData
                             , committed = committed
-                            , stack = stack
-                            , scanPoint = scanPoint
+                            , stack = contractStack stack
+                            , scanPoint = scanPoint |> Debug.log "scanPoint"
                             , count = cursor.count + 1
                         }
+
+
+contract : Text -> Text -> Maybe Text
+contract text1 text2 =
+    case ( text1, text2 ) of
+        ( Arg textList1 meta1, Marked name textList2 meta2 ) ->
+            Just <| Marked name (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
+
+        ( _, _ ) ->
+            Nothing
+
+
+contractStack : List Text -> List Text
+contractStack stack =
+    case stack of
+        text1 :: text2 :: rest ->
+            case contract text1 text2 of
+                Nothing ->
+                    stack
+
+                Just text3 ->
+                    let
+                        _ =
+                            Debug.log "ACTION" "contract stack, scanPoint"
+                    in
+                    text3 :: rest
+
+        _ ->
+            stack
 
 
 
