@@ -1,5 +1,6 @@
 module Common.Render exposing (Settings, render)
 
+import Common.Math
 import Common.Syntax as Syntax exposing (Block(..), Text(..), TextBlock(..))
 import Common.Text
 import Dict exposing (Dict)
@@ -9,7 +10,6 @@ import Element.Font as Font
 import Html exposing (Html)
 import Html.Attributes as HA
 import Html.Keyed
-import Json.Decode
 import Json.Encode
 import Utility
 
@@ -89,7 +89,7 @@ codeBlock generation settings textList =
 
 mathBlock : Int -> Settings -> List String -> Element msg
 mathBlock generation settings textList =
-    mathText generation DisplayMathMode (String.join "\n" textList)
+    Common.Math.mathText generation Common.Math.DisplayMathMode (String.join "\n" textList)
 
 
 quotationBlock : Int -> Settings -> List Syntax.TextBlock -> Element msg
@@ -107,40 +107,3 @@ codeColor =
 
 notImplemented str =
     Element.el [ Font.color (Element.rgb255 40 40 255) ] (Element.text <| "not implemented: " ++ str)
-
-
-type DisplayMode
-    = InlineMathMode
-    | DisplayMathMode
-
-
-mathText : Int -> DisplayMode -> String -> Element msg
-mathText generation displayMode content =
-    Html.Keyed.node "span"
-        [ HA.style "margin-left" "6px" ]
-        [ ( String.fromInt generation, mathText_ displayMode "ID" content )
-        ]
-        |> Element.html
-
-
-mathText_ : DisplayMode -> String -> String -> Html msg
-mathText_ displayMode selectedId content =
-    Html.node "math-text"
-        -- active meta selectedId  ++
-        [ HA.property "display" (Json.Encode.bool (isDisplayMathMode displayMode))
-        , HA.property "content" (Json.Encode.string content)
-
-        -- , clicker meta
-        -- , HA.id (makeId meta)
-        ]
-        []
-
-
-isDisplayMathMode : DisplayMode -> Bool
-isDisplayMathMode displayMode =
-    case displayMode of
-        InlineMathMode ->
-            False
-
-        DisplayMathMode ->
-            True

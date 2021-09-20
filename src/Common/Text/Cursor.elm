@@ -86,6 +86,22 @@ nextCursor rules cursor =
                 rule =
                     Rule.get rules leadingChar
 
+                scannerType =
+                    case cursor.scannerType of
+                        NormalScan ->
+                            if rule.isVerbatim then
+                                VerbatimScan leadingChar
+
+                            else
+                                NormalScan
+
+                        VerbatimScan c ->
+                            if c == leadingChar then
+                                NormalScan
+
+                            else
+                                VerbatimScan c
+
                 _ =
                     rule.name |> debug1 "RULE"
             in
@@ -137,6 +153,9 @@ nextCursor rules cursor =
 
                                 ShiftMarked ->
                                     ( cursor.committed, Marked (String.dropLeft rule.dropLeadingChars stringData.content) [] meta :: cursor.stack )
+
+                                ShiftVerbatim c ->
+                                    ( cursor.committed, Verbatim c "" meta :: cursor.stack |> contract3Stack )
 
                                 ShiftArg ->
                                     ( cursor.committed, Arg [] meta :: cursor.stack )
@@ -194,42 +213,46 @@ contract text1 text2 =
 
 contract3 : Text -> Text -> Text -> Maybe Text
 contract3 text1 text2 text3 =
-    let
-        _ =
-            debug3 "Here is contract" 3
-
-        _ =
-            debug3 "text1" text1
-
-        _ =
-            debug3 "text3" text3
-    in
-    case ( text1, text3 ) of
-        ( Marked a [] meta1, Marked b [] meta3 ) ->
-            let
-                _ =
-                    debug3 "(a,b)" ( a, b )
-            in
+    case ( text1, text2, text3 ) of
+        ( Marked a [] meta1, _, Marked b [] meta3 ) ->
             if a == b then
-                let
-                    _ =
-                        debug3 "Here is contract" 3.1
-                in
                 Just <| Marked a [ text2 ] { start = meta1.start, end = meta3.end, indent = 0, id = meta3.id }
 
             else
-                let
-                    _ =
-                        debug3 "Here is contract" 3.2
-                in
+                Nothing
+
+        ( Verbatim a "" meta1, Text x meta, Verbatim b "" meta3 ) ->
+            if a == b then
+                Just <| Verbatim a x { start = meta1.start, end = meta3.end, indent = 0, id = meta3.id }
+
+            else
                 Nothing
 
         _ ->
-            let
-                _ =
-                    debug3 "Here is contract" 3.3
-            in
             Nothing
+
+
+contract3Stack : List Text -> List Text
+contract3Stack stack =
+    let
+        _ =
+            debug3 "contractStack, stack" stack
+    in
+    case stack of
+        text1 :: text2 :: text3 :: rest ->
+            case contract3 text1 text2 text3 of
+                Nothing ->
+                    stack
+
+                Just text_ ->
+                    let
+                        _ =
+                            Debug.log "ACTION" "contract stack, scanPoint"
+                    in
+                    text_ :: rest
+
+        _ ->
+            stack
 
 
 contractStack : List Text -> List Text

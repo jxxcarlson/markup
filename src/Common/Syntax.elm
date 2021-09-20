@@ -30,7 +30,7 @@ type Text
     = Text String Meta
     | Marked String (List Text) Meta
     | Arg (List Text) Meta
-    | Verbatim String (List Text) Meta
+    | Verbatim String String Meta
     | TError String
 
 
@@ -141,8 +141,8 @@ textToString text =
         Arg textList _ ->
             List.map textToString textList |> String.join "\n"
 
-        Verbatim _ textList _ ->
-            List.map textToString textList |> String.join "\n"
+        Verbatim _ str _ ->
+            str
 
         TError str ->
             str

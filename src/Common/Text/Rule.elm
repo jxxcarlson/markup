@@ -9,6 +9,7 @@ type alias Rule =
     , continue : Char -> Bool
     , endCharLength : Int
     , dropLeadingChars : Int
+    , isVerbatim : Bool
     , expect : List { stop : List String, action : Action }
     }
 
@@ -16,8 +17,10 @@ type alias Rule =
 type Action
     = CommitText
     | CommitMarked
+    | CommitVerbatim String
     | ShiftText
     | ShiftMarked
+    | ShiftVerbatim String
     | ShiftArg
     | ReduceArg
     | ErrorAction

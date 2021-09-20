@@ -21,6 +21,7 @@ defaultRule =
     , continue = \c -> not (List.member c markdownDelimiters)
     , endCharLength = 0
     , dropLeadingChars = 1
+    , isVerbatim = False
     , expect = [ { stop = markdownDelimitersStr, action = ShiftText } ]
     }
 
@@ -40,6 +41,7 @@ markdownRuleList =
         , continue = \c -> c /= ' '
         , endCharLength = 0
         , dropLeadingChars = 0
+        , isVerbatim = False
         , expect =
             [ { stop = [ " " ], action = ShiftMarked }
             ]
@@ -51,6 +53,7 @@ markdownRuleList =
         , continue = \c -> False
         , endCharLength = 0
         , dropLeadingChars = 0
+        , isVerbatim = False
         , expect =
             [ { stop = [ "*" ], action = ShiftMarked }
             ]
@@ -62,8 +65,33 @@ markdownRuleList =
         , continue = \c -> False
         , endCharLength = 0
         , dropLeadingChars = 0
+        , isVerbatim = False
         , expect =
             [ { stop = [ "_" ], action = ShiftMarked }
+            ]
+        }
+      )
+    , ( '`'
+      , { name = "code"
+        , start = \c -> c == '`'
+        , continue = \c -> False
+        , endCharLength = 0
+        , dropLeadingChars = 0
+        , isVerbatim = True
+        , expect =
+            [ { stop = [ "`" ], action = ShiftVerbatim "`" }
+            ]
+        }
+      )
+    , ( '$'
+      , { name = "math"
+        , start = \c -> c == '$'
+        , continue = \c -> False
+        , endCharLength = 0
+        , dropLeadingChars = 0
+        , isVerbatim = True
+        , expect =
+            [ { stop = [ "$" ], action = ShiftVerbatim "$" }
             ]
         }
       )
@@ -73,6 +101,7 @@ markdownRuleList =
         , continue = \c -> not (List.member c markdownDelimiters)
         , endCharLength = 0
         , dropLeadingChars = 1
+        , isVerbatim = False
         , expect =
             [ { stop = markdownDelimitersStr, action = CommitText }
             ]

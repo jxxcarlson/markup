@@ -21,6 +21,7 @@ defaultRule =
     , continue = \c -> not (List.member c miniLaTexDelimiters)
     , endCharLength = 0
     , dropLeadingChars = 1
+    , isVerbatim = False
     , expect = [ { stop = miniLaTexDelimitersStr, action = ShiftText } ]
     }
 
@@ -40,6 +41,7 @@ miniLaTeXRuleList =
         , continue = \c -> not (c == ' ' || c == '{')
         , endCharLength = 0
         , dropLeadingChars = 1
+        , isVerbatim = False
         , expect =
             [ { stop = [ " ", "" ], action = CommitMarked }
             , { stop = [ "{" ], action = ShiftMarked }
@@ -52,6 +54,7 @@ miniLaTeXRuleList =
         , continue = \c -> not (List.member c miniLaTexDelimiters)
         , endCharLength = 0
         , dropLeadingChars = 1
+        , isVerbatim = False
         , expect =
             [ { stop = miniLaTexDelimitersStr, action = CommitText }
             ]
@@ -63,6 +66,7 @@ miniLaTeXRuleList =
         , continue = \c -> False
         , endCharLength = 0 -- adjust for '}' at end of arg
         , dropLeadingChars = 1
+        , isVerbatim = False
         , expect =
             [ { stop = [ "}" ], action = ShiftArg }
             ]
@@ -74,6 +78,7 @@ miniLaTeXRuleList =
         , continue = \c -> False
         , endCharLength = 0 -- adjust for '}' at end of arg
         , dropLeadingChars = 1
+        , isVerbatim = False
         , expect =
             [ { stop = [ "}" ], action = ReduceArg }
             ]
