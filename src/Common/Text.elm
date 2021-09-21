@@ -1,5 +1,6 @@
 module Common.Text exposing (render)
 
+import Common.Debug exposing (debug1)
 import Common.Math
 import Common.Syntax as Syntax exposing (Block(..), Text(..), TextBlock(..))
 import Dict exposing (Dict)
@@ -45,7 +46,7 @@ renderVerbatim name generation settings str =
             notImplemented name
 
         Just f ->
-            f generation settings (Debug.log "XXVerbatim" str)
+            f generation settings (debug1 "XXVerbatim" str)
 
 
 renderMarked name generation settings textList =
