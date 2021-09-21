@@ -1,10 +1,12 @@
 module Common.Syntax exposing
     ( Block(..)
     , BlockType(..)
+    , Language(..)
     , Meta
     , Text(..)
     , TextBlock(..)
     , dummyMeta
+    , getName
     , map
     , textBlockToString
     , textToString
@@ -30,6 +32,23 @@ type Text
     | Arg (List Text) Meta
     | Verbatim String String Meta
     | TError String
+
+
+getName : Text -> Maybe String
+getName text =
+    case text of
+        Marked str _ _ ->
+            Just str
+
+        _ ->
+            Nothing
+
+
+{-| -}
+type Language
+    = L1
+    | Markdown
+    | MiniLaTeX
 
 
 type TextBlock
