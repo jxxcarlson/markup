@@ -71,6 +71,7 @@ blockDict : Dict String (Int -> Settings -> List TextBlock -> Element msg)
 blockDict =
     Dict.fromList
         [ ( "quotation", \g s blocks -> quotationBlock g s blocks )
+        , ( "item", \g s blocks -> item g s blocks )
         ]
 
 
@@ -94,6 +95,14 @@ mathBlock generation settings textList =
 
 quotationBlock : Int -> Settings -> List Syntax.TextBlock -> Element msg
 quotationBlock generation settings blocks =
+    Element.column
+        [ Element.paddingEach { left = 18, right = 0, top = 0, bottom = 8 }
+        ]
+        (List.map (renderBlock generation settings) blocks)
+
+
+item : Int -> Settings -> List Syntax.TextBlock -> Element msg
+item generation settings blocks =
     Element.column
         [ Element.paddingEach { left = 18, right = 0, top = 0, bottom = 8 }
         ]
