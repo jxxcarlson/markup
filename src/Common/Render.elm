@@ -4,7 +4,7 @@ import Common.Math
 import Common.Syntax as Syntax exposing (Block(..), Text(..), TextBlock(..))
 import Common.Text
 import Dict exposing (Dict)
-import Element exposing (Element)
+import Element exposing (..)
 import Element.Background as Background
 import Element.Font as Font
 import Html exposing (Html)
@@ -31,7 +31,7 @@ renderBlock : Int -> Settings -> TextBlock -> Element msg
 renderBlock generation settings block =
     case block of
         TBParagraph textList _ ->
-            Element.paragraph
+            paragraph
                 []
                 (List.map (Common.Text.render generation settings) textList)
 
@@ -56,7 +56,7 @@ renderBlock generation settings block =
 
 
 error str =
-    Element.paragraph [ Background.color (Element.rgb255 250 217 215) ] [ Element.text str ]
+    paragraph [ Background.color (rgb255 250 217 215) ] [ text str ]
 
 
 verbatimBlockDict : Dict String (Int -> Settings -> List String -> Element msg)
@@ -77,15 +77,15 @@ blockDict =
 
 codeBlock : Int -> Settings -> List String -> Element msg
 codeBlock generation settings textList =
-    Element.column
+    column
         [ Font.family
             [ Font.typeface "Inconsolata"
             , Font.monospace
             ]
         , Font.color codeColor
-        , Element.paddingEach { left = 18, right = 0, top = 0, bottom = 8 }
+        , paddingEach { left = 18, right = 0, top = 0, bottom = 8 }
         ]
-        (List.map (\t -> Element.el [] (Element.text t)) textList)
+        (List.map (\t -> el [] (text t)) textList)
 
 
 mathBlock : Int -> Settings -> List String -> Element msg
@@ -95,24 +95,33 @@ mathBlock generation settings textList =
 
 quotationBlock : Int -> Settings -> List Syntax.TextBlock -> Element msg
 quotationBlock generation settings blocks =
-    Element.column
-        [ Element.paddingEach { left = 18, right = 0, top = 0, bottom = 8 }
+    column
+        [ paddingEach { left = 18, right = 0, top = 0, bottom = 8 }
         ]
         (List.map (renderBlock generation settings) blocks)
 
 
 item : Int -> Settings -> List Syntax.TextBlock -> Element msg
 item generation settings blocks =
-    Element.column
-        [ Element.paddingEach { left = 18, right = 0, top = 0, bottom = 8 }
+    row [ width fill ]
+        [ el [ height fill ] none
+        , column [ width fill ]
+            [ row [ width fill, spacing 8 ]
+                [ itemSymbol
+                , row [ width fill ] (List.map (renderBlock generation settings) blocks)
+                ]
+            ]
         ]
-        (List.map (renderBlock generation settings) blocks)
+
+
+itemSymbol =
+    el [ Font.bold, alignTop, moveUp 1, Font.size 18 ] (text "•")
 
 
 codeColor =
     -- E.rgb 0.2 0.5 1.0
-    Element.rgb 0.4 0 0.8
+    rgb 0.4 0 0.8
 
 
 notImplemented str =
-    Element.el [ Font.color (Element.rgb255 40 40 255) ] (Element.text <| "not implemented: " ++ str)
+    el [ Font.color (rgb255 40 40 255) ] (text <| "not implemented: " ++ str)

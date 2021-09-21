@@ -11,6 +11,7 @@ module Common.Library.ParserTools exposing
     , manySeparatedBy
     , mapLoop
     , maybe
+    , nibble
     , oneChar
     , optional
     , optionalList
@@ -236,3 +237,12 @@ prefixFreeOf c str =
 
         Err _ ->
             { content = "", finish = 0, start = 0 }
+
+
+nibble str =
+    case Parser.run (text (\c_ -> c_ /= ' ') (\c_ -> c_ /= ' ')) str of
+        Ok stringData ->
+            stringData.content
+
+        Err _ ->
+            ""

@@ -8,9 +8,9 @@ text =
 
 It was a  *very* bold proposal.
 
-This is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.
+- This is some text. This is some math. This is some math.This is some math.This is some math. This is some math. his is some math. This is some math. This is some math. This is some math.
 
-This is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.
+- This is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.
 
 
 
