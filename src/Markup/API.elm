@@ -1,6 +1,6 @@
 module Markup.API exposing
-    ( compile, Language(..), Settings
-    , parse, prepareForExport
+    ( compile, Settings
+    , getTitle, parse, prepareForExport
     )
 
 {-| The function Markup.API.compile will transform source text in any
@@ -10,6 +10,7 @@ one of three markup languages (L1, Markdown, MiniLaTeX) to `Html msg`.
 
 -}
 
+import Common.Library.ASTTools
 import Common.Render exposing (Settings)
 import Common.Syntax as Syntax exposing (Meta, Text(..))
 import Common.Text.Cursor as Cursor
@@ -23,24 +24,17 @@ import MiniLaTeX.Rule
 
 
 {-| -}
-compile : Language -> Int -> Settings -> List String -> List (Element msg)
+compile : Syntax.Language -> Int -> Settings -> List String -> List (Element msg)
 compile language generation settings lines =
     case language of
-        L1 ->
+        Syntax.L1 ->
             compileL1 generation settings lines
 
-        Markdown ->
+        Syntax.Markdown ->
             compileMarkdown generation settings lines
 
-        MiniLaTeX ->
+        Syntax.MiniLaTeX ->
             compileMiniLaTeX generation settings lines
-
-
-{-| -}
-type Language
-    = L1
-    | Markdown
-    | MiniLaTeX
 
 
 {-| -}
@@ -53,17 +47,22 @@ prepareForExport str =
     ( [ "image urls" ], "document content" )
 
 
-parse : Language -> Int -> List String -> List Syntax.TextBlock
+parse : Syntax.Language -> Int -> List String -> List Syntax.TextBlock
 parse language generation lines =
     case language of
-        Markdown ->
+        Syntax.Markdown ->
             lines |> Markdown.parse generation |> List.map (Syntax.map markdownParseLoop)
 
-        MiniLaTeX ->
+        Syntax.MiniLaTeX ->
             lines |> MiniLaTeX.parse generation |> List.map (Syntax.map miniLaTeXParseLoop)
 
-        L1 ->
+        Syntax.L1 ->
             lines |> MiniLaTeX.parse generation |> List.map (Syntax.map (Common.Text.Parser.dummyParse generation { width = 500 }))
+
+
+getTitle : Syntax.Language -> List Syntax.TextBlock -> Maybe String
+getTitle =
+    Common.Library.ASTTools.getTitle
 
 
 
