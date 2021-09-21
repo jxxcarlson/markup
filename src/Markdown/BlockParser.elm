@@ -1,7 +1,7 @@
 module Markdown.BlockParser exposing (parse, run)
 
 import Common.BasicSyntax as Basic exposing (BasicBlock(..))
-import Common.BlockParser as BP exposing (State, Step(..), loop)
+import Common.BlockParser as BP exposing (State, Step(..), level, loop)
 import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Line as Line exposing (LineType(..))
 import Common.Syntax as Syntax exposing (Block(..), BlockType(..))
@@ -25,10 +25,39 @@ nextStateAux line state =
         lineType =
             Line.classify line |> debug2 "lineType"
 
+        inVerbatimBlock =
+            (case lineType.lineType of
+                BeginVerbatimBlock _ ->
+                    True
+
+                _ ->
+                    if level lineType.indent < level state.indent then
+                        False
+
+                    else
+                        True
+            )
+                |> debug3 "inVerbatimBlock"
+
+        newLineType =
+            case lineType.lineType of
+                BeginVerbatimBlock _ ->
+                    lineType.lineType
+
+                BlankLine ->
+                    BlankLine
+
+                _ ->
+                    if inVerbatimBlock then
+                        OrdinaryLine
+
+                    else
+                        lineType.lineType
+
         indent =
             lineType.indent
     in
-    case lineType.lineType of
+    case newLineType of
         BeginBlock s ->
             let
                 innerBlock =
