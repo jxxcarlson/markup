@@ -6,8 +6,6 @@ module Common.Syntax exposing
     , TextBlock(..)
     , dummyMeta
     , map
-    , map2
-    , mapList
     , textBlockToString
     , textToString
     )
@@ -41,8 +39,8 @@ type TextBlock
     | TBError String
 
 
-map2 : (String -> List Text) -> Block -> TextBlock
-map2 f block =
+map : (String -> List Text) -> Block -> TextBlock
+map f block =
     case block of
         Paragraph stringList meta ->
             TBParagraph (List.map f stringList |> List.concat) meta
@@ -51,7 +49,7 @@ map2 f block =
             TBVerbatimBlock name stringList meta
 
         Block name blockList meta ->
-            TBBlock name (List.map (map2 f) blockList) meta
+            TBBlock name (List.map (map f) blockList) meta
 
         Error str ->
             TBError str
@@ -79,38 +77,6 @@ dummyMeta start indent =
 
 
 -- FUNCTIONS
-
-
-mapList : (List String -> List Text) -> Block -> TextBlock
-mapList f block =
-    case block of
-        Paragraph stringList meta ->
-            TBParagraph (f stringList) meta
-
-        VerbatimBlock name stringList meta ->
-            TBVerbatimBlock name stringList meta
-
-        Block name blockList meta ->
-            TBBlock name (List.map (mapList f) blockList) meta
-
-        Error str ->
-            TBError str
-
-
-map : (String -> Text) -> Block -> TextBlock
-map f block =
-    case block of
-        Paragraph stringList meta ->
-            TBParagraph (List.map f stringList) meta
-
-        VerbatimBlock name stringList meta ->
-            TBVerbatimBlock name stringList meta
-
-        Block name blockList meta ->
-            TBBlock name (List.map (map f) blockList) meta
-
-        Error str ->
-            TBError str
 
 
 textBlockToString : TextBlock -> List String

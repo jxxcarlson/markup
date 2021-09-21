@@ -1,6 +1,6 @@
 module Markup.API exposing
     ( compile, Language(..), Settings
-    , parseMiniLaTeX
+    , parse, prepareForExport
     )
 
 {-| The function Markup.API.compile will transform source text in any
@@ -48,11 +48,33 @@ type alias Settings =
     { width : Int }
 
 
+prepareForExport : String -> ( List String, String )
+prepareForExport str =
+    ( [ "image urls" ], "document content" )
+
+
+parse : Language -> Int -> List String -> List Syntax.TextBlock
+parse language generation lines =
+    case language of
+        Markdown ->
+            lines |> Markdown.parse generation |> List.map (Syntax.map markdownParseLoop)
+
+        MiniLaTeX ->
+            lines |> MiniLaTeX.parse generation |> List.map (Syntax.map miniLaTeXParseLoop)
+
+        L1 ->
+            lines |> MiniLaTeX.parse generation |> List.map (Syntax.map (Common.Text.Parser.dummyParse generation { width = 500 }))
+
+
+
+-- NOT EXPOSED
+
+
 compileMarkdown : Int -> Settings -> List String -> List (Element msg)
 compileMarkdown generation settings lines =
     lines
         |> Markdown.parse generation
-        |> List.map (Syntax.map2 markdownParseLoop)
+        |> List.map (Syntax.map markdownParseLoop)
         |> Common.Render.render generation settings
 
 
@@ -60,7 +82,7 @@ compileMiniLaTeX : Int -> Settings -> List String -> List (Element msg)
 compileMiniLaTeX generation settings lines =
     lines
         |> MiniLaTeX.parse generation
-        |> List.map (Syntax.map2 miniLaTeXParseLoop)
+        |> List.map (Syntax.map miniLaTeXParseLoop)
         |> Common.Render.render generation settings
 
 
@@ -68,7 +90,7 @@ parseMiniLaTeX : Int -> b -> List String -> List Syntax.TextBlock
 parseMiniLaTeX generation settings lines =
     lines
         |> MiniLaTeX.parse generation
-        |> List.map (Syntax.map2 miniLaTeXParseLoop)
+        |> List.map (Syntax.map miniLaTeXParseLoop)
 
 
 miniLaTeXParseLoop : String -> List Text
@@ -85,5 +107,5 @@ compileL1 : Int -> Settings -> List String -> List (Element msg)
 compileL1 generation settings lines =
     lines
         |> L1Block.parse generation
-        |> List.map (Syntax.map2 (Common.Text.Parser.dummyParse generation settings))
+        |> List.map (Syntax.map (Common.Text.Parser.dummyParse generation settings))
         |> Common.Render.render generation settings
