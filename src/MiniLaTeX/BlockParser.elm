@@ -21,7 +21,7 @@ runFromString k str =
 
 run : Int -> List String -> State
 run generation input =
-    BP.loop (BP.initialState generation input) (BP.nextState nextStateAux)
+    BP.loop (BP.initialState generation input) (BP.nextStep nextStateAux)
 
 
 nextStateAux : String -> State -> State

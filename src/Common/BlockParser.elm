@@ -9,7 +9,8 @@ module Common.BlockParser exposing
     , initialState
     , level
     , loop
-    , nextState
+    , nextStep
+    , parse
     , reduceStack
     , reduceStack_
     , reverseStack
@@ -19,8 +20,10 @@ module Common.BlockParser exposing
 
 import Common.BasicSyntax as Basic
 import Common.Debug exposing (debug1, debug2, debug3)
+import Common.Line exposing (LineType(..))
 import Common.Syntax as Syntax exposing (Block(..), BlockType(..))
 import List.Extra
+import Utility
 
 
 type alias State =
@@ -35,8 +38,18 @@ type alias State =
     }
 
 
-nextState : (String -> State -> State) -> State -> Step State State
-nextState nextStateAux state =
+parse : (String -> State -> State) -> Int -> List String -> List Block
+parse nextStateAux_ generation lines =
+    lines |> run nextStateAux_ generation |> .output
+
+
+run : (String -> State -> State) -> Int -> List String -> State
+run nextStateAux_ generation input =
+    loop (initialState generation input) (nextStep nextStateAux_)
+
+
+nextStep : (String -> State -> State) -> State -> Step State State
+nextStep nextStateAux state =
     let
         _ =
             debug2 "STACK" ( state.counter, List.map Basic.simplify state.stack, blockLevelOfStackTop state.stack )
@@ -407,3 +420,7 @@ shift block state =
         , lineNumber = state.lineNumber + 1
         , blockCount = state.blockCount + 1
     }
+
+
+
+-- NEXT
