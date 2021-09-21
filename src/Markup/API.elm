@@ -16,7 +16,7 @@ import Common.Syntax as Syntax exposing (Language(..), Meta, Text(..))
 import Common.Text.Cursor as Cursor
 import Common.Text.Parser
 import Element exposing (Element)
-import L1.BlockParser as L1Block
+import L1.BlockParser as L1
 import Markdown.BlockParser as Markdown
 import Markdown.Rule
 import MiniLaTeX.BlockParser as MiniLaTeX
@@ -24,17 +24,15 @@ import MiniLaTeX.Rule
 
 
 {-| -}
+getTitle : Syntax.Language -> List Syntax.TextBlock -> Maybe String
+getTitle =
+    Common.Library.ASTTools.getTitle
+
+
+{-| -}
 compile : Syntax.Language -> Int -> Settings -> List String -> List (Element msg)
 compile language generation settings lines =
-    case language of
-        Syntax.L1 ->
-            compileL1 generation settings lines
-
-        Syntax.Markdown ->
-            lines |> parse Markdown generation |> Common.Render.render generation settings
-
-        Syntax.MiniLaTeX ->
-            lines |> parse MiniLaTeX generation |> Common.Render.render generation settings
+    lines |> parse language generation |> Common.Render.render generation settings
 
 
 {-| -}
@@ -57,25 +55,11 @@ parse language generation lines =
             lines |> MiniLaTeX.parse generation |> List.map (Syntax.map (parseLoop language))
 
         Syntax.L1 ->
-            lines |> MiniLaTeX.parse generation |> List.map (Syntax.map (Common.Text.Parser.dummyParse generation { width = 500 }))
-
-
-getTitle : Syntax.Language -> List Syntax.TextBlock -> Maybe String
-getTitle =
-    Common.Library.ASTTools.getTitle
+            lines |> L1.parse generation |> List.map (Syntax.map (Common.Text.Parser.dummyParse generation { width = 500 }))
 
 
 
 -- NOT EXPOSED
-
-
-compileMarkdown : Int -> Settings -> List String -> List (Element msg)
-compileMarkdown generation settings lines =
-    lines
-        --|> Markdown.parse generation
-        --|> List.map (Syntax.map markdownParseLoop)
-        |> parse Markdown generation
-        |> Common.Render.render generation settings
 
 
 parseLoop : Syntax.Language -> String -> List Text
@@ -89,11 +73,3 @@ parseLoop language input =
 
         Syntax.L1 ->
             Cursor.parseLoop Markdown.Rule.markdownRules (Cursor.init 0 0 0 input) |> .committed |> List.reverse
-
-
-compileL1 : Int -> Settings -> List String -> List (Element msg)
-compileL1 generation settings lines =
-    lines
-        |> L1Block.parse generation
-        |> List.map (Syntax.map (Common.Text.Parser.dummyParse generation settings))
-        |> Common.Render.render generation settings
