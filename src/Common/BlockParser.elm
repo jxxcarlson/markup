@@ -69,7 +69,7 @@ nextStep nextStateAux state =
                     debug1 "Reduce stack" (newState.output |> List.map Basic.simplify)
 
                 finalState =
-                    { newState | output = newState.stack ++ newState.output |> List.reverse }
+                    { newState | output = newState.stack ++ newState.output |> List.reverse |> debug1 "reverse contents (2)" }
 
                 _ =
                     finalState |> .output |> List.map Basic.simplify |> debug1 "OUTPUT"
@@ -272,8 +272,8 @@ reverseContents block =
         VerbatimBlock name strings meta ->
             VerbatimBlock name (List.reverse strings) meta
 
-        Block name strings meta ->
-            Block name (List.reverse strings) meta
+        Block name blocks meta ->
+            Block name (List.map reverseContents blocks) meta
 
         Error s ->
             Error s
@@ -346,8 +346,15 @@ appendLineAtTop line stack =
 
         Just block ->
             case block of
+                -- TODO: fix Meta, examine other cases not handled
                 Paragraph strings meta ->
                     Paragraph (line :: strings) meta :: List.drop 1 stack
+
+                Block name ((Paragraph lines meta1) :: rest) meta2 ->
+                    Block name (Paragraph (line :: lines) meta1 :: rest) meta2 :: List.drop 1 stack
+
+                Block name ((Block name2 blocks meta1) :: rest) meta2 ->
+                    Block name (Paragraph [ line ] meta1 :: Block name2 blocks meta1 :: rest) meta2 :: List.drop 1 stack
 
                 _ ->
                     stack

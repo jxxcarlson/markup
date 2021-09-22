@@ -181,19 +181,43 @@ handleBlankLine indent state =
 
 
 handleOrdinaryLine indent line state =
+    let
+        _ =
+            debug1 "handleOrdinaryLine, (indent, line)" ( indent, line )
+    in
     if BP.level indent >= BP.blockLevelOfStackTop state.stack then
         case List.head state.stack of
             Nothing ->
+                let
+                    _ =
+                        debug1 "handleOrdinaryLine, (indent, line)" 1
+                in
                 BP.shift (Paragraph [ String.dropLeft indent line ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
 
             Just block ->
-                if BP.typeOfBlock block == P then
+                let
+                    _ =
+                        debug1 "handleOrdinaryLine, typeOfBlock" (BP.typeOfBlock block)
+                in
+                if List.member (BP.typeOfBlock block) [ P, B ] then
+                    let
+                        _ =
+                            debug1 "handleOrdinaryLine, (indent, line)" 2.1
+                    in
                     { state | stack = BP.appendLineAtTop (String.dropLeft indent line) state.stack, indent = indent }
 
                 else
+                    let
+                        _ =
+                            debug1 "handleOrdinaryLine, (indent, line)" 2.2
+                    in
                     BP.shift (Paragraph [ String.dropLeft indent line ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
 
     else
+        let
+            _ =
+                debug1 "handleOrdinaryLine, (indent, line)" 3
+        in
         BP.shift (Paragraph [ line ] (Syntax.dummyMeta 0 0)) (BP.reduceStack { state | indent = indent })
 
 

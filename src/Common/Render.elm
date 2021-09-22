@@ -1,5 +1,6 @@
 module Common.Render exposing (Settings, render)
 
+import Common.Debug exposing (debug3)
 import Common.Math
 import Common.Syntax as Syntax exposing (Block(..), Text(..), TextBlock(..))
 import Common.Text
@@ -99,7 +100,7 @@ quotationBlock generation settings blocks =
     column
         [ paddingEach { left = 18, right = 0, top = 0, bottom = 8 }
         ]
-        (List.map (renderBlock generation settings) blocks)
+        (List.map (renderBlock generation settings) (debug3 "XX, block in quotation" blocks))
 
 
 item : Int -> Settings -> List Syntax.TextBlock -> Element msg
