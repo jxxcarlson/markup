@@ -71,9 +71,10 @@ suiteParseLoop =
             [ Text "abc " { end = 4, id = "0.0", indent = 0, start = 0 }
             , Marked "foo" [] { end = 8, id = "0.1", indent = 0, start = 4 }
             ]
-        , testParseLoopCommitted "(2)"
-            "\\foo{bar}"
-            [ Marked "foo" [ Text "bar" { end = 8, id = "0.2", indent = 0, start = 5 } ] { end = 8, id = "0.0", indent = 0, start = 0 } ]
+        , Test.only <|
+            testParseLoopCommitted "(2)"
+                "\\foo{bar}"
+                [ Marked "foo" [ Text "bar" { end = 8, id = "0.2", indent = 0, start = 5 } ] { end = 8, id = "0.0", indent = 0, start = 0 } ]
         , testParseLoopCommitted "(3)"
             "\\foo{bar}{baz}"
             [ Marked "foo"

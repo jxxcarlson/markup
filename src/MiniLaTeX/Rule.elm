@@ -51,12 +51,12 @@ miniLaTeXRuleList =
     , ( ' '
       , { name = "blank"
         , start = \c -> c == ' '
-        , continue = \c -> not (List.member c miniLaTexDelimiters)
+        , continue = \c -> c == ' '
         , endCharLength = 0
         , dropLeadingChars = 1
         , isVerbatim = False
         , expect =
-            [ { stop = miniLaTexDelimitersStr, action = CommitText }
+            [ { stop = miniLaTexDelimitersStr, action = Commit }
             ]
         }
       )

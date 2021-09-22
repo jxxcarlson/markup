@@ -98,12 +98,12 @@ markdownRuleList =
     , ( ' '
       , { name = "blank"
         , start = \c -> c == ' '
-        , continue = \c -> not (List.member c markdownDelimiters)
+        , continue = \c -> c == ' '
         , endCharLength = 0
         , dropLeadingChars = 1
         , isVerbatim = False
         , expect =
-            [ { stop = markdownDelimitersStr, action = CommitText }
+            [ { stop = markdownDelimitersStr, action = Commit }
             ]
         }
       )

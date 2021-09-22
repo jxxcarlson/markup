@@ -51,6 +51,10 @@ type ScannerType
 
 parseLoop : Rules -> TextCursor -> TextCursor
 parseLoop rules initialCursor =
+    let
+        _ =
+            debug3 "+++++++++++++++" "+"
+    in
     if initialCursor.source == "" then
         { initialCursor
             | stack = []
@@ -92,6 +96,9 @@ nextCursor_ leadingChar cursor rules textToProcess =
             getParser rule
 
         _ =
+            debug3 "========================" "="
+
+        _ =
             rule.name |> debug1 "RULE"
     in
     case currentParser textToProcess of
@@ -121,14 +128,21 @@ nextCursor_ leadingChar cursor rules textToProcess =
 
                 ( committed, stack ) =
                     case action of
-                        CommitText ->
+                        Commit ->
                             let
                                 newStack =
-                                    contractStackRepeatedly cursor.stack |> debug2 "newStack"
+                                    contractStackRepeatedly cursor.stack |> debug3 "newStack (Commit)"
 
+                                -- TODO: not working for \\foo{\\bar{baz}
                                 -- TODO: we have to handle the case of length newStack > 1, which is an error state
                             in
-                            ( contractStack <| Text stringData.content meta :: (newStack ++ cursor.committed), [] )
+                            case List.head newStack of
+                                Just item ->
+                                    ( Text " " (Syntax.dummyMeta 0 0) :: item :: cursor.committed, List.drop 1 newStack )
+
+                                Nothing ->
+                                    -- TODO: is this correct?
+                                    ( cursor.committed, [] )
 
                         CommitMarked ->
                             ( Marked (String.dropLeft 1 stringData.content) [] meta :: cursor.committed, cursor.stack )
@@ -259,7 +273,7 @@ contract3Stack stack =
                 Just text_ ->
                     let
                         _ =
-                            debug1 "ACTION" "contract stack, scanPoint"
+                            debug1 "ACTION 3" "contract stack, scanPoint"
                     in
                     text_ :: rest
 
@@ -268,24 +282,17 @@ contract3Stack stack =
 
 
 contractStack : List Text -> List Text
-contractStack stack =
+contractStack =
+    contract2Stack >> contract3Stack
+
+
+contract2Stack : List Text -> List Text
+contract2Stack stack =
     let
         _ =
             debug3 "contractStack, stack" stack
     in
     case stack of
-        text1 :: text2 :: text3 :: rest ->
-            case contract3 text1 text2 text3 of
-                Nothing ->
-                    stack
-
-                Just text_ ->
-                    let
-                        _ =
-                            debug1 "ACTION" "contract stack, scanPoint"
-                    in
-                    text_ :: rest
-
         text1 :: text2 :: rest ->
             case contract text1 text2 of
                 Nothing ->
@@ -294,7 +301,7 @@ contractStack stack =
                 Just text_ ->
                     let
                         _ =
-                            debug1 "ACTION" "contract stack, scanPoint"
+                            debug1 "ACTION 2" "contract stack, scanPoint"
                     in
                     text_ :: rest
 
@@ -320,7 +327,7 @@ contractStackRepeatedly stack =
                 Just text_ ->
                     let
                         _ =
-                            debug1 "ACTION" "contract stack, scanPoint"
+                            debug1 "ACTION 3(R)" "contract stack, scanPoint"
                     in
                     text_ :: rest
 
@@ -332,7 +339,7 @@ contractStackRepeatedly stack =
                 Just text_ ->
                     let
                         _ =
-                            debug1 "ACTION" "contract stack, scanPoint"
+                            debug1 "ACTION (2)R" "contract stack, scanPoint"
                     in
                     contractStackRepeatedly (text_ :: rest)
 

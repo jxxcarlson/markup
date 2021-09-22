@@ -15,7 +15,7 @@ type alias Rule =
 
 
 type Action
-    = CommitText
+    = Commit
     | CommitMarked
     | CommitVerbatim String
     | ShiftText
