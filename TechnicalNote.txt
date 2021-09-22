@@ -1,0 +1,82 @@
+# MetaMarkup: Technical Notes
+
+The MetaMarkup library provides a parser and renderer which is capable of transforming text in multiple markup languages into HTML in real time.  The text is rendered as you type, and syntax errors are noted in the rendered text as they occur.  The languages implemented in the present system are
+
+- L1: a markup language with a syntax inspired by Lisp. 
+
+- Rational Markdown:  a variant  of Markdown which can render mathematical formulas, provide numbered section headings, a table of contents, etc.  
+
+-  MiniLaTeX, a subset of LaTeX with a few added features.
+
+The task of managing multiple languages is made possible by a rules-based shift-reduce parser that transforms source code from any of the target languages to a common AST.  To change markup languages, one changes the rule set.  A single rendering function suffices to render the comon AST to HTML. 
+
+
+## Parsing and Rendering
+
+The  parser consumes the source text as a list of strings, transforming it first into a list of blocks. The block parsers, one for each language, are relatively small, under 150 loc, relying on a common code library which is twice as big.  Blocks are entities such as paragraphs, quotations, and LaTeX environments.  Once the blocks have been found, their contents are parsed to handle inline constructs such as TeX macros, marked text such as the below, and so on.
+
+```
+   *bold*, _italic_, `code`, $math$, etc.
+
+In this step, each `Block` is transformed into a `TextBlock` by a function
+
+```
+   parseLoop : Rules -> TextCursor -> TextCursor
+
+Here `TextCursor` is a data structure that holds the source text and various auxiliary data needed to build the AST.  The `Rules` argument is a list of rules which define the in-line part of the language being parsed.  The flow of data is as in the diagram below, where `List TextBlock` is the final AST.
+
+```
+   List String -> List Block -> List TextBlock
+
+This single AST is expressive enough to handle markup languages as different as Markup and MiniLaTeX.  In the first we have
+
+```
+   *important* => Marked "*" (Text "important")
+
+while in the second we have
+
+```   
+   \strong{important}  => Marked "strong" (Text "important")
+
+The renderer has a dictionary that maps names of  `Marked` elements to rendering functions.  In the case at hand, the names `*` and `strong` are mapped to the same element.
+
+## The block parser
+
+There is a shared block parser, so that we may write
+
+``` 
+    parse : Syntax.Language -> Int -> List String -> List Syntax.TextBlock
+    parse language generation lines =
+       lines |> blockParser generation 
+             |> List.map (Syntax.map (parseLoop language))
+
+
+## The text parser
+
+The text type is used for the contents of blocks:
+
+```
+   type Text = 
+      Text String Meta
+      | Marked String (List Text) Meta
+      | Arg (List Text) Meta
+      | Verbatim String String Meta
+      | TError String
+
+- `Text String` is for ordinary text
+- `Marked String (List Text)` is for marked-up elements
+- `Arg (List Text)` is for arguments, e.g., the "functions" defined by `Marked` elements.
+- `Verbatim String String` is for inline verbatim elements such as code and math.
+- The `Meta` component gives information about the corresponding source text: start and end position, indentation.
+
+This type is sufficient to express the text AST for the three languages under consideration (L1, MiniLaTeX, Rational Markdown). As noted above, text parsing is carried out by a function
+
+```
+    parseLoop : Rules -> TextCursor -> TextCursor
+    parseLoop rules initialCursor =
+      loop initialCursor (nextCursor rules)
+
+where `Rules = List Rule` is language-dependent, but the definition of `parseLoop` is not.
+
+
+
