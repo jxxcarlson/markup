@@ -45,11 +45,15 @@ nextStateAux line state =
                     lineType.lineType
 
                 BlankLine ->
-                    BlankLine
+                    if inVerbatimBlock then
+                        BlankLine
+
+                    else
+                        BlankLine
 
                 _ ->
                     if inVerbatimBlock then
-                        OrdinaryLine
+                        VerbatimLine
 
                     else
                         lineType.lineType
@@ -92,6 +96,9 @@ nextStateAux line state =
 
         OrdinaryLine ->
             state |> handleOrdinaryLine indent line
+
+        VerbatimLine ->
+            state |> handleVerbatimLine indent line
 
         BlankLine ->
             handleBlankLine indent state
@@ -137,37 +144,36 @@ handleBlankLine indent state =
     if BP.level indent == BP.level state.indent then
         case List.head state.stack of
             Nothing ->
-                let
-                    _ =
-                        debug3 "handleBlankLine" 1
-                in
                 state
 
             Just block ->
-                let
-                    _ =
-                        debug3 "handleBlankLine" 2
-                in
                 if List.member (BP.typeOfBlock block) [ V ] then
-                    let
-                        _ =
-                            debug3 "handleBlankLine" 2.1
-                    in
                     { state | stack = BP.appendLineAtTop "" state.stack, indent = indent }
 
                 else
-                    let
-                        _ =
-                            debug3 "handleBlankLine" ( 2.2, state.stack )
-                    in
                     { state | stack = [], output = Syntax.Paragraph [] (Syntax.dummyMeta 0 0) :: List.reverse state.stack ++ state.output }
 
     else
-        let
-            _ =
-                debug3 "handleBlankLine" 3
-        in
         BP.reduceStack state
+
+
+
+--handleVerbatimBlankLine indent state =
+--    -- TODO: finish up
+--    if BP.level indent >= BP.blockLevelOfStackTop state.stack then
+--        case List.head state.stack of
+--            Nothing ->
+--                BP.shift (Paragraph [ String.dropLeft 0 line ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
+--
+--            Just block ->
+--                if BP.typeOfBlock block == P then
+--                    { state | stack = BP.appendLineAtTop (String.dropLeft 0 line) state.stack, indent = indent }
+--
+--                else
+--                    BP.shift (Paragraph [ String.dropLeft 0 line ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
+--
+--    else
+--        BP.shift (Paragraph [ line ] (Syntax.dummyMeta 0 0)) (BP.reduceStack { state | indent = indent })
 
 
 handleOrdinaryLine indent line state =
@@ -182,6 +188,23 @@ handleOrdinaryLine indent line state =
 
                 else
                     BP.shift (Paragraph [ String.dropLeft indent line ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
+
+    else
+        BP.shift (Paragraph [ line ] (Syntax.dummyMeta 0 0)) (BP.reduceStack { state | indent = indent })
+
+
+handleVerbatimLine indent line state =
+    if BP.level indent >= BP.blockLevelOfStackTop state.stack then
+        case List.head state.stack of
+            Nothing ->
+                BP.shift (Paragraph [ String.dropLeft 0 line ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
+
+            Just block ->
+                if BP.typeOfBlock block == P then
+                    { state | stack = BP.appendLineAtTop (String.dropLeft 0 line) state.stack, indent = indent }
+
+                else
+                    BP.shift (Paragraph [ String.dropLeft 0 line ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
 
     else
         BP.shift (Paragraph [ line ] (Syntax.dummyMeta 0 0)) (BP.reduceStack { state | indent = indent })

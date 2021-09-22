@@ -5,6 +5,7 @@ import Parser exposing ((|.), (|=), Parser)
 
 type LineType
     = OrdinaryLine
+    | VerbatimLine
     | BlankLine
     | BeginBlock String
     | EndBlock String

@@ -65,6 +65,9 @@ nextStateAux line state =
         OrdinaryLine ->
             state |> handleOrdinaryLine indent line
 
+        VerbatimLine ->
+            state |> handleOrdinaryLine 0 line
+
         BlankLine ->
             handleBlankLine indent state
 
