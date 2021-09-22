@@ -33,25 +33,25 @@ suite =
         , test "Markdown.classify empty line" <|
             \_ ->
                 Markdown.classify ""
-                    |> Expect.equal { indent = 0, lineType = Line.BlankLine }
+                    |> Expect.equal { indent = 0, lineType = Line.BlankLine, content = "" }
         , test "Markdown.classify  blank line with 3 leading spaces" <|
             \_ ->
                 Markdown.classify "   "
-                    |> Expect.equal { indent = 3, lineType = Line.BlankLine }
+                    |> Expect.equal { indent = 3, lineType = Line.BlankLine, content = "   " }
         , test "Markdown.classify ordinary line with 3 leading spaces" <|
             \_ ->
                 Markdown.classify "   ho ho ho!"
-                    |> Expect.equal { indent = 3, lineType = Line.OrdinaryLine }
+                    |> Expect.equal { indent = 3, lineType = Line.OrdinaryLine, content = "   ho ho ho!" }
         , test "Markdown.classify begin code block" <|
             \_ ->
                 Markdown.classify "```"
-                    |> Expect.equal { indent = 0, lineType = Line.BeginVerbatimBlock "code" }
+                    |> Expect.equal { indent = 0, lineType = Line.BeginVerbatimBlock "code", content = "" }
         , test "Markdown.classify begin math block" <|
             \_ ->
                 Markdown.classify "$$"
-                    |> Expect.equal { indent = 0, lineType = Line.BeginVerbatimBlock "math" }
+                    |> Expect.equal { indent = 0, lineType = Line.BeginVerbatimBlock "math", content = "" }
         , test "Markdown.classify begin quotation block" <|
             \_ ->
                 Markdown.classify ">"
-                    |> Expect.equal { indent = 0, lineType = Line.BeginBlock "quotation" }
+                    |> Expect.equal { indent = 0, lineType = Line.BeginBlock "quotation", content = "" }
         ]
