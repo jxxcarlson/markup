@@ -84,6 +84,7 @@ codeBlock generation settings textList =
             ]
         , Font.color codeColor
         , paddingEach { left = 18, right = 0, top = 0, bottom = 8 }
+        , spacing 12
         ]
         (List.map (\t -> el [] (text t)) textList)
 
