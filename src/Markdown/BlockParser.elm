@@ -35,7 +35,7 @@ nextStateAux line state =
                         False
 
                     else
-                        True
+                        state.inVerbatimBlock
             )
                 |> debug3 "inVerbatimBlock"
 
@@ -61,6 +61,10 @@ nextStateAux line state =
         indent =
             lineType.indent
     in
+    nextStateAux2 indent line newLineType lineType { state | inVerbatimBlock = inVerbatimBlock }
+
+
+nextStateAux2 indent line newLineType lineType state =
     case newLineType of
         BeginBlock s ->
             let

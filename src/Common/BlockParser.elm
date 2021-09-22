@@ -33,6 +33,7 @@ type alias State =
     , lineNumber : Int
     , generation : Int
     , blockCount : Int
+    , inVerbatimBlock : Bool
     , counter : Int
     , stack : List Block
     }
@@ -88,6 +89,7 @@ initialState generation input =
     , generation = generation
     , blockCount = 0
     , counter = 0
+    , inVerbatimBlock = False
     , stack = []
     }
 
