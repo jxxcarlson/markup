@@ -10,16 +10,14 @@ one of three markup languages (L1, Markdown, MiniLaTeX) to `Html msg`.
 
 -}
 
+import Common.BlockParser as Block
 import Common.Library.ASTTools
 import Common.Render exposing (Settings)
 import Common.Syntax as Syntax exposing (Language(..), Meta, Text(..))
 import Common.Text.Cursor as Cursor
 import Common.Text.Parser
 import Element exposing (Element)
-import L1.BlockParser as L1
-import Markdown.BlockParser as Markdown
 import Markdown.Rule
-import MiniLaTeX.BlockParser as MiniLaTeX
 import MiniLaTeX.Rule
 
 
@@ -47,15 +45,7 @@ prepareForExport str =
 
 parse : Syntax.Language -> Int -> List String -> List Syntax.TextBlock
 parse language generation lines =
-    case language of
-        Syntax.Markdown ->
-            lines |> Markdown.parse generation |> List.map (Syntax.map (parseLoop language))
-
-        Syntax.MiniLaTeX ->
-            lines |> MiniLaTeX.parse generation |> List.map (Syntax.map (parseLoop language))
-
-        Syntax.L1 ->
-            lines |> L1.parse generation |> List.map (Syntax.map (Common.Text.Parser.dummyParse generation { width = 500 }))
+    lines |> Block.parse generation |> List.map (Syntax.map (parseLoop language))
 
 
 
