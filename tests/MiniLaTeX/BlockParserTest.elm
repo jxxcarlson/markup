@@ -9,7 +9,7 @@ import Test exposing (..)
 
 
 rs str =
-    BlockParser.run MiniLaTeX 1 (String.lines str) |> .output |> List.map Syntax.simplify
+    BlockParser.runParser MiniLaTeX 1 (String.lines str) |> .output |> List.map Syntax.simplify
 
 
 testParser input output =
@@ -62,8 +62,7 @@ suite =
         , testParser
             "```\n   a[i] = a[i] + 1\n   \n   b[i] = b[i] + 1"
             [ BBVerbatimBlock "code" [ "   a[i] = a[i] + 1", "   ", "   b[i] = b[i] + 1" ] ]
-        , Test.only <|
-            testParser
-                "one\ntwo"
-                [ BBParagraph [ "one", "two" ] ]
+        , testParser
+            "one\ntwo"
+            [ BBParagraph [ "one", "two" ] ]
         ]

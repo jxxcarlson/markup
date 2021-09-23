@@ -9,7 +9,7 @@ import Test exposing (..)
 
 
 rs str =
-    BlockParser.run Markdown 1 (String.lines str) |> .output |> List.map Syntax.simplify
+    BlockParser.runParser Markdown 1 (String.lines str) |> .output |> List.map Syntax.simplify
 
 
 testParser input output =

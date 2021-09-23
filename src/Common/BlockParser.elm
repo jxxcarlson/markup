@@ -1,4 +1,4 @@
-module Common.BlockParser exposing (parse, run)
+module Common.BlockParser exposing (parse, runParser)
 
 import Common.BasicSyntax as Basic exposing (BasicBlock(..))
 import Common.BlockParserTools as BP exposing (State, Step(..), level, loop)
@@ -13,11 +13,11 @@ import Utility
 
 parse : Language -> Int -> List String -> List Block
 parse language generation lines =
-    lines |> run language generation |> .output
+    lines |> runParser language generation |> .output
 
 
-run : Language -> Int -> List String -> State
-run language generation input =
+runParser : Language -> Int -> List String -> State
+runParser language generation input =
     BP.loop (BP.initialState generation input) (BP.nextStep (nextStateAux language))
 
 
