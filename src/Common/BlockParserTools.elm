@@ -21,7 +21,7 @@ module Common.BlockParserTools exposing
 import Common.BasicSyntax as Basic
 import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Line exposing (LineType(..))
-import Common.Syntax as Syntax exposing (Block(..), BlockType(..))
+import Common.Syntax as Syntax exposing (Block(..), BlockType(..), dummyMeta)
 import List.Extra
 import Utility
 
@@ -352,6 +352,9 @@ appendLineAtTop line stack =
 
                 Block name ((Paragraph lines meta1) :: rest) meta2 ->
                     Block name (Paragraph (line :: lines) meta1 :: rest) meta2 :: List.drop 1 stack
+
+                Block name [] meta2 ->
+                    Block name [ Paragraph [ line ] (dummyMeta 0 0) ] meta2 :: List.drop 1 stack
 
                 Block name ((Block name2 blocks meta1) :: rest) meta2 ->
                     Block name (Paragraph [ line ] meta1 :: Block name2 blocks meta1 :: rest) meta2 :: List.drop 1 stack

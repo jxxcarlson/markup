@@ -78,14 +78,18 @@ nextStateAux2 indent line newLineType lineType state =
     case newLineType of
         BeginBlock s ->
             let
-                innerBlock =
-                    Paragraph [ lineType.content ] (Syntax.dummyMeta 0 0)
+                innerBlockList =
+                    if lineType.content == "" then
+                        []
+
+                    else
+                        [ Paragraph [ lineType.content ] (Syntax.dummyMeta 0 0) ]
             in
             if BP.level indent <= BP.blockLevelOfStackTop state.stack then
-                { state | indent = indent } |> BP.reduceStack |> BP.shift (Block s [ innerBlock ] (Syntax.dummyMeta 0 0))
+                { state | indent = indent } |> BP.reduceStack |> BP.shift (Block s innerBlockList (Syntax.dummyMeta 0 0))
 
             else
-                { state | indent = indent } |> BP.shift (Block s [ innerBlock ] (Syntax.dummyMeta 0 0))
+                { state | indent = indent } |> BP.shift (Block s innerBlockList (Syntax.dummyMeta 0 0))
 
         BeginVerbatimBlock s ->
             if BP.level indent <= BP.blockLevelOfStackTop state.stack then
