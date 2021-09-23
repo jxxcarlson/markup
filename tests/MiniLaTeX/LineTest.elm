@@ -33,21 +33,21 @@ suite =
         , test "MiniLaTeX.classify empty line" <|
             \_ ->
                 MiniLaTeX.classify ""
-                    |> Expect.equal { indent = 0, lineType = Line.BlankLine }
+                    |> Expect.equal { indent = 0, lineType = Line.BlankLine, content = "" }
         , test "MiniLaTeX.classify  blank line with 3 leading spaces" <|
             \_ ->
                 MiniLaTeX.classify "   "
-                    |> Expect.equal { indent = 3, lineType = Line.BlankLine }
+                    |> Expect.equal { indent = 3, lineType = Line.BlankLine, content = "   " }
         , test "MiniLaTeX.classify ordinary line with 3 leading spaces" <|
             \_ ->
                 MiniLaTeX.classify "   ho ho ho!"
-                    |> Expect.equal { indent = 3, lineType = Line.OrdinaryLine }
+                    |> Expect.equal { indent = 3, lineType = Line.OrdinaryLine, content = "   " }
         , test "MiniLaTeX.classify begin block" <|
             \_ ->
                 MiniLaTeX.classify "\\begin{foo}"
-                    |> Expect.equal { indent = 0, lineType = Line.BeginBlock "foo" }
+                    |> Expect.equal { indent = 0, lineType = Line.BeginBlock "foo", content = "   " }
         , test "MiniLaTeX.classify end block" <|
             \_ ->
                 MiniLaTeX.classify "\\end{foo}"
-                    |> Expect.equal { indent = 0, lineType = Line.EndBlock "foo" }
+                    |> Expect.equal { indent = 0, lineType = Line.EndBlock "foo", content = "   " }
         ]

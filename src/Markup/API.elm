@@ -45,7 +45,7 @@ prepareForExport str =
 
 parse : Syntax.Language -> Int -> List String -> List Syntax.TextBlock
 parse language generation lines =
-    lines |> Block.parse generation |> List.map (Syntax.map (parseLoop language))
+    lines |> Block.parse language generation |> List.map (Syntax.map (parseLoop language))
 
 
 

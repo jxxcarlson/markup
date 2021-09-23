@@ -4,26 +4,36 @@ import Common.BasicSyntax as Basic exposing (BasicBlock(..))
 import Common.BlockParserTools as BP exposing (State, Step(..), level, loop)
 import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Line as Line exposing (LineType(..))
-import Common.Syntax as Syntax exposing (Block(..), BlockType(..))
-import Markdown.Line as Line
+import Common.Syntax as Syntax exposing (Block(..), BlockType(..), Language(..))
+import L1.Line
+import Markdown.Line
+import MiniLaTeX.Line
 import Utility
 
 
-parse : Int -> List String -> List Block
-parse generation lines =
-    lines |> run generation |> .output
+parse : Language -> Int -> List String -> List Block
+parse language generation lines =
+    lines |> run language generation |> .output
 
 
-run : Int -> List String -> State
-run generation input =
-    BP.loop (BP.initialState generation input) (BP.nextStep nextStateAux)
+run : Language -> Int -> List String -> State
+run language generation input =
+    BP.loop (BP.initialState generation input) (BP.nextStep (nextStateAux language))
 
 
-nextStateAux : String -> State -> State
-nextStateAux line state =
+nextStateAux : Language -> String -> State -> State
+nextStateAux language line state =
     let
         lineType =
-            Line.classify line |> debug2 "lineType"
+            case language of
+                L1 ->
+                    L1.Line.classify line |> debug2 "lineType"
+
+                Markdown ->
+                    Markdown.Line.classify line |> debug2 "lineType"
+
+                MiniLaTeX ->
+                    MiniLaTeX.Line.classify line |> debug2 "lineType"
 
         inVerbatimBlock =
             (case lineType.lineType of

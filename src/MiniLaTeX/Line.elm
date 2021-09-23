@@ -1,16 +1,20 @@
 module MiniLaTeX.Line exposing (classify)
 
+import Common.Library.ParserTools as ParserTools
 import Common.Line as Line
 import Parser exposing ((|.), (|=), Parser)
 
 
-classify : String -> { indent : Int, lineType : Line.LineType }
+classify : String -> { indent : Int, lineType : Line.LineType, content : String }
 classify str =
     let
         leadingSpaces =
             Line.countLeadingSpaces str
+
+        nibble str_ =
+            String.dropLeft (String.length (ParserTools.nibble str_) + 1) str_
     in
-    { indent = leadingSpaces, lineType = lineType (String.dropLeft leadingSpaces str) }
+    { indent = leadingSpaces, lineType = lineType (String.dropLeft leadingSpaces str), content = nibble str }
 
 
 lineType str =

@@ -1,14 +1,15 @@
-module MiniLaTeX.BlockParserTest exposing (..)
+module MiniLaTeX.BlockParserTest exposing (suite)
 
 import Common.BasicSyntax as Syntax exposing (BasicBlock(..))
 import Common.BlockParser as BlockParser
 import Common.BlockParserTools
+import Common.Syntax exposing (Language(..))
 import Expect exposing (Expectation)
 import Test exposing (..)
 
 
 rs str =
-    BlockParser.run 1 (String.lines str) |> .output |> List.map Syntax.simplify
+    BlockParser.run MiniLaTeX 1 (String.lines str) |> .output |> List.map Syntax.simplify
 
 
 testParser input output =
@@ -21,9 +22,10 @@ testParser input output =
 suite : Test
 suite =
     describe "The MiniLaTeX Block Parser"
-        [ testParser
-            "\\begin{foo}\n   ho ho ho!\n\\end{foo}"
-            [ BBBlock "foo" [ BBParagraph [ "ho ho ho!" ] ] ]
+        [ Test.only <|
+            testParser
+                "\\begin{foo}\n   ho ho ho!\n\\end{foo}"
+                [ BBBlock "foo" [ BBParagraph [ "ho ho ho!" ] ] ]
         , testParser
             "aaa\nbbb\n\n\\begin{foo}\n   ho ho ho!\n\\end{foo}n\nccc\nddd"
             [ BBParagraph [ "bbb", "aaa" ]

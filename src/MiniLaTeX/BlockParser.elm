@@ -1,4 +1,4 @@
-module MiniLaTeX.BlockParser exposing (parse, run)
+module MiniLaTeX.BlockParser exposing (foo)
 
 import Common.BasicSyntax as Basic exposing (BasicBlock(..))
 import Common.BlockParserTools as BP exposing (State, Step(..), loop)
@@ -7,6 +7,10 @@ import Common.Line as Line exposing (LineType(..))
 import Common.Syntax as Syntax exposing (Block(..), BlockType(..))
 import MiniLaTeX.Line as Line
 import Utility
+
+
+foo =
+    1
 
 
 parse : Int -> List String -> List Block
@@ -78,7 +82,7 @@ nextStateAux line state =
                     Utility.takeUntil (\a -> BP.blockLabel a == s && BP.blockLevel a == BP.level indent) state.stack
 
                 data =
-                    BP.reduceStack_ { stack = prefix, output = [] } |> debug1 "data (1), Endblock"
+                    BP.reduceStack_ { stack = prefix, output = [] } |> debug1 "MiniLaTeX data (1), Endblock"
             in
             if s == BP.blockLabelAtBottomOfStack prefix then
                 { state | stack = data.stack ++ rest, output = data.output ++ state.output }
