@@ -45,21 +45,21 @@ prepareForExport str =
 
 parse : Syntax.Language -> Int -> List String -> List Syntax.TextBlock
 parse language generation lines =
-    lines |> Block.parse language generation |> List.map (Syntax.map (parseLoop language))
+    lines |> Block.parse language generation |> List.map (Syntax.map (parseText language))
 
 
 
 -- NOT EXPOSED
 
 
-parseLoop : Syntax.Language -> String -> List Text
-parseLoop language input =
+parseText : Syntax.Language -> String -> List Text
+parseText language input =
     case language of
         Syntax.Markdown ->
-            Cursor.parseLoop Markdown.Rule.markdownRules (Cursor.init 0 0 0 input) |> .committed |> List.reverse
+            Cursor.parseLoop Markdown.Rule.rules (Cursor.init 0 0 0 input) |> .committed |> List.reverse
 
         Syntax.MiniLaTeX ->
-            Cursor.parseLoop MiniLaTeX.Rule.miniLaTeXRules (Cursor.init 0 0 0 input) |> .committed |> List.reverse
+            Cursor.parseLoop MiniLaTeX.Rule.rules (Cursor.init 0 0 0 input) |> .committed |> List.reverse
 
         Syntax.L1 ->
-            Cursor.parseLoop Markdown.Rule.markdownRules (Cursor.init 0 0 0 input) |> .committed |> List.reverse
+            Cursor.parseLoop Markdown.Rule.rules (Cursor.init 0 0 0 input) |> .committed |> List.reverse

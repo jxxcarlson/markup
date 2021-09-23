@@ -3,6 +3,7 @@ module Common.BlockParser exposing (parse, runParser)
 import Common.BasicSyntax as Basic exposing (BasicBlock(..))
 import Common.BlockParserTools as BP exposing (State, Step(..), level, loop)
 import Common.Debug exposing (debug1, debug2, debug3)
+import Common.Library.ParserTools as ParserTools
 import Common.Line as Line exposing (LineType(..))
 import Common.Syntax as Syntax exposing (Block(..), BlockType(..), Language(..))
 import L1.Line
@@ -21,19 +22,44 @@ runParser language generation input =
     BP.loop (BP.initialState generation input) (BP.nextStep (nextStateAux language))
 
 
+classify : (String -> Line.LineType) -> Bool -> String -> { indent : Int, lineType : Line.LineType, content : String }
+classify lineType inVerbatimBlock str =
+    let
+        leadingSpaces =
+            Line.countLeadingSpaces str
+
+        nibble str_ =
+            String.dropLeft (String.length (ParserTools.nibble str_) + 1) str_
+
+        provisionalLineType =
+            lineType (String.dropLeft leadingSpaces str)
+
+        lineType_ =
+            if inVerbatimBlock && provisionalLineType == Line.BlankLine then
+                Line.VerbatimLine
+
+            else
+                provisionalLineType
+    in
+    { indent = leadingSpaces, lineType = lineType_, content = nibble str }
+
+
 nextStateAux : Language -> String -> State -> State
 nextStateAux language line state =
     let
-        lineType =
+        lineTypeParser =
             case language of
                 L1 ->
-                    L1.Line.classify state.inVerbatimBlock line |> debug2 "lineType (L1)"
+                    L1.Line.lineType
 
                 Markdown ->
-                    Markdown.Line.classify state.inVerbatimBlock line |> debug2 "lineType (Markdown)"
+                    Markdown.Line.lineType
 
                 MiniLaTeX ->
-                    MiniLaTeX.Line.classify state.inVerbatimBlock line |> debug2 "lineType (MiniLaTeX)"
+                    MiniLaTeX.Line.lineType
+
+        lineType =
+            classify lineTypeParser state.inVerbatimBlock line |> debug2 "lineType (L1)"
 
         inVerbatimBlock =
             (case lineType.lineType of

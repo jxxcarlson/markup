@@ -11,17 +11,17 @@ import Test exposing (..)
 
 markdownParseLoopCommitted : String -> List Text
 markdownParseLoopCommitted input =
-    Cursor.parseLoop Rule.markdownRules (Cursor.init 0 0 0 input) |> .committed
+    Cursor.parseLoop Rule.rules (Cursor.init 0 0 0 input) |> .committed
 
 
 markdownParseLoop : String -> Cursor.TextCursor
 markdownParseLoop input =
-    Cursor.parseLoop Rule.markdownRules (Cursor.init 0 0 0 input)
+    Cursor.parseLoop Rule.rules (Cursor.init 0 0 0 input)
 
 
 testParseLoopCommitted : String -> String -> List Text -> Test
 testParseLoopCommitted label input output =
-    test label <| \_ -> Cursor.parseLoop Rule.markdownRules (Cursor.init 0 0 0 input) |> .committed |> List.reverse |> Expect.equal output
+    test label <| \_ -> Cursor.parseLoop Rule.rules (Cursor.init 0 0 0 input) |> .committed |> List.reverse |> Expect.equal output
 
 
 stringDataContent : Cursor.Step Cursor.TextCursor Cursor.TextCursor -> String

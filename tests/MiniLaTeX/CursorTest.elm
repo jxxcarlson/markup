@@ -11,37 +11,37 @@ import Test exposing (..)
 
 miniLaTeXParseLoopCommitted : String -> List Text
 miniLaTeXParseLoopCommitted input =
-    Cursor.parseLoop Rule.miniLaTeXRules (Cursor.init 0 0 0 input) |> .committed
+    Cursor.parseLoop Rule.rules (Cursor.init 0 0 0 input) |> .committed
 
 
 miniLaTeXParseLoop : String -> Cursor.TextCursor
 miniLaTeXParseLoop input =
-    Cursor.parseLoop Rule.miniLaTeXRules (Cursor.init 0 0 0 input)
+    Cursor.parseLoop Rule.rules (Cursor.init 0 0 0 input)
 
 
 testNextCursorMiniLaTeX : String -> Int -> String -> String -> Test
 testNextCursorMiniLaTeX label scanPoint input output =
-    test label <| \_ -> Cursor.nextCursor Rule.miniLaTeXRules (Cursor.init 0 0 scanPoint input) |> stringDataContent |> Expect.equal output
+    test label <| \_ -> Cursor.nextCursor Rule.rules (Cursor.init 0 0 scanPoint input) |> stringDataContent |> Expect.equal output
 
 
 testNextCursorCommittedMiniLaTeX : String -> Int -> String -> List Text -> Test
 testNextCursorCommittedMiniLaTeX label scanPoint input output =
-    test label <| \_ -> Cursor.nextCursor Rule.miniLaTeXRules (Cursor.init 0 0 scanPoint input) |> mapStepCursor .committed |> Expect.equal output
+    test label <| \_ -> Cursor.nextCursor Rule.rules (Cursor.init 0 0 scanPoint input) |> mapStepCursor .committed |> Expect.equal output
 
 
 testNextCursorStackMiniLaTeX : String -> Int -> String -> List Text -> Test
 testNextCursorStackMiniLaTeX label scanPoint input output =
-    test label <| \_ -> Cursor.nextCursor Rule.miniLaTeXRules (Cursor.init 0 0 scanPoint input) |> mapStepCursor .stack |> Expect.equal output
+    test label <| \_ -> Cursor.nextCursor Rule.rules (Cursor.init 0 0 scanPoint input) |> mapStepCursor .stack |> Expect.equal output
 
 
 testParseLoopCommitted : String -> String -> List Text -> Test
 testParseLoopCommitted label input output =
-    test label <| \_ -> Cursor.parseLoop Rule.miniLaTeXRules (Cursor.init 0 0 0 input) |> .committed |> List.reverse |> Expect.equal output
+    test label <| \_ -> Cursor.parseLoop Rule.rules (Cursor.init 0 0 0 input) |> .committed |> List.reverse |> Expect.equal output
 
 
 testParseLoopStack : String -> String -> List Text -> Test
 testParseLoopStack label input output =
-    test label <| \_ -> Cursor.parseLoop Rule.miniLaTeXRules (Cursor.init 0 0 0 input) |> .stack |> Expect.equal output
+    test label <| \_ -> Cursor.parseLoop Rule.rules (Cursor.init 0 0 0 input) |> .stack |> Expect.equal output
 
 
 

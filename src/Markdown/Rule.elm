@@ -1,11 +1,11 @@
-module Markdown.Rule exposing (markdownRules)
+module Markdown.Rule exposing (rules)
 
 import Common.Text.Rule exposing (Action(..), Rule, Rules)
 import Dict exposing (Dict)
 
 
-markdownRules : Rules
-markdownRules =
+rules : Rules
+rules =
     { dict = markdownRuleDict, default = defaultRule }
 
 

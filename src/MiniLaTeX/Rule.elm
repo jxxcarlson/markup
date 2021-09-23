@@ -1,11 +1,11 @@
-module MiniLaTeX.Rule exposing (miniLaTeXRules)
+module MiniLaTeX.Rule exposing (rules)
 
 import Common.Text.Rule exposing (Action(..), Rule, Rules)
 import Dict exposing (Dict)
 
 
-miniLaTeXRules : Rules
-miniLaTeXRules =
+rules : Rules
+rules =
     { dict = miniLaTeXRuleDict, default = defaultRule }
 
 

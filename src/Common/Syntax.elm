@@ -59,16 +59,16 @@ type TextBlock
 
 
 map : (String -> List Text) -> Block -> TextBlock
-map f block =
+map textParser block =
     case block of
         Paragraph stringList meta ->
-            TBParagraph (List.map f stringList |> List.concat) meta
+            TBParagraph (List.map textParser stringList |> List.concat) meta
 
         VerbatimBlock name stringList meta ->
             TBVerbatimBlock name stringList meta
 
         Block name blockList meta ->
-            TBBlock name (List.map (map f) blockList) meta
+            TBBlock name (List.map (map textParser) blockList) meta
 
         Error str ->
             TBError str

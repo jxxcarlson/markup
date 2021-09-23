@@ -1,4 +1,4 @@
-module Markdown.Line exposing (classify)
+module Markdown.Line exposing (lineType)
 
 import Common.Debug exposing (debug3)
 import Common.Library.ParserTools as ParserTools

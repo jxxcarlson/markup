@@ -1,4 +1,4 @@
-module L1.Line exposing (classify)
+module L1.Line exposing (lineType)
 
 import Common.Library.ParserTools as ParserTools
 import Common.Line as Line
