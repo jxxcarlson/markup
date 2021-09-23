@@ -32,24 +32,24 @@ suite =
                     |> Expect.equal (Ok Line.OrdinaryLine)
         , test "(4) MiniLaTeX.classify empty line" <|
             \_ ->
-                MiniLaTeX.classify ""
+                MiniLaTeX.classify False ""
                     |> Expect.equal { indent = 0, lineType = Line.BlankLine, content = "" }
         , test "(5) MiniLaTeX.classify  blank line with 3 leading spaces" <|
             \_ ->
                 -- TODO: note, one space less than expected, no big deal??
-                MiniLaTeX.classify "   "
+                MiniLaTeX.classify False "   "
                     |> Expect.equal { indent = 3, lineType = Line.BlankLine, content = "  " }
         , test "(6) MiniLaTeX.classify ordinary line with 3 leading spaces" <|
             \_ ->
                 -- TODO: note, one space less than expected, no big deal??
-                MiniLaTeX.classify "   ho ho ho!"
+                MiniLaTeX.classify False "   ho ho ho!"
                     |> Expect.equal { content = "  ho ho ho!", indent = 3, lineType = Line.OrdinaryLine }
         , test "(7) MiniLaTeX.classify begin block" <|
             \_ ->
-                MiniLaTeX.classify "\\begin{foo}"
+                MiniLaTeX.classify False "\\begin{foo}"
                     |> Expect.equal { content = "", indent = 0, lineType = Line.BeginBlock "foo" }
         , test "(8) MiniLaTeX.classify end block" <|
             \_ ->
-                MiniLaTeX.classify "\\end{foo}"
+                MiniLaTeX.classify False "\\end{foo}"
                     |> Expect.equal { content = "", indent = 0, lineType = Line.EndBlock "foo" }
         ]

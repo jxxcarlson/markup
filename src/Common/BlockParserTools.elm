@@ -69,7 +69,7 @@ nextStep nextStateAux state =
                     debug1 "Reduce stack" (newState.output |> List.map Basic.simplify)
 
                 finalState =
-                    { newState | output = newState.stack ++ newState.output |> List.reverse |> debug1 "reverse contents (2)" }
+                    { newState | output = newState.stack ++ newState.output |> List.reverse |> debug1 "reverse output (2)" }
 
                 _ =
                     finalState |> .output |> List.map Basic.simplify |> debug1 "OUTPUT"
@@ -119,7 +119,7 @@ handle state stack2 block1 block2 =
                 newBlock =
                     Block name (reverseContents block1 :: blocks) meta
             in
-            reduceStack { state | stack = stack2, output = newBlock :: state.output }
+            reduceStack { state | stack = stack2, output = reverseContents newBlock :: state.output }
 
         VerbatimBlock name blocks meta ->
             case block1 of
@@ -129,7 +129,7 @@ handle state stack2 block1 block2 =
                         newBlock =
                             VerbatimBlock name (List.reverse <| strings ++ blocks) metaP
                     in
-                    reduceStack { state | stack = stack2, output = newBlock :: state.output }
+                    reduceStack { state | stack = stack2, output = reverseContents newBlock :: state.output }
 
                 _ ->
                     state
@@ -265,7 +265,11 @@ blockIsLikeTopOfStack block blocks =
 
 reverseContents : Block -> Block
 reverseContents block =
-    case block of
+    (let
+        _ =
+            debug3 "THE REAL reverseContents (IN)" block
+     in
+     case block of
         Paragraph strings meta ->
             Paragraph (List.reverse strings) meta
 
@@ -277,6 +281,8 @@ reverseContents block =
 
         Error s ->
             Error s
+    )
+        |> debug3 "THE REAL reverseContents (OUT)"
 
 
 

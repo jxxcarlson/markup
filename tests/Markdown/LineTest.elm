@@ -30,32 +30,32 @@ suite =
             \_ ->
                 Parser.run (Line.ordinaryLineParser []) "\\{foo} ho ho ho!"
                     |> Expect.equal (Ok Line.OrdinaryLine)
-        , test "Markdown.classify empty line" <|
+        , test "Markdown.classify False empty line" <|
             \_ ->
-                Markdown.classify ""
+                Markdown.classify False ""
                     |> Expect.equal { indent = 0, lineType = Line.BlankLine, content = "" }
-        , test "Markdown.classify  blank line with 3 leading spaces" <|
+        , test "Markdown.classify False  blank line with 3 leading spaces" <|
             \_ ->
-                Markdown.classify "   "
+                Markdown.classify False "   "
                     |> Expect.equal { indent = 3, lineType = Line.BlankLine, content = "  " }
 
         -- TODO: only two spaces returned.  But do we care?
-        , test "Markdown.classify ordinary line with 3 leading spaces" <|
+        , test "Markdown.classify False ordinary line with 3 leading spaces" <|
             \_ ->
-                Markdown.classify "   ho ho ho!"
+                Markdown.classify False "   ho ho ho!"
                     |> Expect.equal { indent = 3, lineType = Line.OrdinaryLine, content = "  ho ho ho!" }
 
         -- TODO: only two spaces returned.  But do we care?
-        , test "Markdown.classify begin code block" <|
+        , test "Markdown.classify False begin code block" <|
             \_ ->
-                Markdown.classify "```"
+                Markdown.classify False "```"
                     |> Expect.equal { indent = 0, lineType = Line.BeginVerbatimBlock "code", content = "" }
-        , test "Markdown.classify begin math block" <|
+        , test "Markdown.classify False begin math block" <|
             \_ ->
-                Markdown.classify "$$"
+                Markdown.classify False "$$"
                     |> Expect.equal { indent = 0, lineType = Line.BeginVerbatimBlock "math", content = "" }
-        , test "Markdown.classify begin quotation block" <|
+        , test "Markdown.classify False begin quotation block" <|
             \_ ->
-                Markdown.classify ">"
+                Markdown.classify False ">"
                     |> Expect.equal { indent = 0, lineType = Line.BeginBlock "quotation", content = "" }
         ]

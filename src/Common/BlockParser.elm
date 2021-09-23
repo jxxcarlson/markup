@@ -27,13 +27,13 @@ nextStateAux language line state =
         lineType =
             case language of
                 L1 ->
-                    L1.Line.classify line |> debug2 "lineType"
+                    L1.Line.classify state.inVerbatimBlock line |> debug2 "lineType (L1)"
 
                 Markdown ->
-                    Markdown.Line.classify line |> debug2 "lineType"
+                    Markdown.Line.classify state.inVerbatimBlock line |> debug2 "lineType (Markdown)"
 
                 MiniLaTeX ->
-                    MiniLaTeX.Line.classify line |> debug2 "lineType"
+                    MiniLaTeX.Line.classify state.inVerbatimBlock line |> debug2 "lineType (MiniLaTeX)"
 
         inVerbatimBlock =
             (case lineType.lineType of
@@ -75,6 +75,10 @@ nextStateAux language line state =
 
 
 nextStateAux2 indent line newLineType lineType state =
+    let
+        _ =
+            debug1 "newLineType" newLineType
+    in
     case newLineType of
         BeginBlock s ->
             let
@@ -197,7 +201,7 @@ handleBlankLine indent state =
 handleOrdinaryLine indent line state =
     let
         _ =
-            debug1 "handleOrdinaryLine, (indent, line)" ( indent, line )
+            debug1 "!!! handleOrdinaryLine, (indent, line, inVerbatimBlock)" ( indent, line, state.inVerbatimBlock )
     in
     if BP.level indent >= BP.blockLevelOfStackTop state.stack then
         case List.head state.stack of
@@ -236,6 +240,10 @@ handleOrdinaryLine indent line state =
 
 
 handleVerbatimLine indent line state =
+    let
+        _ =
+            debug1 "handleVerbatimLine" line
+    in
     if BP.level indent >= BP.blockLevelOfStackTop state.stack then
         case List.head state.stack of
             Nothing ->

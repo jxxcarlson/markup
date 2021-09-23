@@ -30,7 +30,7 @@ getTitle =
 {-| -}
 compile : Syntax.Language -> Int -> Settings -> List String -> List (Element msg)
 compile language generation settings lines =
-    lines |> parse language generation |> Common.Render.render generation settings
+    lines |> parse language generation |> Debug.log "FINAL OUTPUT" |> Common.Render.render generation settings
 
 
 {-| -}

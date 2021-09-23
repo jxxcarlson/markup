@@ -31,24 +31,24 @@ suite =
                 \_ ->
                     Parser.run (Line.ordinaryLineParser [ '|' ]) "| ho ho ho!"
                         |> Expect.notEqual (Ok Line.OrdinaryLine)
-            , test "L1.classify empty line" <|
+            , test "L1.classify False empty line" <|
                 \_ ->
-                    L1.classify ""
+                    L1.classify False ""
                         |> Expect.equal { indent = 0, lineType = Line.BlankLine, content = "   " }
-            , test "L1.classify  blank line with 3 leading spaces" <|
+            , test "L1.classify False  blank line with 3 leading spaces" <|
                 \_ ->
-                    L1.classify "   "
+                    L1.classify False "   "
                         |> Expect.equal { indent = 3, lineType = Line.BlankLine, content = "   " }
-            , test "L1.classify ordinary line with 3 leading spaces" <|
+            , test "L1.classify False ordinary line with 3 leading spaces" <|
                 \_ ->
-                    L1.classify "   ho ho ho!"
+                    L1.classify False "   ho ho ho!"
                         |> Expect.equal { indent = 3, lineType = Line.OrdinaryLine, content = "   " }
-            , test "L1.classify block" <|
+            , test "L1.classify False block" <|
                 \_ ->
-                    L1.classify "| indent"
+                    L1.classify False "| indent"
                         |> Expect.equal { indent = 0, lineType = Line.BeginBlock "indent", content = "   " }
-            , test "L1.classify verbatim block" <|
+            , test "L1.classify False verbatim block" <|
                 \_ ->
-                    L1.classify "|| math"
+                    L1.classify False "|| math"
                         |> Expect.equal { indent = 0, lineType = Line.BeginVerbatimBlock "math", content = "   " }
             ]

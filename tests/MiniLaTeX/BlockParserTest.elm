@@ -55,15 +55,15 @@ suite =
         , -- TODO: returning leading spaces, hmm???
           testParser
             "$$\n    x^2\n\nHo ho ho!"
-            [ BBVerbatimBlock "math" [ "    x^2" ], BBParagraph [ "Ho ho ho!" ] ]
+            [ BBVerbatimBlock "math" [ "    x^2" ], BBParagraph [ "", "Ho ho ho!" ] ]
         , testParser
             "$$\n    x^2\n$$"
             [ BBVerbatimBlock "math" [ "    x^2" ] ]
         , testParser
-            "Code:\n```\n   a[i] = a[i] + 1\n   \n   b[i] = b[i] + 1\n\nOk!"
-            [ BBParagraph [ "Code:" ], BBVerbatimBlock "code" [ "a[i] = a[i] + 1", "", "b[i] = b[i] + 1" ], BBParagraph [ "Ok!" ] ]
-        , Test.skip <|
+            "```\n   a[i] = a[i] + 1\n   \n   b[i] = b[i] + 1"
+            [ BBVerbatimBlock "code" [ "   a[i] = a[i] + 1", "   ", "   b[i] = b[i] + 1" ] ]
+        , Test.only <|
             testParser
-                "one\ntwo\n\nthree\nfour"
-                [ BBParagraph [ "one", "two" ], BBParagraph [ "three", "four" ] ]
+                "one\ntwo"
+                [ BBParagraph [ "one", "two" ] ]
         ]
