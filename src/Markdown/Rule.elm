@@ -19,6 +19,7 @@ defaultRule =
     { name = "alpha"
     , start = \c -> not (List.member c (' ' :: markdownDelimiters))
     , continue = \c -> not (List.member c markdownDelimiters)
+    , spaceFollows = False
     , endCharLength = 0
     , dropLeadingChars = 1
     , isVerbatim = False
@@ -39,6 +40,7 @@ markdownRuleList =
       , { name = "title"
         , start = \c -> c == '#'
         , continue = \c -> c /= ' '
+        , spaceFollows = True
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = False
@@ -51,6 +53,7 @@ markdownRuleList =
       , { name = "bold"
         , start = \c -> c == '*'
         , continue = \c -> False
+        , spaceFollows = False
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = False
@@ -65,6 +68,7 @@ markdownRuleList =
         , continue = \c -> False
         , endCharLength = 0
         , dropLeadingChars = 0
+        , spaceFollows = True
         , isVerbatim = False
         , expect =
             [ { stop = [ "_" ], action = ShiftMarked }
@@ -75,6 +79,7 @@ markdownRuleList =
       , { name = "code"
         , start = \c -> c == '`'
         , continue = \c -> False
+        , spaceFollows = False
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = True
@@ -87,6 +92,7 @@ markdownRuleList =
       , { name = "math"
         , start = \c -> c == '$'
         , continue = \c -> False
+        , spaceFollows = False
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = True
@@ -99,6 +105,7 @@ markdownRuleList =
       , { name = "blank"
         , start = \c -> c == ' '
         , continue = \c -> c == ' '
+        , spaceFollows = False
         , endCharLength = 0
         , dropLeadingChars = 1
         , isVerbatim = False

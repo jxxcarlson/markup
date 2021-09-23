@@ -7,6 +7,7 @@ type alias Rule =
     { name : String
     , start : Char -> Bool
     , continue : Char -> Bool
+    , spaceFollows : Bool
     , endCharLength : Int
     , dropLeadingChars : Int
     , isVerbatim : Bool

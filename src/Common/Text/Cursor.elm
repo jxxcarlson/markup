@@ -155,7 +155,8 @@ nextCursor_ leadingChar cursor rules textToProcess =
                                 ( cursor.committed, Text stringData.content meta :: cursor.stack )
 
                         ShiftMarked ->
-                            ( cursor.committed, Marked (String.dropLeft rule.dropLeadingChars stringData.content) [] meta :: cursor.stack )
+                            -- ( cursor.committed, Marked (String.dropLeft rule.dropLeadingChars stringData.content) [] meta :: cursor.stack )
+                            ( cursor.committed, Marked (String.trim stringData.content) [] meta :: cursor.stack )
 
                         ShiftVerbatim c ->
                             ( cursor.committed, Verbatim c "" meta :: cursor.stack |> contract3Stack )
@@ -194,7 +195,11 @@ nextCursor_ leadingChar cursor rules textToProcess =
 
 getParser : Rule -> String -> Result (List (Parser.Advanced.DeadEnd Context Problem)) StringData
 getParser rule =
-    ParserTools.getText rule.start rule.continue
+    if rule.spaceFollows then
+        ParserTools.getTextAndSpaces rule.start rule.continue
+
+    else
+        ParserTools.getText rule.start rule.continue
 
 
 getScannerType : TextCursor -> Rule -> Char -> ScannerType

@@ -5,6 +5,7 @@ module Common.Library.ParserTools exposing
     , char
     , first
     , getText
+    , getTextAndSpaces
     , loop
     , many
     , manyNonEmpty
@@ -148,6 +149,11 @@ getText prefix continue str =
     Parser.run (text prefix continue) str
 
 
+getTextAndSpaces : (Char -> Bool) -> (Char -> Bool) -> String -> Result (List (Parser.DeadEnd Context Problem)) StringData
+getTextAndSpaces prefix continue str =
+    Parser.run (textAndSpaces prefix continue) str
+
+
 {-| Get the longest string
 whose first character satisfies `prefix` and whose remaining
 characters satisfy `continue`. Example:
@@ -164,6 +170,17 @@ text prefix continue =
         |= Parser.getOffset
         |. Parser.chompIf (\c -> prefix c) (UnHandledError 2)
         |. Parser.chompWhile (\c -> continue c)
+        |= Parser.getOffset
+        |= Parser.getSource
+
+
+textAndSpaces : (Char -> Bool) -> (Char -> Bool) -> Parser StringData
+textAndSpaces prefix continue =
+    Parser.succeed (\start finish content -> { start = start, finish = finish, content = String.slice start finish content })
+        |= Parser.getOffset
+        |. Parser.chompIf (\c -> prefix c) (UnHandledError 2)
+        |. Parser.chompWhile (\c -> continue c)
+        |. Parser.spaces
         |= Parser.getOffset
         |= Parser.getSource
 
@@ -239,6 +256,7 @@ prefixFreeOf c str =
             { content = "", finish = 0, start = 0 }
 
 
+nibble : String -> String
 nibble str =
     case Parser.run (text (\c_ -> c_ /= ' ') (\c_ -> c_ /= ' ')) str of
         Ok stringData ->
