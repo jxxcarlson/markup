@@ -1,6 +1,5 @@
 module Common.BlockParser exposing (classify, parse, runParser)
 
-import Common.BasicSyntax as Basic exposing (BasicBlock(..))
 import Common.BlockParserTools as BP exposing (State, Step(..), level, loop)
 import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Library.ParserTools as ParserTools
