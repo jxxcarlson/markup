@@ -34,7 +34,7 @@ renderBlock generation settings block =
         TBParagraph textList _ ->
             paragraph
                 []
-                (List.map (Common.Text.render generation settings) (Debug.log "FINAL, RENDER PARAGRAPH" textList))
+                (List.map (Common.Text.render generation settings) textList)
 
         TBVerbatimBlock name lines _ ->
             case Dict.get name verbatimBlockDict of
