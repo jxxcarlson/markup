@@ -5,28 +5,6 @@ import Common.Line as Line
 import Parser exposing ((|.), (|=), Parser)
 
 
-classify : Bool -> String -> { indent : Int, lineType : Line.LineType, content : String }
-classify inVerbatimBlock str =
-    let
-        leadingSpaces =
-            Line.countLeadingSpaces str
-
-        nibble str_ =
-            String.dropLeft (String.length (ParserTools.nibble str_) + 1) str_
-
-        provisionalLineType =
-            lineType (String.dropLeft leadingSpaces str)
-
-        lineType_ =
-            if inVerbatimBlock && provisionalLineType == Line.BlankLine then
-                Line.VerbatimLine
-
-            else
-                provisionalLineType
-    in
-    { indent = leadingSpaces, lineType = lineType_, content = nibble str }
-
-
 lineType : String -> Line.LineType
 lineType str =
     case Parser.run lineTypeParser str of

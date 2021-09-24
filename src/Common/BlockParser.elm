@@ -84,9 +84,6 @@ getLineTypeParser language =
 nextStateAux : Language -> String -> State -> State
 nextStateAux language line state =
     let
-        lineTypeParser =
-            getLineTypeParser language
-
         lineType =
             classify language state.inVerbatimBlock line |> debug2 "lineType (L1)"
 
