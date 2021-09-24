@@ -1,6 +1,6 @@
 module Common.BlockParser exposing (classify, parse, runParser)
 
-import Common.BlockParserTools as BP exposing (State, Step(..), level, loop)
+import Common.BlockParserTools as BP exposing (State, Step(..), level, loop, reduceStack)
 import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Library.ParserTools as ParserTools
 import Common.Line as Line exposing (LineType(..))
@@ -228,7 +228,8 @@ handleBlankLine indent state =
                     { state | stack = BP.appendLineAtTop "" state.stack, indent = indent }
 
                 else
-                    { state | stack = [], output = Syntax.Paragraph [] (Syntax.dummyMeta 0 0) :: List.reverse state.stack ++ state.output }
+                    -- { state | stack = [], output = (Syntax.Paragraph [] (Syntax.dummyMeta 0 0) :: List.reverse state.stack) ++ state.output }
+                    { state | stack = [], output = (Syntax.Paragraph [] (Syntax.dummyMeta 0 0) :: List.map BP.reverseContents (List.reverse state.stack)) ++ state.output }
 
     else
         BP.reduceStack state
@@ -265,7 +266,7 @@ handleOrdinaryLine indent line state =
                     _ =
                         debug1 "handleOrdinaryLine, (indent, line)" 1
                 in
-                BP.shift (Paragraph [ String.dropLeft indent line ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
+                BP.shift (Paragraph [ String.dropLeft indent (line ++ "\n") ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
 
             Just block ->
                 let
@@ -277,21 +278,21 @@ handleOrdinaryLine indent line state =
                         _ =
                             debug1 "handleOrdinaryLine, (indent, line)" 2.1
                     in
-                    { state | stack = BP.appendLineAtTop (String.dropLeft indent line) state.stack, indent = indent }
+                    { state | stack = BP.appendLineAtTop (String.dropLeft indent (line ++ "\n")) state.stack, indent = indent }
 
                 else
                     let
                         _ =
                             debug1 "handleOrdinaryLine, (indent, line)" 2.2
                     in
-                    BP.shift (Paragraph [ String.dropLeft indent line ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
+                    BP.shift (Paragraph [ String.dropLeft indent (line ++ "\n") ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
 
     else
         let
             _ =
                 debug1 "handleOrdinaryLine, (indent, line)" 3
         in
-        BP.shift (Paragraph [ line ] (Syntax.dummyMeta 0 0)) (BP.reduceStack { state | indent = indent })
+        BP.shift (Paragraph [ line ++ "\n" ] (Syntax.dummyMeta 0 0)) (BP.reduceStack { state | indent = indent })
 
 
 handleVerbatimLine indent line state =

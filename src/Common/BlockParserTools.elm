@@ -13,6 +13,7 @@ module Common.BlockParserTools exposing
     , parse
     , reduceStack
     , reduceStack_
+    , reverseContents
     , reverseStack
     , shift
     , typeOfBlock
@@ -61,12 +62,11 @@ nextStep nextStateAux state =
                 newState =
                     reduceStack { state | counter = state.counter + 1 }
 
-                -- |> reverseStack
                 _ =
-                    debug1 "STACK" ( newState.counter, List.map Basic.simplify newState.stack, blockLevelOfStackTop newState.stack )
+                    debug1 "!! STACK" ( newState.counter, List.map Basic.simplify newState.stack, blockLevelOfStackTop newState.stack )
 
                 _ =
-                    debug1 "Reduce stack" (newState.output |> List.map Basic.simplify)
+                    debug1 "!! Reduce stack" (newState.output |> List.map Basic.simplify)
 
                 finalState =
                     { newState | output = newState.stack ++ newState.output |> List.reverse |> debug1 "reverse output (2)" }

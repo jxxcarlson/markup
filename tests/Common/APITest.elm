@@ -25,6 +25,16 @@ suite =
         [ testAPI Markdown
             "one\ntwo"
             [ TBParagraph [ Text "one" { end = 3, id = "0.0", indent = 0, start = 0 }, Text "two" { end = 3, id = "0.0", indent = 0, start = 0 } ] { end = 0, id = "1.0", indent = 0, start = 0 } ]
+        , Test.only <|
+            testAPI Markdown
+                "one\nthree\n"
+                [ TBParagraph
+                    [ Text "one" { end = 3, id = "0.0", indent = 0, start = 0 }
+                    , Text "three" { end = 5, id = "0.0", indent = 0, start = 0 }
+                    ]
+                    { end = 0, id = "1.0", indent = 0, start = 0 }
+                , TBParagraph [] { end = 0, id = "1.2", indent = 0, start = 0 }
+                ]
         , testAPI Markdown
             "```\n   one\n   two"
             -- TODO: incorrect position information

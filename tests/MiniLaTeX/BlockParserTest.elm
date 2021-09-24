@@ -33,12 +33,11 @@ suite =
             , BBBlock "foo" [ BBParagraph [ "ho ho ho!" ] ]
             , BBParagraph [ "ccc", "ddd" ]
             ]
-        , Test.skip <|
-            testParser
-                "\\begin{foo}\n   HA HA HA!\n\\end{BAR}"
-                [ BBBlock "foo" [ BBParagraph [ "HA HA HA!" ] ]
-                , BBParagraph [ "Error: I was expecting an end-block labeled  foo, but found BAR" ]
-                ]
+        , testParser
+            "\\begin{foo}\n   HA HA HA!\n\\end{BAR}"
+            [ BBBlock "foo" [ BBParagraph [ "HA HA HA!" ] ]
+            , BBParagraph [ "Error: I was expecting an end-block labeled  foo, but found BAR" ]
+            ]
         , testParser
             "\\begin{foo}\n   ho ho ho!\n\\end{foo}\n\n\\begin{bar}\n   x^2\n\\end{bar}"
             [ BBBlock "foo" [ BBParagraph [ "ho ho ho!" ] ], BBBlock "bar" [ BBParagraph [ "x^2" ] ] ]

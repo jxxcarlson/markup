@@ -91,22 +91,21 @@ suiteParseLoop =
 
 suiteMiniLaTeXNextCursor : Test
 suiteMiniLaTeXNextCursor =
-    Test.skip <|
-        describe "the nextCursor function for MiniLaTeX"
-            [ testNextCursorMiniLaTeX "(1)" 0 "simple text \\foo" "simple text "
-            , testNextCursorMiniLaTeX "(2)" 12 "simple text \\foo" "\\foo"
-            , testNextCursorMiniLaTeX "(3)" 12 "simple text \\foo ha ha ha!" "\\foo"
-            , testNextCursorMiniLaTeX "(4)" 16 "simple text \\foo ha ha ha!" " ha ha ha!"
-            , testNextCursorCommittedMiniLaTeX "(5)"
-                0
-                "simple text \\foo"
-                [ Text "simple text " { start = 0, end = 12, indent = 0, id = "0.0" } ]
-            , testNextCursorCommittedMiniLaTeX "(6)"
-                12
-                "simple text \\foo"
-                [ Marked "foo" [] { start = 12, end = 16, indent = 0, id = "0.0" } ]
-            , testNextCursorStackMiniLaTeX "(7)"
-                12
-                "simple text \\foo{bar} baz"
-                [ Marked "foo" [] { start = 12, end = 16, indent = 0, id = "0.0" } ]
-            ]
+    describe "the nextCursor function for MiniLaTeX"
+        [ testNextCursorMiniLaTeX "(1)" 0 "simple text \\foo" "simple text "
+        , testNextCursorMiniLaTeX "(2)" 12 "simple text \\foo" "\\foo"
+        , testNextCursorMiniLaTeX "(3)" 12 "simple text \\foo ha ha ha!" "\\foo"
+        , testNextCursorMiniLaTeX "(4)" 16 "simple text \\foo ha ha ha!" " ha ha ha!"
+        , testNextCursorCommittedMiniLaTeX "(5)"
+            0
+            "simple text \\foo"
+            [ Text "simple text " { start = 0, end = 12, indent = 0, id = "0.0" } ]
+        , testNextCursorCommittedMiniLaTeX "(6)"
+            12
+            "simple text \\foo"
+            [ Marked "foo" [] { start = 12, end = 16, indent = 0, id = "0.0" } ]
+        , testNextCursorStackMiniLaTeX "(7)"
+            12
+            "simple text \\foo{bar} baz"
+            [ Marked "foo" [] { start = 12, end = 16, indent = 0, id = "0.0" } ]
+        ]
