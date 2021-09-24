@@ -85,7 +85,7 @@ nextStateAux : Language -> String -> State -> State
 nextStateAux language line state =
     let
         lineType =
-            classify language state.inVerbatimBlock line |> debug2 "lineType (L1)"
+            classify language state.inVerbatimBlock line |> debug2 "lineType (nextStateAux)"
 
         inVerbatimBlock =
             (case lineType.lineType of

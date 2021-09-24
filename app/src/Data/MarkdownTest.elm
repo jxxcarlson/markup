@@ -28,8 +28,10 @@ This is some code:  `a := 1`.  And so is this
 
 ```
    a[1] = 1
-   .
-   b[i] = 2
+   b[1] = 1
+
+   c[i] = 2
+   d[i] = c[i] + 1
 
 
 ## Quotation
