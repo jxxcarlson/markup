@@ -84,10 +84,10 @@ codeBlock generation settings textList =
             , Font.monospace
             ]
         , Font.color codeColor
-        , paddingEach { left = 18, right = 0, top = 0, bottom = 8 }
+        , paddingEach { left = 0, right = 0, top = 0, bottom = 8 }
         , spacing 12
         ]
-        (List.map (\t -> el [] (text t)) textList)
+        (List.map (\t -> el [] (text t)) (List.map (String.dropLeft 0) textList))
 
 
 mathBlock : Int -> Settings -> List String -> Element msg

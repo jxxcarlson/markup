@@ -53,6 +53,11 @@ blockParse language generation lines =
     lines |> Block.parse language generation
 
 
+parse2 : Syntax.Language -> List Syntax.Block -> List Syntax.TextBlock
+parse2 language blocks =
+    List.map (Syntax.map (parseText language)) blocks
+
+
 
 -- NOT EXPOSED
 
