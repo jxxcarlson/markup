@@ -27,6 +27,7 @@ classify inVerbatimBlock str =
     { indent = leadingSpaces, lineType = lineType_, content = nibble str }
 
 
+lineType : String -> Line.LineType
 lineType str =
     case Parser.run lineTypeParser str of
         Ok type_ ->

@@ -1,10 +1,15 @@
 module MiniLaTeX.LineTest exposing (suite)
 
+import Common.BlockParser as BlockParser
 import Common.Line as Line
+import Common.Syntax as Syntax
 import Expect exposing (Expectation)
-import MiniLaTeX.Line as MiniLaTeX
 import Parser
 import Test exposing (..)
+
+
+classify =
+    BlockParser.classify Syntax.Markdown
 
 
 intTest label theTest expectedValue =
@@ -30,26 +35,26 @@ suite =
             \_ ->
                 Parser.run (Line.ordinaryLineParser []) "\\{foo} ho ho ho!"
                     |> Expect.equal (Ok Line.OrdinaryLine)
-        , test "(4) MiniLaTeX.classify empty line" <|
+        , test "(4) classify empty line" <|
             \_ ->
-                MiniLaTeX.classify False ""
+                classify False ""
                     |> Expect.equal { indent = 0, lineType = Line.BlankLine, content = "" }
-        , test "(5) MiniLaTeX.classify  blank line with 3 leading spaces" <|
+        , test "(5) classify  blank line with 3 leading spaces" <|
             \_ ->
                 -- TODO: note, one space less than expected, no big deal??
-                MiniLaTeX.classify False "   "
+                classify False "   "
                     |> Expect.equal { indent = 3, lineType = Line.BlankLine, content = "  " }
-        , test "(6) MiniLaTeX.classify ordinary line with 3 leading spaces" <|
+        , test "(6) classify ordinary line with 3 leading spaces" <|
             \_ ->
                 -- TODO: note, one space less than expected, no big deal??
-                MiniLaTeX.classify False "   ho ho ho!"
+                classify False "   ho ho ho!"
                     |> Expect.equal { content = "  ho ho ho!", indent = 3, lineType = Line.OrdinaryLine }
-        , test "(7) MiniLaTeX.classify begin block" <|
+        , test "(7) classify begin block" <|
             \_ ->
-                MiniLaTeX.classify False "\\begin{foo}"
+                classify False "\\begin{foo}"
                     |> Expect.equal { content = "", indent = 0, lineType = Line.BeginBlock "foo" }
-        , test "(8) MiniLaTeX.classify end block" <|
+        , test "(8) classify end block" <|
             \_ ->
-                MiniLaTeX.classify False "\\end{foo}"
+                classify False "\\end{foo}"
                     |> Expect.equal { content = "", indent = 0, lineType = Line.EndBlock "foo" }
         ]

@@ -1,4 +1,4 @@
-module Common.BlockParser exposing (parse, runParser)
+module Common.BlockParser exposing (classify, parse, runParser)
 
 import Common.BasicSyntax as Basic exposing (BasicBlock(..))
 import Common.BlockParserTools as BP exposing (State, Step(..), level, loop)
@@ -22,8 +22,33 @@ runParser language generation input =
     BP.loop (BP.initialState generation input) (BP.nextStep (nextStateAux language))
 
 
-classify : (String -> Line.LineType) -> Bool -> String -> { indent : Int, lineType : Line.LineType, content : String }
-classify lineType inVerbatimBlock str =
+classify : Language -> Bool -> String -> { indent : Int, lineType : Line.LineType, content : String }
+classify language inVerbatimBlock str =
+    let
+        lineType =
+            getLineTypeParser language
+
+        leadingSpaces =
+            Line.countLeadingSpaces str
+
+        nibble str_ =
+            String.dropLeft (String.length (ParserTools.nibble str_) + 1) str_
+
+        provisionalLineType =
+            lineType (String.dropLeft leadingSpaces str)
+
+        lineType_ =
+            if inVerbatimBlock && provisionalLineType == Line.BlankLine then
+                Line.VerbatimLine
+
+            else
+                provisionalLineType
+    in
+    { indent = leadingSpaces, lineType = lineType_, content = nibble str }
+
+
+classify1 : (String -> Line.LineType) -> Bool -> String -> { indent : Int, lineType : Line.LineType, content : String }
+classify1 lineType inVerbatimBlock str =
     let
         leadingSpaces =
             Line.countLeadingSpaces str
@@ -44,22 +69,27 @@ classify lineType inVerbatimBlock str =
     { indent = leadingSpaces, lineType = lineType_, content = nibble str }
 
 
+getLineTypeParser : Language -> String -> Line.LineType
+getLineTypeParser language =
+    case language of
+        L1 ->
+            L1.Line.lineType
+
+        Markdown ->
+            Markdown.Line.lineType
+
+        MiniLaTeX ->
+            MiniLaTeX.Line.lineType
+
+
 nextStateAux : Language -> String -> State -> State
 nextStateAux language line state =
     let
         lineTypeParser =
-            case language of
-                L1 ->
-                    L1.Line.lineType
-
-                Markdown ->
-                    Markdown.Line.lineType
-
-                MiniLaTeX ->
-                    MiniLaTeX.Line.lineType
+            getLineTypeParser language
 
         lineType =
-            classify lineTypeParser state.inVerbatimBlock line |> debug2 "lineType (L1)"
+            classify language state.inVerbatimBlock line |> debug2 "lineType (L1)"
 
         inVerbatimBlock =
             (case lineType.lineType of
