@@ -85,7 +85,7 @@ codeBlock generation settings textList =
             ]
         , Font.color codeColor
         , paddingEach { left = 0, right = 0, top = 0, bottom = 8 }
-        , spacing 12
+        , spacing 6
         ]
         (List.map (\t -> el [] (text t)) (List.map (String.dropLeft 0) textList))
 
@@ -105,7 +105,7 @@ quotationBlock generation settings blocks =
 
 item : Int -> Settings -> List Syntax.TextBlock -> Element msg
 item generation settings blocks =
-    row [ width fill ]
+    row [ width fill, paddingEach { left = 18, right = 0, top = 0, bottom = 0 } ]
         [ el [ height fill ] none
         , column [ width fill ]
             [ row [ width fill, spacing 8 ]
