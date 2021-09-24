@@ -105,6 +105,7 @@ reduceStack state =
                 handle state rest block1 block2
 
         block1 :: rest ->
+            -- (1)
             { state | output = reverseContents block1 :: state.output, stack = rest }
 
         [] ->
@@ -117,8 +118,10 @@ handle state stack2 block1 block2 =
             let
                 newBlock : Block
                 newBlock =
+                    -- (2)
                     Block name (reverseContents block1 :: blocks) meta
             in
+            -- (3) TODO: double counting???
             reduceStack { state | stack = stack2, output = reverseContents newBlock :: state.output }
 
         VerbatimBlock name blocks meta ->
@@ -127,8 +130,10 @@ handle state stack2 block1 block2 =
                     let
                         newBlock : Block
                         newBlock =
-                            VerbatimBlock name (List.reverse <| strings ++ blocks) metaP
+                            -- TODO: (List.reverse strings ++ blocks) => (strings ++ blocks)
+                            VerbatimBlock name (strings ++ blocks) metaP
                     in
+                    -- (4)
                     reduceStack { state | stack = stack2, output = reverseContents newBlock :: state.output }
 
                 _ ->
@@ -277,6 +282,7 @@ reverseContents block =
             VerbatimBlock name (List.reverse strings) meta
 
         Block name blocks meta ->
+            -- (7)
             Block name (List.map reverseContents blocks) meta
 
         Error s ->
@@ -303,6 +309,7 @@ reduceStack_ state =
         Just ( block1, stack1 ) ->
             case List.Extra.uncons stack1 of
                 Nothing ->
+                    -- (5)
                     { stack = stack1, output = [ reverseContents block1 ] }
 
                 Just ( block2, stack2 ) ->
@@ -322,6 +329,7 @@ reduceStack_ state =
 
                                     newBlock : Block
                                     newBlock =
+                                        -- (6)
                                         Block name (reverseContents block1 :: blocks) meta
                                 in
                                 reduceStack_ { state | stack = stack2, output = newBlock :: state.output }

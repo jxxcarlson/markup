@@ -22,10 +22,9 @@ testAPI language input output =
 suite : Test
 suite =
     describe "The API"
-        [ Test.only <|
-            testAPI Markdown
-                "one\ntwo"
-                [ TBParagraph [ Text "one" { end = 3, id = "0.0", indent = 0, start = 0 }, Text "two" { end = 3, id = "0.0", indent = 0, start = 0 } ] { end = 0, id = "1.0", indent = 0, start = 0 } ]
+        [ testAPI Markdown
+            "one\ntwo"
+            [ TBParagraph [ Text "one" { end = 3, id = "0.0", indent = 0, start = 0 }, Text "two" { end = 3, id = "0.0", indent = 0, start = 0 } ] { end = 0, id = "1.0", indent = 0, start = 0 } ]
         , testAPI Markdown
             "```\n   one\n   two"
             -- TODO: incorrect position information

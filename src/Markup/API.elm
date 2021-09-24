@@ -1,6 +1,6 @@
 module Markup.API exposing
     ( compile, Settings
-    , getTitle, parse, prepareForExport
+    , blockParse, getTitle, parse, prepareForExport
     )
 
 {-| The function Markup.API.compile will transform source text in any
@@ -46,6 +46,11 @@ prepareForExport str =
 parse : Syntax.Language -> Int -> List String -> List Syntax.TextBlock
 parse language generation lines =
     lines |> Block.parse language generation |> List.map (Syntax.map (parseText language))
+
+
+blockParse : Syntax.Language -> Int -> List String -> List Syntax.Block
+blockParse language generation lines =
+    lines |> Block.parse language generation
 
 
 
