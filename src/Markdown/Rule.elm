@@ -40,19 +40,19 @@ transformHeading : String -> String
 transformHeading str =
     case str of
         "#" ->
-            "heading1"
+            "title"
 
         "##" ->
-            "heading2"
+            "section"
 
         "###" ->
-            "heading3"
+            "subsection"
 
         "####" ->
-            "heading4"
+            "subsubsection"
 
         "#####" ->
-            "heading5"
+            "subheading"
 
         _ ->
             str

@@ -64,11 +64,11 @@ markupDict =
         [ ( "strong", \g s textList -> strong g s textList )
         , ( "italic", \g s textList -> italic g s textList )
         , ( "red", \g s textList -> red g s textList )
-        , ( "title", \g s textList -> title g s textList )
-        , ( "heading1", \g s textList -> heading1 g s textList )
-        , ( "heading2", \g s textList -> heading2 g s textList )
-        , ( "heading3", \g s textList -> heading3 g s textList )
-        , ( "heading4", \g s textList -> heading4 g s textList )
+        , ( "title", \g s textList -> heading1 g s textList )
+        , ( "section", \g s textList -> heading2 g s textList )
+        , ( "subsection", \g s textList -> heading3 g s textList )
+        , ( "subsubsection", \g s textList -> heading4 g s textList )
+        , ( "subheading", \g s textList -> italic g s textList )
         ]
 
 
@@ -116,21 +116,18 @@ codeColor =
     Element.rgb 0.4 0 0.8
 
 
-title g s textList =
-    simpleElement [ Font.size 32 ] g s textList
-
-
 heading1 g s textList =
     -- simpleElement [ Font.size 32, Font.color (Element.rgb255 200 0 0) ] g s textList
-    Element.paragraph [ Font.size 32 ] (List.map (render g s) textList)
+    --Element.paragraph [ Font.size 32 ] (List.map (render g s) textList)
+    simpleElement [ Font.size 30 ] g s textList
 
 
 heading2 g s textList =
-    simpleElement [ Font.size 22 ] g s textList
+    simpleElement [ Font.size 24 ] g s textList
 
 
 heading3 g s textList =
-    simpleElement [ Font.size 18, Font.italic ] g s textList
+    simpleElement [ Font.size 18 ] g s textList
 
 
 heading4 g s textList =
