@@ -5,15 +5,7 @@ import Common.Syntax as Syntax
 
 getTitle : Syntax.Language -> List Syntax.TextBlock -> Maybe String
 getTitle language blocks =
-    case language of
-        Syntax.Markdown ->
-            filterStrict "#" blocks |> List.head |> Maybe.map (Syntax.textToString >> String.trim)
-
-        Syntax.MiniLaTeX ->
-            filterStrict "title" blocks |> List.head |> Maybe.map (Syntax.textToString >> String.trim)
-
-        _ ->
-            Nothing
+    filterStrict "title" blocks |> List.head |> Maybe.map (Syntax.textToString >> String.trim)
 
 
 getHeadings : Syntax.Language -> List Syntax.TextBlock -> List Syntax.Text
