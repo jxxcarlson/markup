@@ -4,12 +4,12 @@ import Common.BlockParser as BlockParser
 import Common.Line as Line
 import Common.Syntax as Syntax
 import Expect exposing (Expectation)
-import Parser
+import Parser exposing (Problem(..))
 import Test exposing (..)
 
 
 classify =
-    BlockParser.classify Syntax.Markdown
+    BlockParser.classify Syntax.L1
 
 
 intTest label theTest expectedValue =
@@ -34,25 +34,28 @@ suite =
         , test "ordinaryLineParser, fail" <|
             \_ ->
                 Parser.run (Line.ordinaryLineParser [ '|' ]) "| ho ho ho!"
-                    |> Expect.notEqual (Ok Line.OrdinaryLine)
+                    |> Expect.equal (Err [ { col = 1, problem = UnexpectedChar, row = 1 } ])
         , test "classify False empty line" <|
             \_ ->
                 classify False ""
-                    |> Expect.equal { indent = 0, lineType = Line.BlankLine, content = "   " }
+                    |> Expect.equal { indent = 0, lineType = Line.BlankLine, content = "" }
         , test "classify False  blank line with 3 leading spaces" <|
             \_ ->
                 classify False "   "
-                    |> Expect.equal { indent = 3, lineType = Line.BlankLine, content = "   " }
+                    |> Expect.equal { indent = 3, lineType = Line.BlankLine, content = "  " }
         , test "classify False ordinary line with 3 leading spaces" <|
             \_ ->
                 classify False "   ho ho ho!"
-                    |> Expect.equal { indent = 3, lineType = Line.OrdinaryLine, content = "   " }
+                    |> Expect.equal { content = "  ho ho ho!", indent = 3, lineType = Line.OrdinaryLine }
         , test "classify False block" <|
             \_ ->
                 classify False "| indent"
-                    |> Expect.equal { indent = 0, lineType = Line.BeginBlock "indent", content = "   " }
-        , test "classify False verbatim block" <|
+                    |> Expect.equal { content = "indent", indent = 0, lineType = Line.BeginBlock "indent" }
+        , test
+            "classify False verbatim block"
+          <|
             \_ ->
                 classify False "|| math"
-                    |> Expect.equal { indent = 0, lineType = Line.BeginVerbatimBlock "math", content = "   " }
+                    |> Debug.log "RESULT"
+                    |> Expect.equal { content = "math", indent = 0, lineType = Line.BeginVerbatimBlock "math" }
         ]
