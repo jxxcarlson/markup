@@ -23,6 +23,7 @@ defaultRule =
     , endCharLength = 0
     , dropLeadingChars = 1
     , isVerbatim = False
+    , transform = identity
     , expect = [ { stop = miniLaTexDelimitersStr, action = ShiftText } ]
     }
 
@@ -44,6 +45,7 @@ miniLaTeXRuleList =
         , endCharLength = 0
         , dropLeadingChars = 1
         , isVerbatim = False
+        , transform = identity
         , expect =
             [ { stop = [ " ", "" ], action = CommitMarked }
             , { stop = [ "{" ], action = ShiftMarked }
@@ -58,6 +60,7 @@ miniLaTeXRuleList =
         , endCharLength = 0
         , dropLeadingChars = 1
         , isVerbatim = False
+        , transform = identity
         , expect =
             [ { stop = miniLaTexDelimitersStr, action = Commit }
             ]
@@ -71,6 +74,7 @@ miniLaTeXRuleList =
         , endCharLength = 0 -- adjust for '}' at end of arg
         , dropLeadingChars = 1
         , isVerbatim = False
+        , transform = identity
         , expect =
             [ { stop = [ "}" ], action = ShiftArg }
             ]
@@ -84,6 +88,7 @@ miniLaTeXRuleList =
         , endCharLength = 0 -- adjust for '}' at end of arg
         , dropLeadingChars = 1
         , isVerbatim = False
+        , transform = identity
         , expect =
             [ { stop = [ "}" ], action = ReduceArg }
             ]

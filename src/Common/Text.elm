@@ -65,12 +65,10 @@ markupDict =
         , ( "italic", \g s textList -> italic g s textList )
         , ( "red", \g s textList -> red g s textList )
         , ( "title", \g s textList -> title g s textList )
-        , ( "#", \g s textList -> heading1 g s textList )
-        , ( "##", \g s textList -> heading2 g s textList )
-        , ( "###", \g s textList -> heading3 g s textList )
-        , ( "####", \g s textList -> heading4 g s textList )
-        , ( "*", \g s textList -> strong g s textList )
-        , ( "_", \g s textList -> italic g s textList )
+        , ( "heading1", \g s textList -> heading1 g s textList )
+        , ( "heading2", \g s textList -> heading2 g s textList )
+        , ( "heading3", \g s textList -> heading3 g s textList )
+        , ( "heading4", \g s textList -> heading4 g s textList )
         ]
 
 

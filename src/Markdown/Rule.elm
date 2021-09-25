@@ -23,6 +23,7 @@ defaultRule =
     , endCharLength = 0
     , dropLeadingChars = 1
     , isVerbatim = False
+    , transform = identity
     , expect = [ { stop = markdownDelimitersStr, action = ShiftText } ]
     }
 
@@ -35,6 +36,48 @@ markdownDelimitersStr =
     [ "*", "_", "`", "$", "[", "]", "(", ")", "#" ]
 
 
+transformHeading : String -> String
+transformHeading str =
+    case str of
+        "#" ->
+            "heading1"
+
+        "##" ->
+            "heading2"
+
+        "###" ->
+            "heading3"
+
+        "####" ->
+            "heading4"
+
+        "#####" ->
+            "heading5"
+
+        _ ->
+            str
+
+
+transformAsterisk : String -> String
+transformAsterisk str =
+    case str of
+        "*" ->
+            "strong"
+
+        _ ->
+            str
+
+
+transformUnderscore : String -> String
+transformUnderscore str =
+    case str of
+        "_" ->
+            "italic"
+
+        _ ->
+            str
+
+
 markdownRuleList =
     [ ( '#'
       , { name = "title"
@@ -44,6 +87,7 @@ markdownRuleList =
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = False
+        , transform = transformHeading
         , expect =
             [ { stop = [ " " ], action = ShiftMarked }
             ]
@@ -57,6 +101,7 @@ markdownRuleList =
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = False
+        , transform = identity
         , expect =
             [ { stop = [ "]" ], action = ShiftMarked }
             ]
@@ -70,6 +115,7 @@ markdownRuleList =
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = False
+        , transform = identity
         , expect =
             [ { stop = [ ")" ], action = ShiftMarked }
             ]
@@ -83,6 +129,7 @@ markdownRuleList =
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = False
+        , transform = transformAsterisk
         , expect =
             [ { stop = [ "*" ], action = ShiftMarked }
             ]
@@ -96,6 +143,7 @@ markdownRuleList =
         , dropLeadingChars = 0
         , spaceFollows = True
         , isVerbatim = False
+        , transform = transformUnderscore
         , expect =
             [ { stop = [ "_" ], action = ShiftMarked }
             ]
@@ -109,6 +157,7 @@ markdownRuleList =
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = True
+        , transform = identity
         , expect =
             [ { stop = [ "`" ], action = ShiftVerbatim "`" }
             ]
@@ -122,6 +171,7 @@ markdownRuleList =
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = True
+        , transform = identity
         , expect =
             [ { stop = [ "$" ], action = ShiftVerbatim "$" }
             ]
@@ -135,6 +185,7 @@ markdownRuleList =
         , endCharLength = 0
         , dropLeadingChars = 1
         , isVerbatim = False
+        , transform = identity
         , expect =
             [ { stop = markdownDelimitersStr, action = Commit }
             ]

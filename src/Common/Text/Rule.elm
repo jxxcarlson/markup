@@ -11,6 +11,7 @@ type alias Rule =
     , endCharLength : Int
     , dropLeadingChars : Int
     , isVerbatim : Bool
+    , transform : String -> String
     , expect : List { stop : List String, action : Action }
     }
 
