@@ -226,52 +226,62 @@ getScannerType cursor rule leadingChar =
 
 contract : Text -> Text -> Maybe Text
 contract text1 text2 =
-    case ( text1, text2 ) of
+    (let
+        _ =
+            debug3 "CONTRACT CASES (IN)" ( text1, text2 )
+     in
+     case ( text1, text2 ) of
         ( Arg textList1 meta1, Arg textList2 meta2 ) ->
             let
                 _ =
-                    debug2 "contract (1)"
+                    debug2 "contract" 1
             in
             Just <| Arg (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
 
         ( Arg textList1 meta1, Marked name textList2 meta2 ) ->
             let
                 _ =
-                    debug2 "contract (2)"
+                    debug2 "contract" 2
             in
             Just <| Marked name (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
 
         ( Text str meta1, Arg textList2 meta2 ) ->
             let
                 _ =
-                    debug2 "contract (3)"
+                    debug2 "contract" 3
             in
             Just <| Arg (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
 
         ( Marked name textList1 meta1, Arg textList2 meta2 ) ->
             let
                 _ =
-                    debug2 "contract (4)"
+                    debug2 "contract" 4
             in
             Just <| Arg (Marked name textList1 meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
 
         ( Text str meta1, Marked name textList2 meta2 ) ->
             let
                 _ =
-                    debug2 "contract (5)"
+                    debug2 "contract" 5
             in
             Just <| Marked name (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
 
         ( _, _ ) ->
             let
                 _ =
-                    debug2 "contract (6: Nothing)"
+                    debug2 "contract" 0
             in
             Nothing
+    )
+        |> debug3 "CONTRACT CASES (OUT)"
 
 
 contract3 : Text -> Text -> Text -> Maybe Text
 contract3 text1 text2 text3 =
+    let
+        _ =
+            debug3 "contract3, stack" "-"
+    in
     case ( text1, text2, text3 ) of
         ( Marked a [] meta1, _, Marked b [] meta3 ) ->
             if a == b then
@@ -295,7 +305,7 @@ contract3Stack : List Text -> List Text
 contract3Stack stack =
     let
         _ =
-            debug3 "contractStack, stack" stack
+            debug3 "contractStack3, stack" stack
     in
     case stack of
         text1 :: text2 :: text3 :: rest ->
@@ -355,6 +365,10 @@ contract2Stack stack =
 
 contractStackRepeatedly : List Text -> List Text
 contractStackRepeatedly stack =
+    let
+        _ =
+            debug1 "contractStackRepeatedly" "!!!"
+    in
     (case stack of
         text1 :: text2 :: text3 :: rest ->
             case contract3 text1 text2 text3 of
