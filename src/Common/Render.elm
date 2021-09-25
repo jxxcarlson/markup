@@ -1,6 +1,7 @@
 module Common.Render exposing (Settings, render)
 
 import Common.Debug exposing (debug3)
+import Common.Library.ASTTools as ASTTools
 import Common.Math
 import Common.Syntax as Syntax exposing (Block(..), Text(..), TextBlock(..))
 import Common.Text
@@ -8,11 +9,6 @@ import Dict exposing (Dict)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Font as Font
-import Html exposing (Html)
-import Html.Attributes as HA
-import Html.Keyed
-import Json.Encode
-import Utility
 
 
 type alias Settings =
@@ -21,6 +17,21 @@ type alias Settings =
 
 
 -- RENDER
+--renderFancy : Int -> Settings -> List TextBlock -> List (Element msg)
+--renderFancy generation settings blocks =
+--    let
+--        toc =
+--            Markup.API.tableOfContents generation settings blocks
+--
+--
+--
+--        titleString =
+--            ASTTools.getTitle blocks |> Maybe.withDefault "Untitled"
+--
+--        title =
+--            el [ Font.size 30 ] (text titleString)
+--    in
+--    title :: column [ paddingXY 18 ] toc :: render generation settings ast2
 
 
 render : Int -> Settings -> List TextBlock -> List (Element msg)

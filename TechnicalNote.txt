@@ -1,5 +1,6 @@
 # MetaMarkup: Technical Notes
 
+
 The MetaMarkup library provides a parser and renderer which is capable of transforming text in multiple markup languages into HTML in real time.  The text is rendered as you type, and syntax errors are noted in the rendered text as they occur.  The languages implemented in the present system are
 
 - L1: a markup language with a syntax inspired by Lisp.
@@ -46,7 +47,7 @@ The sole dependency on the `Language` argument is via the function
 
 ```
    classify : Language -> Bool -> String -> LineTypeData
-ule
+
 This function examines a string, principally to determine line type:
 
 ```
@@ -89,6 +90,7 @@ The core of the `parserText` function is a call to `Cursor.parserLoop,` a shift-
 - `committed: List Text` — the output
 
 
+#### Rules
 
 A rule is a record with various fields including
 
@@ -105,6 +107,9 @@ A rule is a record with various fields including
 
 If the action is `ShiftMarked,` the `committed` field is left untouched and the `Text` element `Marked str meta` is prepended to the `stack` field.  Here `str` is a substring of the prefix and `meta` locates that prefix in the source.
 
+
+#### Actions
+
 If the action is `CommitMarked,` the data `Marked str meta` is prepended to the `committed` field instead and `stack` is left untouched.
 
 As a final exampe, if the action is `ReduceArg,` then the commited text is left untouched and the function `contractTextIntoArg >> contractArgIntoMarked >> contractMarkedIntoArg` is applied to the stack.  Each function in a chain like this has signature `List Text -> List Text,` and it acts via pattern-matching on the first two or three elements on the stack to replace these elements by a single combined element.  For example, we have
@@ -117,7 +122,17 @@ As a final exampe, if the action is `ReduceArg,` then the commited text is left 
             _ ->
                 stack
 
-where `META` is new metadata.
+where `META` is new metadata.  If the stack reads
+
+```
+   Text "foo" ... :: Arg [ ] ... :: rest
+
+before contraction, then afterwards it will read
+
+```
+   Arg [Text "foo" ...] ... :: rest
+
+
 
 
 ### Language Dependencies

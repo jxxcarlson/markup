@@ -1,6 +1,7 @@
 module Main exposing (main)
 
 import Browser
+import Common.Library.ASTTools as ASTTools
 import Common.Syntax exposing (Language(..))
 import Data.Article2
 import Data.L1Test
@@ -217,8 +218,30 @@ renderedText model =
         (render model.language model.count model.sourceText)
 
 
+render : Language -> Int -> String -> List (Element msg)
 render language count source =
-    API.compile language count { width = 500 } (String.lines source)
+    let
+        ast =
+            API.parse language count (String.lines source)
+
+        toc_ : List (Element msg)
+        toc_ =
+            API.tableOfContents count { width = 500 } ast
+
+        titleString =
+            ASTTools.getTitle ast |> Maybe.withDefault "Untitled"
+
+        docTitle =
+            el [ Font.size 30 ] (text titleString)
+
+        toc =
+            column [ paddingXY 0 24, spacing 8 ] toc_
+
+        renderedText_ : List (Element msg)
+        renderedText_ =
+            API.render count { width = 500 } ast
+    in
+    docTitle :: toc :: renderedText_
 
 
 

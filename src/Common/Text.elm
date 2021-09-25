@@ -1,10 +1,10 @@
-module Common.Text exposing (render)
+module Common.Text exposing (render, viewTOC)
 
 import Common.Debug exposing (debug1)
 import Common.Math
 import Common.Syntax as Syntax exposing (Block(..), Text(..), TextBlock(..))
 import Dict exposing (Dict)
-import Element exposing (Element)
+import Element exposing (Element, paragraph)
 import Element.Background as Background
 import Element.Font as Font
 
@@ -64,11 +64,12 @@ markupDict =
         [ ( "strong", \g s textList -> strong g s textList )
         , ( "italic", \g s textList -> italic g s textList )
         , ( "red", \g s textList -> red g s textList )
-        , ( "title", \g s textList -> heading1 g s textList )
-        , ( "section", \g s textList -> heading2 g s textList )
-        , ( "subsection", \g s textList -> heading3 g s textList )
-        , ( "subsubsection", \g s textList -> heading4 g s textList )
-        , ( "subheading", \g s textList -> italic g s textList )
+        , ( "title", \g s textList -> Element.none )
+        , ( "heading1", \g s textList -> heading1 g s textList )
+        , ( "heading2", \g s textList -> heading2 g s textList )
+        , ( "heading3", \g s textList -> heading3 g s textList )
+        , ( "heading4", \g s textList -> heading4 g s textList )
+        , ( "heading5", \g s textList -> italic g s textList )
         ]
 
 
@@ -116,6 +117,46 @@ codeColor =
     Element.rgb 0.4 0 0.8
 
 
+tocColor =
+    Element.rgb 0.1 0 0.8
+
+
+viewTOC : Int -> Settings -> List Syntax.Text -> List (Element msg)
+viewTOC generation settings items =
+    Element.el [ Font.size 18 ] (Element.text "Contents") :: List.map (viewTOCItem generation settings) items
+
+
+viewTOCItem : Int -> Settings -> Syntax.Text -> Element msg
+viewTOCItem generation settings block =
+    case block of
+        Marked "heading2" textList _ ->
+            paragraph (tocStyle 2) (List.map (render generation settings) textList)
+
+        Marked "heading3" textList _ ->
+            paragraph (tocStyle 3) (List.map (render generation settings) textList)
+
+        Marked "heading4" textList _ ->
+            paragraph (tocStyle 4) (List.map (render generation settings) textList)
+
+        Marked "heading5" textList _ ->
+            paragraph (tocStyle 5) (List.map (render generation settings) textList)
+
+        _ ->
+            Element.none
+
+
+tocStyle k =
+    [ Font.size 14, Font.color tocColor, leftPadding (k * tocPadding) ]
+
+
+leftPadding k =
+    Element.paddingEach { left = k, right = 0, top = 0, bottom = 0 }
+
+
+tocPadding =
+    10
+
+
 heading1 g s textList =
     -- simpleElement [ Font.size 32, Font.color (Element.rgb255 200 0 0) ] g s textList
     --Element.paragraph [ Font.size 32 ] (List.map (render g s) textList)
@@ -123,7 +164,7 @@ heading1 g s textList =
 
 
 heading2 g s textList =
-    simpleElement [ Font.size 24 ] g s textList
+    simpleElement [ Font.size 22 ] g s textList
 
 
 heading3 g s textList =
@@ -131,7 +172,7 @@ heading3 g s textList =
 
 
 heading4 g s textList =
-    simpleElement [ Font.size 14, Font.italic ] g s textList
+    simpleElement [ Font.size 14, Font.italic, Font.bold ] g s textList
 
 
 strong : Int -> Settings -> List Text -> Element msg

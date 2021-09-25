@@ -3,17 +3,18 @@ module Data.MiniLaTeXTest exposing (text)
 
 text =
     """
-\\strong{Bold stuff!}
+\\title{MiniLaTeX Test}
+
+\\section{Macros}
 
 This is a very \\strong{bold} move.
 
-Yes, a \\italic{\\red{very}} bold move indeed!
+Yes, a \\italic{\\red{very}} bold move indeed! \\italic{(Note that macros are composing properly).}
 
-This is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.
+Pythagoras sez that $a^2 + b^2 = c^2$.
 
-This is some text. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math. This is some math.
+\\section{Math blocks}
 
-THIS IS SOME MATH:
 $$
    \\int_0^1 x^n dx = \\frac{1}{n+1}
 $$
@@ -22,10 +23,15 @@ This is some code:
 
 ```
    a[1] = 1
-   .
-   b[i] = 2
 
-This is a quote:
+   b[i] = 2
+   c[i] = b[i] + 1
+
+
+\\section{Environments}
+
+
+This is a quotation:
 
 \\begin{quotation}
    Regular languages are rather inexpressive,
@@ -42,7 +48,20 @@ This is a quote:
 \\end{quotation}
 
 
+\\section{Errors}
 
-*by James Carlson*
+The text below has a two errors:
+
+```
+   \\begin{foo}
+      ho ho ho!
+   \\end{bar}
+
+Here is how it is rendered:
+
+\\begin{foo}
+   ho ho ho!
+\\end{bar}
+
 
 """

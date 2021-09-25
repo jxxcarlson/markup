@@ -4,6 +4,25 @@ import Common.Text.Rule exposing (Action(..), Rule, Rules)
 import Dict exposing (Dict)
 
 
+transformMacros : String -> String
+transformMacros str =
+    case str of
+        "section" ->
+            "heading2"
+
+        "subsection" ->
+            "heading3"
+
+        "susubsection" ->
+            "heading4"
+
+        "subheading" ->
+            "heading5"
+
+        _ ->
+            str
+
+
 rules : Rules
 rules =
     { dict = miniLaTeXRuleDict, default = defaultRule }
@@ -45,7 +64,7 @@ miniLaTeXRuleList =
         , endCharLength = 0
         , dropLeadingChars = 1
         , isVerbatim = False
-        , transform = identity
+        , transform = transformMacros
         , expect =
             [ { stop = [ " ", "" ], action = CommitMarked }
             , { stop = [ "{" ], action = ShiftMarked }

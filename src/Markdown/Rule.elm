@@ -43,16 +43,16 @@ transformHeading str =
             "title"
 
         "##" ->
-            "section"
+            "heading2"
 
         "###" ->
-            "subsection"
+            "heading3"
 
         "####" ->
-            "subsubsection"
+            "heading4"
 
         "#####" ->
-            "subheading"
+            "heading5"
 
         _ ->
             str
