@@ -1,4 +1,4 @@
-module Common.Line exposing (LineType(..), countLeadingSpaces, emptyLineParser, ordinaryLineParser)
+module Common.Line exposing (BlockOption(..), LineType(..), countLeadingSpaces, emptyLineParser, ordinaryLineParser)
 
 import Parser exposing ((|.), (|=), Parser)
 
@@ -7,11 +7,19 @@ type LineType
     = OrdinaryLine
     | VerbatimLine
     | BlankLine
-    | BeginBlock String
+    | BeginBlock BlockOption String
     | EndBlock String
     | BeginVerbatimBlock String
     | EndVerbatimBlock String
     | Problem String
+
+
+{-| In the case of the AcceptFirstLine option, the line after the block mark
+is incorporated into the body of the block, e.g. TODO add example
+-}
+type BlockOption
+    = AcceptFirstLine
+    | RejectFirstLine
 
 
 countLeadingSpaces : String -> Int

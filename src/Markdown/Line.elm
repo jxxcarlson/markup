@@ -36,7 +36,7 @@ beginItemParser =
     (Parser.succeed String.slice
         |. Parser.symbol "-"
     )
-        |> Parser.map (\_ -> Line.BeginBlock "item")
+        |> Parser.map (\_ -> Line.BeginBlock Line.AcceptFirstLine "item")
 
 
 beginMathBlockParser : Parser Line.LineType
@@ -60,4 +60,4 @@ beginQuotationBlockParser =
     (Parser.succeed String.slice
         |. Parser.symbol ">"
     )
-        |> Parser.map (\_ -> Line.BeginBlock "quotation")
+        |> Parser.map (\_ -> Line.BeginBlock Line.AcceptFirstLine "quotation")

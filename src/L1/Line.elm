@@ -29,7 +29,7 @@ beginBlockParser =
         |= Parser.getOffset
         |= Parser.getSource
     )
-        |> Parser.map (\s -> Line.BeginBlock s)
+        |> Parser.map (\s -> Line.BeginBlock Line.RejectFirstLine s)
 
 
 beginVerbatimBlockParser : Parser Line.LineType

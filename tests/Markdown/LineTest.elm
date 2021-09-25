@@ -62,5 +62,5 @@ suite =
         , test "classify False begin quotation block" <|
             \_ ->
                 classify False ">"
-                    |> Expect.equal { indent = 0, lineType = Line.BeginBlock "quotation", content = "" }
+                    |> Expect.equal { indent = 0, lineType = Line.BeginBlock Line.AcceptFirstLine "quotation", content = "" }
         ]

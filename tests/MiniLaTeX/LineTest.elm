@@ -52,7 +52,7 @@ suite =
         , test "(7) classify begin block" <|
             \_ ->
                 classify False "\\begin{foo}"
-                    |> Expect.equal { content = "", indent = 0, lineType = Line.BeginBlock "foo" }
+                    |> Expect.equal { content = "", indent = 0, lineType = Line.BeginBlock Line.RejectFirstLine "foo" }
         , test "(8) classify end block" <|
             \_ ->
                 classify False "\\end{foo}"

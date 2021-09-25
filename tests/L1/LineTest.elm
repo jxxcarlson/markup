@@ -50,12 +50,11 @@ suite =
         , test "classify False block" <|
             \_ ->
                 classify False "| indent"
-                    |> Expect.equal { content = "indent", indent = 0, lineType = Line.BeginBlock "indent" }
+                    |> Expect.equal { content = "indent", indent = 0, lineType = Line.BeginBlock Line.RejectFirstLine "indent" }
         , test
             "classify False verbatim block"
           <|
             \_ ->
                 classify False "|| math"
-                    |> Debug.log "RESULT"
                     |> Expect.equal { content = "math", indent = 0, lineType = Line.BeginVerbatimBlock "math" }
         ]

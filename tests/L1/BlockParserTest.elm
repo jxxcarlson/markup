@@ -24,41 +24,46 @@ suite =
     describe "The Line modules for L1"
         [ testParser
             "| indent\n   foo"
-            [ BBBlock "indent" [ BBParagraph [ "foo" ] ] ]
-        , testParser
-            "| indent\nfoo (*)"
-            [ BBBlock "indent" [], BBParagraph [ "foo (*)" ] ]
+            [ BBBlock "indent" [ BBParagraph [ "foo\n" ] ] ]
         , testParser
             "| indent\n   foo\n   bar"
-            [ BBBlock "indent" [ BBParagraph [ "foo", "bar" ] ] ]
+            [ BBBlock "indent" [ BBParagraph [ "foo\n", "bar\n" ] ] ]
         , testParser
             "| indent\n   foo\n   bar\n   baz"
-            [ BBBlock "indent" [ BBParagraph [ "foo", "bar", "baz" ] ] ]
+            [ BBBlock "indent" [ BBParagraph [ "foo\n", "bar\n", "baz\n" ] ] ]
         , testParser
-            "| indent\n   foo\n   bar\n| math\n   x^2"
-            [ BBBlock "indent" [ BBParagraph [ "foo", "bar" ] ], BBBlock "math" [ BBParagraph [ "x^2" ] ] ]
-        , testParser
-            "| indent\n   foo\n   bar\n|\n   \n   baz"
-            [ BBBlock "indent" [ BBParagraph [ "foo", "bar", "", "baz" ] ] ]
-        , testParser
-            "| indent\n   foo\n   bar\n|\n\n   baz"
-            [ BBBlock "indent" [ BBParagraph [ "foo", "bar", "baz" ] ] ]
-        , testParser
-            "|| code\n   foo\n   bar\n\n   baz"
-            [ BBVerbatimBlock "code" [ "foo", "bar", "baz" ] ]
-        , testParser
-            "|| code\n   foo\n   bar\n   \n   baz"
-            [ BBVerbatimBlock "code" [ "foo", "bar", "", "baz" ]
+            "| indent\n   foo\n   bar\n|| math\n   x^2"
+            [ BBBlock "indent" [ BBParagraph [ "foo\n", "bar\n" ] ]
+            , BBVerbatimBlock "math" [ "   x^2" ]
             ]
         , testParser
+            "| indent\n   foo\n   bar\n|\n   \n   baz"
+            [ BBBlock "indent" [ BBParagraph [ "foo\n", "bar\n" ] ]
+            , BBParagraph []
+            , BBParagraph [ "baz\n" ]
+            ]
+        , testParser
+            "| indent\n   foo\n   bar\n|\n\n   baz"
+            [ BBBlock "indent" [ BBParagraph [ "foo\n", "bar\n" ] ]
+            , BBParagraph [ "baz\n" ]
+            ]
+        , testParser
+            "|| code\n   foo\n   bar\n\n   baz"
+            [ BBVerbatimBlock "code" [ "   foo", "   bar" ], BBParagraph [ "", "baz\n" ] ]
+        , testParser
+            "|| code\n   foo\n   bar\n   \n   baz"
+            [ BBVerbatimBlock "code" [ "   foo", "   bar", "   ", "   baz" ] ]
+        , testParser
             "|| code\n   foo\n   bar\n   \n   baz\nho ho ho!"
-            [ BBVerbatimBlock "code" [ "foo", "bar", "", "baz" ]
-            , BBParagraph [ "ho ho ho!" ]
+            [ BBVerbatimBlock "code" [ "   foo", "   bar", "   ", "   baz" ]
+            , BBParagraph [ "ho ho ho!\n" ]
             ]
         , testParser
             "ABC\nXYZ\n|| code\n   foo\n   bar\nDEF\n\nGHI"
-            [ BBParagraph [ "ABC", "XYZ" ]
-            , BBVerbatimBlock "code" [ "foo", "bar" ]
-            , BBParagraph [ "DEF", "", "GHI" ]
+            [ BBParagraph [ "ABC\n", "XYZ\n" ]
+            , BBVerbatimBlock "code" [ "   foo", "   bar" ]
+            , BBParagraph [ "DEF\n" ]
+            , BBParagraph []
+            , BBParagraph [ "GHI\n" ]
             ]
         ]

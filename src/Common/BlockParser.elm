@@ -136,7 +136,7 @@ nextStateAux2 indent line newLineType lineType state =
             debug1 "newLineType" newLineType
     in
     case newLineType of
-        BeginBlock s ->
+        BeginBlock Line.AcceptFirstLine s ->
             let
                 innerBlockList =
                     if lineType.content == "" then
@@ -150,6 +150,13 @@ nextStateAux2 indent line newLineType lineType state =
 
             else
                 { state | indent = indent } |> BP.shift (Block s innerBlockList (Syntax.dummyMeta 0 0))
+
+        BeginBlock Line.RejectFirstLine s ->
+            if BP.level indent <= BP.blockLevelOfStackTop state.stack then
+                { state | indent = indent } |> BP.reduceStack |> BP.shift (Block s [] (Syntax.dummyMeta 0 0))
+
+            else
+                { state | indent = indent } |> BP.shift (Block s [] (Syntax.dummyMeta 0 0))
 
         BeginVerbatimBlock s ->
             if BP.level indent <= BP.blockLevelOfStackTop state.stack then
