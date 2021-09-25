@@ -44,11 +44,11 @@ suiteParseLoop =
     describe "the parseLoop function for Markdown"
         [ testParseLoopCommitted "(1)"
             "# Introduction to Chemistry"
-            [ Marked "#" [ Text "Introduction to Chemistry" { end = 27, id = "0.1", indent = 0, start = 2 } ] { end = 27, id = "0.0", indent = 0, start = 0 } ]
+            [ Marked "title" [ Text "Introduction to Chemistry" { end = 27, id = "0.1", indent = 0, start = 2 } ] { end = 27, id = "0.0", indent = 0, start = 0 } ]
         , testParseLoopCommitted "(2)"
             "It was *very* bold"
             [ Text "It was " { end = 7, id = "0.0", indent = 0, start = 0 }
-            , Marked "*" [ Text "very" { end = 12, id = "0.2", indent = 0, start = 8 } ] { end = 8, id = "0.1", indent = 0, start = 12 }
+            , Marked "strong" [ Text "very" { end = 12, id = "0.2", indent = 0, start = 8 } ] { end = 8, id = "0.1", indent = 0, start = 12 }
             , Text " " { end = 0, id = "1.2", indent = 0, start = 0 }
             , Text "bold" { end = 18, id = "0.5", indent = 0, start = 14 }
             ]

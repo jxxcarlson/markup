@@ -154,7 +154,7 @@ leftPadding k =
 
 
 tocPadding =
-    10
+    8
 
 
 heading1 g s textList =
