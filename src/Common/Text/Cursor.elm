@@ -171,7 +171,7 @@ nextCursor_ leadingChar cursor rules textToProcess =
                         ReduceArg ->
                             let
                                 _ =
-                                    debug2 "ReduceArg, contracted stack" contractStack cursor.stack
+                                    debug2 "ReduceArg, contracted stack" (contractStack cursor.stack)
                             in
                             ( cursor.committed, contractStack cursor.stack )
 
@@ -228,21 +228,45 @@ contract : Text -> Text -> Maybe Text
 contract text1 text2 =
     case ( text1, text2 ) of
         ( Arg textList1 meta1, Arg textList2 meta2 ) ->
+            let
+                _ =
+                    debug2 "contract (1)"
+            in
             Just <| Arg (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
 
         ( Arg textList1 meta1, Marked name textList2 meta2 ) ->
+            let
+                _ =
+                    debug2 "contract (2)"
+            in
             Just <| Marked name (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
 
         ( Text str meta1, Arg textList2 meta2 ) ->
+            let
+                _ =
+                    debug2 "contract (3)"
+            in
             Just <| Arg (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
 
         ( Marked name textList1 meta1, Arg textList2 meta2 ) ->
+            let
+                _ =
+                    debug2 "contract (4)"
+            in
             Just <| Arg (Marked name textList1 meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
 
         ( Text str meta1, Marked name textList2 meta2 ) ->
+            let
+                _ =
+                    debug2 "contract (5)"
+            in
             Just <| Marked name (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
 
         ( _, _ ) ->
+            let
+                _ =
+                    debug2 "contract (6: Nothing)"
+            in
             Nothing
 
 
@@ -292,6 +316,10 @@ contract3Stack stack =
 
 contractStack : List Text -> List Text
 contractStack =
+    let
+        _ =
+            debug2 "contractStack" "yes!"
+    in
     contract2Stack >> contract3Stack
 
 

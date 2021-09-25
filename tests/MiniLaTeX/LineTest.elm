@@ -9,7 +9,7 @@ import Test exposing (..)
 
 
 classify =
-    BlockParser.classify Syntax.Markdown
+    BlockParser.classify Syntax.MiniLaTeX
 
 
 intTest label theTest expectedValue =

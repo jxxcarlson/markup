@@ -9,53 +9,9 @@ import Set
 import Test exposing (..)
 
 
-miniLaTeXParseLoopCommitted : String -> List Text
-miniLaTeXParseLoopCommitted input =
-    Cursor.parseLoop Rule.rules (Cursor.init 0 0 0 input) |> .committed
-
-
-testNextCursorMiniLaTeX : String -> Int -> String -> String -> Test
-testNextCursorMiniLaTeX label scanPoint input output =
-    test label <| \_ -> Cursor.nextCursor Rule.rules (Cursor.init 0 0 scanPoint input) |> stringDataContent |> Expect.equal output
-
-
-testNextCursorCommittedMiniLaTeX : String -> Int -> String -> List Text -> Test
-testNextCursorCommittedMiniLaTeX label scanPoint input output =
-    test label <| \_ -> Cursor.nextCursor Rule.rules (Cursor.init 0 0 scanPoint input) |> mapStepCursor .committed |> Expect.equal output
-
-
-testNextCursorStackMiniLaTeX : String -> Int -> String -> List Text -> Test
-testNextCursorStackMiniLaTeX label scanPoint input output =
-    test label <| \_ -> Cursor.nextCursor Rule.rules (Cursor.init 0 0 scanPoint input) |> mapStepCursor .stack |> Expect.equal output
-
-
 testParseLoopCommitted : String -> String -> List Text -> Test
 testParseLoopCommitted label input output =
     test label <| \_ -> Cursor.parseLoop Rule.rules (Cursor.init 0 0 0 input) |> .committed |> List.reverse |> Expect.equal output
-
-
-testParseLoopStack : String -> String -> List Text -> Test
-testParseLoopStack label input output =
-    test label <| \_ -> Cursor.parseLoop Rule.rules (Cursor.init 0 0 0 input) |> .stack |> Expect.equal output
-
-
-
--- |> .parsed |> Expect.equal output
-
-
-stringDataContent : Cursor.Step Cursor.TextCursor Cursor.TextCursor -> String
-stringDataContent stepTC =
-    mapStepCursor (.stringData >> .content) stepTC
-
-
-mapStepCursor : (Cursor.TextCursor -> a) -> Cursor.Step Cursor.TextCursor Cursor.TextCursor -> a
-mapStepCursor f stepTC =
-    case stepTC of
-        Cursor.Done tc ->
-            f tc
-
-        Cursor.Loop tc ->
-            f tc
 
 
 suiteParseLoop : Test
@@ -86,26 +42,4 @@ suiteParseLoop =
             , Marked "strong" [ Text "bold" { end = 17, id = "0.3", indent = 0, start = 13 } ] { end = 17, id = "0.1", indent = 0, start = 5 }
             , Text " move" { end = 23, id = "0.5", indent = 0, start = 18 }
             ]
-        ]
-
-
-suiteMiniLaTeXNextCursor : Test
-suiteMiniLaTeXNextCursor =
-    describe "the nextCursor function for MiniLaTeX"
-        [ testNextCursorMiniLaTeX "(1)" 0 "simple text \\foo" "simple text "
-        , testNextCursorMiniLaTeX "(2)" 12 "simple text \\foo" "\\foo"
-        , testNextCursorMiniLaTeX "(3)" 12 "simple text \\foo ha ha ha!" "\\foo"
-        , testNextCursorMiniLaTeX "(4)" 16 "simple text \\foo ha ha ha!" " ha ha ha!"
-        , testNextCursorCommittedMiniLaTeX "(5)"
-            0
-            "simple text \\foo"
-            [ Text "simple text " { start = 0, end = 12, indent = 0, id = "0.0" } ]
-        , testNextCursorCommittedMiniLaTeX "(6)"
-            12
-            "simple text \\foo"
-            [ Marked "foo" [] { start = 12, end = 16, indent = 0, id = "0.0" } ]
-        , testNextCursorStackMiniLaTeX "(7)"
-            12
-            "simple text \\foo{bar} baz"
-            [ Marked "foo" [] { start = 12, end = 16, indent = 0, id = "0.0" } ]
         ]

@@ -60,11 +60,4 @@ suiteParseLoop =
             [ Text "Some math: " { end = 11, id = "0.0", indent = 0, start = 0 }
             , Verbatim "$" "a^2 = 7" { end = 12, id = "0.1", indent = 0, start = 19 }
             ]
-        , testParseLoopCommitted "(5)"
-            "[ABC]"
-            [ Marked "[" [ Text "ABC" { end = 4, id = "0.1", indent = 0, start = 1 } ] { end = 4, id = "0.0", indent = 0, start = 0 } ]
-        , Test.only <|
-            testParseLoopCommitted "(6)"
-                "(ABC)"
-                []
         ]

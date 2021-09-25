@@ -25,28 +25,28 @@ suite =
         "The MiniLaTeX Block Parser"
         [ testParser
             "\\begin{foo}\n   ho ho ho!\n\\end{foo}"
-            [ BBBlock "foo" [ BBParagraph [ "ho ho ho!" ] ] ]
+            [ BBBlock "foo" [ BBParagraph [ "ho ho ho!\n" ] ] ]
         , testParser
             "aaa\nbbb\n\n\\begin{foo}\n   ho ho ho!\n\\end{foo}n\nccc\nddd"
-            [ BBParagraph [ "bbb", "aaa" ]
+            [ BBParagraph [ "aaa\n", "bbb\n" ]
             , BBParagraph []
-            , BBBlock "foo" [ BBParagraph [ "ho ho ho!" ] ]
-            , BBParagraph [ "ccc", "ddd" ]
+            , BBBlock "foo" [ BBParagraph [ "ho ho ho!\n" ] ]
+            , BBParagraph [ "ccc\n", "ddd\n" ]
             ]
         , testParser
             "\\begin{foo}\n   HA HA HA!\n\\end{BAR}"
-            [ BBBlock "foo" [ BBParagraph [ "HA HA HA!" ] ]
-            , BBParagraph [ "Error: I was expecting an end-block labeled  foo, but found BAR" ]
+            [ BBBlock "foo" [ BBParagraph [ "HA HA HA!\n" ] ]
+            , BBError "Error: I was expecting an end-block labeled  foo, but found BAR"
             ]
         , testParser
             "\\begin{foo}\n   ho ho ho!\n\\end{foo}\n\n\\begin{bar}\n   x^2\n\\end{bar}"
-            [ BBBlock "foo" [ BBParagraph [ "ho ho ho!" ] ], BBBlock "bar" [ BBParagraph [ "x^2" ] ] ]
+            [ BBBlock "foo" [ BBParagraph [ "ho ho ho!\n" ] ], BBBlock "bar" [ BBParagraph [ "x^2\n" ] ] ]
         , testParser
             "\\begin{foo}\n   ho ho ho!\n\n\n"
-            [ BBBlock "foo" [ BBParagraph [ "ho ho ho!" ] ] ]
+            [ BBBlock "foo" [ BBParagraph [ "ho ho ho!\n" ] ] ]
         , testParser
             "\\begin{foo}\n   ho ho ho!\n\n\n\\begin{bar}\n   HA HA HA!\n\\end{bar}"
-            [ BBBlock "foo" [ BBParagraph [ "ho ho ho!" ] ], BBBlock "bar" [ BBParagraph [ "HA HA HA!" ] ] ]
+            [ BBBlock "foo" [ BBParagraph [ "ho ho ho!\n" ] ], BBBlock "bar" [ BBParagraph [ "HA HA HA!\n" ] ] ]
         , -- TODO: returning leading spaces, hmm???
           testParser
             "$$\n    x^2"
@@ -54,7 +54,7 @@ suite =
         , -- TODO: returning leading spaces, hmm???
           testParser
             "$$\n    x^2\n\nHo ho ho!"
-            [ BBVerbatimBlock "math" [ "    x^2" ], BBParagraph [ "", "Ho ho ho!" ] ]
+            [ BBVerbatimBlock "math" [ "    x^2" ], BBParagraph [ "", "Ho ho ho!\n" ] ]
         , testParser
             "$$\n    x^2\n$$"
             [ BBVerbatimBlock "math" [ "    x^2" ] ]
@@ -63,5 +63,5 @@ suite =
             [ BBVerbatimBlock "code" [ "   a[i] = a[i] + 1", "   ", "   b[i] = b[i] + 1" ] ]
         , testParser
             "one\ntwo"
-            [ BBParagraph [ "one", "two" ] ]
+            [ BBParagraph [ "one\n", "two\n" ] ]
         ]
