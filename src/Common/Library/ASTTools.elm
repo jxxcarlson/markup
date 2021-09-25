@@ -9,6 +9,9 @@ getTitle language blocks =
         Syntax.Markdown ->
             filterStrict "#" blocks |> List.head |> Maybe.map (Syntax.textToString >> String.trim)
 
+        Syntax.MiniLaTeX ->
+            filterStrict "title" blocks |> List.head |> Maybe.map (Syntax.textToString >> String.trim)
+
         _ ->
             Nothing
 

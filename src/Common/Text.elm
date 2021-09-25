@@ -64,6 +64,7 @@ markupDict =
         [ ( "strong", \g s textList -> strong g s textList )
         , ( "italic", \g s textList -> italic g s textList )
         , ( "red", \g s textList -> red g s textList )
+        , ( "title", \g s textList -> title g s textList )
         , ( "#", \g s textList -> heading1 g s textList )
         , ( "##", \g s textList -> heading2 g s textList )
         , ( "###", \g s textList -> heading3 g s textList )
@@ -115,6 +116,10 @@ mathElement generation settings str =
 codeColor =
     -- E.rgb 0.2 0.5 1.0
     Element.rgb 0.4 0 0.8
+
+
+title g s textList =
+    simpleElement [ Font.size 32 ] g s textList
 
 
 heading1 g s textList =
