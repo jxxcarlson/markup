@@ -29,11 +29,11 @@ defaultRule =
 
 
 miniLaTexDelimiters =
-    [ '\\', '{', '}' ]
+    [ '\\', '{', '}', '$' ]
 
 
 miniLaTexDelimitersStr =
-    [ "\\", "{", "}" ]
+    [ "\\", "{", "}", "$" ]
 
 
 miniLaTeXRuleList =
@@ -91,6 +91,20 @@ miniLaTeXRuleList =
         , transform = identity
         , expect =
             [ { stop = [ "}" ], action = ReduceArg }
+            ]
+        }
+      )
+    , ( '$'
+      , { name = "math"
+        , start = \c -> c == '$'
+        , continue = \c -> False
+        , spaceFollows = False
+        , endCharLength = 0
+        , dropLeadingChars = 0
+        , isVerbatim = True
+        , transform = identity
+        , expect =
+            [ { stop = [ "$" ], action = ShiftVerbatim "$" }
             ]
         }
       )
