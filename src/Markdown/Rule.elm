@@ -28,11 +28,11 @@ defaultRule =
 
 
 markdownDelimiters =
-    [ '*', '_', '`', '$', '[', ']', '#' ]
+    [ '*', '_', '`', '$', '[', ']', '(', ')', '#' ]
 
 
 markdownDelimitersStr =
-    [ "*", "_", "`", "$", "[", "]", "#" ]
+    [ "*", "_", "`", "$", "[", "]", "(", ")", "#" ]
 
 
 markdownRuleList =
@@ -46,6 +46,32 @@ markdownRuleList =
         , isVerbatim = False
         , expect =
             [ { stop = [ " " ], action = ShiftMarked }
+            ]
+        }
+      )
+    , ( '['
+      , { name = "annotationBegin"
+        , start = \c -> c == '['
+        , continue = \c -> c == ']'
+        , spaceFollows = False
+        , endCharLength = 0
+        , dropLeadingChars = 0
+        , isVerbatim = False
+        , expect =
+            [ { stop = [ "]" ], action = ShiftMarked }
+            ]
+        }
+      )
+    , ( '('
+      , { name = "argBegin"
+        , start = \c -> c == '('
+        , continue = \c -> c == ')'
+        , spaceFollows = False
+        , endCharLength = 0
+        , dropLeadingChars = 0
+        , isVerbatim = False
+        , expect =
+            [ { stop = [ ")" ], action = ShiftMarked }
             ]
         }
       )

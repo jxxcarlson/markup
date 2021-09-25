@@ -1,82 +1,133 @@
+
+
+
 # MetaMarkup: Technical Notes
 
 The MetaMarkup library provides a parser and renderer which is capable of transforming text in multiple markup languages into HTML in real time.  The text is rendered as you type, and syntax errors are noted in the rendered text as they occur.  The languages implemented in the present system are
 
-- L1: a markup language with a syntax inspired by Lisp. 
+- L1: a markup language with a syntax inspired by Lisp.
 
-- Rational Markdown:  a variant  of Markdown which can render mathematical formulas, provide numbered section headings, a table of contents, etc.  
+- Rational Markdown:  a variant  of Markdown which can render mathematical formulas, provide numbered section headings, a table of contents, etc.
 
 -  MiniLaTeX, a subset of LaTeX with a few added features.
 
-The task of managing multiple languages is made possible by a rules-based shift-reduce parser that transforms source code from any of the target languages to a common AST.  To change markup languages, one changes the rule set.  A single rendering function suffices to render the comon AST to HTML. 
+The task of managing multiple languages is made possible by a rules-based shift-reduce parser that transforms source code from any of the target languages to a common AST.  To change markup languages, one changes the rule set.  A single rendering function suffices to render the comon AST to HTML.
 
 
 ## Parsing and Rendering
 
-The  parser consumes the source text as a list of strings, transforming it first into a list of blocks. The block parsers, one for each language, are relatively small, under 150 loc, relying on a common code library which is twice as big.  Blocks are entities such as paragraphs, quotations, and LaTeX environments.  Once the blocks have been found, their contents are parsed to handle inline constructs such as TeX macros, marked text such as the below, and so on.
+The  parser consumes the source text as a list of strings, transforming it first into a list of blocks. Blocks are entities such as paragraphs, quotations, and LaTeX environments.
+Once the blocks have been found, their contents are parsed to handle inline constructs such as TeX macros, marked text such as the below, and so on.
 
 ```
-   *bold*, _italic_, `code`, $math$, etc.
+   *bold*, _italic_, `a[i] = a[i] + 1`, $a^2 + b^2 = c^2$,
+   \section{Introduction}, \emph{important stuff]
 
-In this step, each `Block` is transformed into a `TextBlock` by a function
-
-```
-   parseLoop : Rules -> TextCursor -> TextCursor
-
-Here `TextCursor` is a data structure that holds the source text and various auxiliary data needed to build the AST.  The `Rules` argument is a list of rules which define the in-line part of the language being parsed.  The flow of data is as in the diagram below, where `List TextBlock` is the final AST.
+The flow of data is
 
 ```
-   List String -> List Block -> List TextBlock
+   List String -> List Block -> List TextBlock -> List (Html msg)
 
-This single AST is expressive enough to handle markup languages as different as Markup and MiniLaTeX.  In the first we have
+where the source text has type `List String` and the ulltimate AST, common to all languages handled, is of type `List TextBlock`.
+
+### Block parser
+
+The first step is carried out by a function
+
+```
+   Block.parse: Language -> Int -> List String -> List Block
+
+where
+
+```
+   type Language
+        = L1
+        | Markdown
+        | MiniLaTeX
+
+The sole dependency on the `Language` argument is via the function
+
+```
+   classify : Language -> Bool -> String -> LineTypeData
+ule
+This function examines a string, principally to determine line type:
+
+```
+    type LineType
+        = OrdinaryLine
+        | VerbatimLine
+        | BlankLine
+        | BeginBlock String
+        | EndBlock String
+        | BeginVerbatimBlock String
+        | EndVerbatimBlock String
+        | Problem String
+
+The language dependency is in fact concentrated in the function
+
+```
+   getLineTypeParser : Language -> String -> LineType
+
+where, for instance, the function `getLine Markdown` has type `String -> LineType.` Functions of this type, one for each language, are what do the actual work.  Their implementation is quite small, about 50 lines of code.
+
+
+### Text parser
+
+The second step, parsing from `Blocks` to `TextBlocks` is carried  out by the function
+
+```
+    parse2 : Language -> List Block -> List TextBlock
+    parse2 language blocks =
+        List.map (Syntax.map (parseText language)) blocks
+
+where
+
+```
+    parseText : Language -> String -> List Text
+    parseText language input =
+        case language of
+            L1 ->
+              Cursor.parseLoop L1.Rule.rules (Cursor.init input)
+              |> .committed |> List.reverse
+
+              ... and likewise for Markdown and MiniLaTeX
+
+The dependency on `Language` is via the set of rules loaded in each case.  The files defining language rules wieigh in at about 100 lines of code.
+
+### Language Dependencies
+
+It takes two files and about 150 lines of code to define a markup language that can be handled by MetaMarkup.  We make no claim aobut the scope of the system.  It is adequate for L1, Rational Markdown, and MiniLaTeX, despite their obvous surface differences.  It would be interesting to characterize the kind of languages that can be handled by this system or close relaitves thereof.
+
+
+### Rendering
+
+The final step, rendering a list of `TextBlock` to a list of type `Html msg,` is carried out by a single language-independent function,
+
+```
+   render : Int -> Settings -> List TextBlock -> List (Element msg)
+
+The AST, of type `List TextBlock,` is expressive enough to handle markup languages as different as L1, Markdown and MiniLaTeX.  For L1  we have
+
+```
+   [b important] => Marked "b" (Text Impotant)
+
+while in Markdown the same construct reads
 
 ```
    *important* => Marked "*" (Text "important")
 
-while in the second we have
+with MiniLaTeX as in this last example:
 
-```   
+```
    \strong{important}  => Marked "strong" (Text "important")
 
-The renderer has a dictionary that maps names of  `Marked` elements to rendering functions.  In the case at hand, the names `*` and `strong` are mapped to the same element.
+The renderer has a dictionary that maps names of  `Marked` elements to rendering functions.  In the case at hand, the names `b,` `*` and `strong` are mapped to the same element.
 
-## The block parser
-
-There is a shared block parser, so that we may write
-
-``` 
-    parse : Syntax.Language -> Int -> List String -> List Syntax.TextBlock
-    parse language generation lines =
-       lines |> blockParser generation 
-             |> List.map (Syntax.map (parseLoop language))
-
-
-## The text parser
-
-The text type is used for the contents of blocks:
+One advantage of this architecture is that printing to PDF can be implemented by a function of type
 
 ```
-   type Text = 
-      Text String Meta
-      | Marked String (List Text) Meta
-      | Arg (List Text) Meta
-      | Verbatim String String Meta
-      | TError String
+   renderToLaTeX : List TextBlock -> String
 
-- `Text String` is for ordinary text
-- `Marked String (List Text)` is for marked-up elements
-- `Arg (List Text)` is for arguments, e.g., the "functions" defined by `Marked` elements.
-- `Verbatim String String` is for inline verbatim elements such as code and math.
-- The `Meta` component gives information about the corresponding source text: start and end position, indentation.
-
-This type is sufficient to express the text AST for the three languages under consideration (L1, MiniLaTeX, Rational Markdown). As noted above, text parsing is carried out by a function
-
-```
-    parseLoop : Rules -> TextCursor -> TextCursor
-    parseLoop rules initialCursor =
-      loop initialCursor (nextCursor rules)
-
-where `Rules = List Rule` is language-dependent, but the definition of `parseLoop` is not.
-
+that emits standard LaTeX source code.  Using this function as the final step in the pipeline considered above, we transform markup source text to LaTeX source text.  This can then be shipped to a server that accepts LaTeX files and returns them transformed into PDF.
 
 
