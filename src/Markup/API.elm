@@ -29,11 +29,11 @@ getTitle =
     ASTTools.getTitle
 
 
-renderFancy : Language -> Int -> String -> List (Element msg)
+renderFancy : Syntax.Language -> Int -> List String -> List (Element msg)
 renderFancy language count source =
     let
         ast =
-            parse language count (String.lines source)
+            parse language count source
 
         toc_ : List (Element msg)
         toc_ =
