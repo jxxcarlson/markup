@@ -31,6 +31,7 @@ type alias State =
     { input : List String
     , output : List Block
     , indent : Int
+    , verbatimBlockInitialIndent : Int
     , lineNumber : Int
     , generation : Int
     , blockCount : Int
@@ -85,6 +86,7 @@ initialState generation input =
     { input = input
     , output = []
     , indent = 0
+    , verbatimBlockInitialIndent = 0
     , lineNumber = 0
     , generation = generation
     , blockCount = 0

@@ -38,8 +38,7 @@ suite =
             "```\n   one\n   two"
             -- TODO: incorrect position information
             [ TBVerbatimBlock "code" [ "   one", "   two" ] { end = 1, id = "1.1", indent = 3, start = 1 } ]
-        , Test.only <|
-            testAPI Markdown
-                "```\n   aaa\n      bbb\n   cccc"
-                []
+        , testAPI Markdown
+            "```\n   aaa\n      bbb\n   cccc"
+            []
         ]

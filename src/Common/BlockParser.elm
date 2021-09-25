@@ -84,6 +84,9 @@ getLineTypeParser language =
 nextStateAux : Language -> String -> State -> State
 nextStateAux language line state =
     let
+        _ =
+            debug2 "(state.indent, state.verbatimBlockInitialIndent)" ( state.verbatimBlockInitialIndent, state.indent )
+
         lineType =
             classify language state.inVerbatimBlock line |> debug2 "lineType (nextStateAux)"
 
@@ -93,7 +96,8 @@ nextStateAux language line state =
                     True
 
                 _ ->
-                    if level lineType.indent < level state.indent then
+                    -- TODO: check this out.  Is it OK?? Previously: < level state.indent
+                    if level lineType.indent < level state.verbatimBlockInitialIndent then
                         False
 
                     else
@@ -160,13 +164,13 @@ nextStateAux2 indent line newLineType lineType state =
                         yada.prefix |> BP.blockLabelAtBottomOfStack |> debug2 "yada.prefix, bottom label"
                 in
                 if BP.blockLabelAtBottomOfStack yada.prefix == s then
-                    { state | indent = indent } |> BP.reduceStack
+                    { state | indent = indent, verbatimBlockInitialIndent = indent + 3 } |> BP.reduceStack
 
                 else
-                    { state | indent = indent } |> BP.reduceStack |> BP.shift (VerbatimBlock s [] (Syntax.dummyMeta 0 0))
+                    { state | indent = indent, verbatimBlockInitialIndent = indent + 3 } |> BP.reduceStack |> BP.shift (VerbatimBlock s [] (Syntax.dummyMeta 0 0))
 
             else
-                { state | indent = indent } |> BP.shift (VerbatimBlock s [] (Syntax.dummyMeta 0 0))
+                { state | indent = indent, verbatimBlockInitialIndent = indent + 3 } |> BP.shift (VerbatimBlock s [] (Syntax.dummyMeta 0 0))
 
         OrdinaryLine ->
             state |> handleOrdinaryLine indent line
