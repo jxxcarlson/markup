@@ -1,6 +1,3 @@
-
-
-
 # MetaMarkup: Technical Notes
 
 The MetaMarkup library provides a parser and renderer which is capable of transforming text in multiple markup languages into HTML in real time.  The text is rendered as you type, and syntax errors are noted in the rendered text as they occur.  The languages implemented in the present system are
@@ -73,30 +70,59 @@ where, for instance, the function `getLine Markdown` has type `String -> LineTyp
 
 ### Text parser
 
-The second step, parsing from `Blocks` to `TextBlocks` is carried  out by the function
+The second step, parsing from `Blocks` to `TextBlocks` is carried  out by mapping a function
+`parseText : Language -> String -> List Text` over the list of blocks:
 
 ```
     parse2 : Language -> List Block -> List TextBlock
     parse2 language blocks =
         List.map (Syntax.map (parseText language)) blocks
 
-where
+The core of the `parserText` function is a call to `Cursor.parserLoop,` a shift-reduce parser whose operation is defined by a set of language-specific rules which are loaded as the first argument.  Here `parserLoop` is a functional loop operating on a `TextCursor,` a structure with fields
+
+- `sourceText: String` — the input
+
+- `scanPoint` — an index into `sourceText`
+
+- `stack: List Text` — data not completely parsed
+
+- `committed: List Text` — the output
+
+
+
+A rule is a record with various fields including
+
+- two predicates which define a parser that accepts a string, e.g., `"\foo"` from the input
+`"\foo{bar}"` for the beginning of a LaTeX macro.
+
+- a list of "expectations," e.g.,
 
 ```
-    parseText : Language -> String -> List Text
-    parseText language input =
-        case language of
-            L1 ->
-              Cursor.parseLoop L1.Rule.rules (Cursor.init input)
-              |> .committed |> List.reverse
+     [  { stop = [ " ", "" ], action = CommitMarked }
+      , { stop = [ "{" ], action = ShiftMarked } ]
 
-              ... and likewise for Markdown and MiniLaTeX
+ On each pass of `parserLoop,` the `textToProcess` is  set to the source text from `scanPoint`  on and he current rule is computed from by the rule set and the leading character of `textToProcess.`  The current rule determines a parser which returns a prefix of `textToProcess,` advances the `scanPoint,` and finds `stopChar,` the character in the source text just beyond `scanPoint.`  This character and the current rule determine an action, as in the rule example above.  A case statement based on the action then determines how to update the `committed` and `stack` fields of the text cursor.
 
-The dependency on `Language` is via the set of rules loaded in each case.  The files defining language rules wieigh in at about 100 lines of code.
+If the action is `ShiftMarked,` the `committed` field is left untouched and the `Text` element `Marked str meta` is prepended to the `stack` field.  Here `str` is a substring of the prefix and `meta` locates that prefix in the source.
+
+If the action is `CommitMarked,` the data `Marked str meta` is prepended to the `committed` field instead and `stack` is left untouched.
+
+As a final exampe, if the action is `ReduceArg,` then the commited text is left untouched and the function `contractTextIntoArg >> contractArgIntoMarked >> contractMarkedIntoArg` is applied to the stack.  Each function in a chain like this has signature `List Text -> List Text,` and it acts via pattern-matching on the first two or three elements on the stack to replace these elements by a single combined element.  For example, we have
+
+```
+    contractTextIntoArg stack =
+        case stack of
+            (Text str meta1) :: (Arg textList2 meta2) :: rest ->
+                Arg (Text str meta1 :: textList2) META :: rest
+            _ ->
+                stack
+
+where `META` is new metadata.
+
 
 ### Language Dependencies
 
-It takes two files and about 150 lines of code to define a markup language that can be handled by MetaMarkup.  We make no claim aobut the scope of the system.  It is adequate for L1, Rational Markdown, and MiniLaTeX, despite their obvous surface differences.  It would be interesting to characterize the kind of languages that can be handled by this system or close relaitves thereof.
+It takes two files and about 150 lines of code to define a markup language that can be handled by MetaMarkup.  We make no claim about the scope of the system.  It is adequate for L1, Rational Markdown, and MiniLaTeX, despite their obvous surface differences.  It would be interesting to characterize the kind of languages that can be handled by this system or close relaitves thereof.
 
 
 ### Rendering
@@ -129,5 +155,6 @@ One advantage of this architecture is that printing to PDF can be implemented by
    renderToLaTeX : List TextBlock -> String
 
 that emits standard LaTeX source code.  Using this function as the final step in the pipeline considered above, we transform markup source text to LaTeX source text.  This can then be shipped to a server that accepts LaTeX files and returns them transformed into PDF.
+
 
 
