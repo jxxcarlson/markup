@@ -25,15 +25,14 @@ suiteParseLoop =
         , testParseLoopCommitted "(2)"
             "\\foo{bar}"
             [ Marked "foo" [ Text "bar" { end = 8, id = "0.2", indent = 0, start = 5 } ] { end = 8, id = "0.0", indent = 0, start = 0 } ]
-        , Test.only <|
-            testParseLoopCommitted "(3)"
-                "\\foo{bar}{baz}"
-                [ Marked "foo"
-                    [ Text "baz" { end = 13, id = "0.5", indent = 0, start = 10 }
-                    , Text "bar" { end = 8, id = "0.2", indent = 0, start = 5 }
-                    ]
-                    { end = 13, id = "0.0", indent = 0, start = 0 }
+        , testParseLoopCommitted "(3)"
+            "\\foo{bar}{baz}"
+            [ Marked "foo"
+                [ Text "baz" { end = 13, id = "0.5", indent = 0, start = 10 }
+                , Text "bar" { end = 8, id = "0.2", indent = 0, start = 5 }
                 ]
+                { end = 13, id = "0.0", indent = 0, start = 0 }
+            ]
         , testParseLoopCommitted "(4)"
             "\\foo{\\bar{baz}}"
             [ Marked "foo" [ Marked "bar" [ Text "baz" { end = 13, id = "0.4", indent = 0, start = 10 } ] { end = 13, id = "0.2", indent = 0, start = 5 } ] { end = 13, id = "0.0", indent = 0, start = 0 } ]
@@ -41,6 +40,7 @@ suiteParseLoop =
             "very \\strong{bold} move"
             [ Text "very " { end = 5, id = "0.0", indent = 0, start = 0 }
             , Marked "strong" [ Text "bold" { end = 17, id = "0.3", indent = 0, start = 13 } ] { end = 17, id = "0.1", indent = 0, start = 5 }
-            , Text " move" { end = 23, id = "0.5", indent = 0, start = 18 }
+            , Text " " { end = 0, id = "1.2", indent = 0, start = 0 }
+            , Text "move" { end = 23, id = "0.6", indent = 0, start = 19 }
             ]
         ]

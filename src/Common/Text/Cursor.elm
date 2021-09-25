@@ -171,9 +171,9 @@ nextCursor_ leadingChar cursor rules textToProcess =
                         ReduceArg ->
                             let
                                 _ =
-                                    debug2 "ReduceArg, contracted stack" (contractStack cursor.stack)
+                                    debug2 "ReduceArg, contractStackRepeatedly stack" (contractStackRepeatedly cursor.stack)
                             in
-                            ( cursor.committed, contractStack cursor.stack )
+                            ( cursor.committed, (contractTextIntoArg >> contractArgIntoMarked >> contractMarkedIntoArg) cursor.stack )
 
                         _ ->
                             ( cursor.committed, cursor.stack )
@@ -222,6 +222,48 @@ getScannerType cursor rule leadingChar =
 
             else
                 VerbatimScan c
+
+
+contractMarkedIntoArg : List Text -> List Text
+contractMarkedIntoArg stack =
+    case stack of
+        (Marked name textList1 meta1) :: (Arg textList2 meta2) :: rest ->
+            let
+                _ =
+                    debug2 "contractMarkedIntoArg" 3
+            in
+            Arg [ Marked name textList1 meta1 ] { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
+
+        _ ->
+            stack
+
+
+contractTextIntoArg : List Text -> List Text
+contractTextIntoArg stack =
+    case stack of
+        (Text str meta1) :: (Arg textList2 meta2) :: rest ->
+            let
+                _ =
+                    debug2 "contractTextIntoArg" 3
+            in
+            Arg (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
+
+        _ ->
+            stack
+
+
+contractArgIntoMarked : List Text -> List Text
+contractArgIntoMarked stack =
+    case stack of
+        (Arg textList1 meta1) :: (Marked name textList2 meta2) :: rest ->
+            let
+                _ =
+                    debug2 "contractArgIntoMarked" 2
+            in
+            Marked name (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
+
+        _ ->
+            stack
 
 
 contract : Text -> Text -> Maybe Text

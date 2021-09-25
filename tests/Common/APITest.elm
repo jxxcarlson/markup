@@ -24,14 +24,15 @@ suite =
     describe "The API"
         [ testAPI Markdown
             "one\ntwo"
-            [ TBParagraph [ Text "one" { end = 3, id = "0.0", indent = 0, start = 0 }, Text "two" { end = 3, id = "0.0", indent = 0, start = 0 } ] { end = 0, id = "1.0", indent = 0, start = 0 } ]
-        , testAPI Markdown
-            "one\nthree\n"
             [ TBParagraph
-                [ Text "one" { end = 3, id = "0.0", indent = 0, start = 0 }
-                , Text "three" { end = 5, id = "0.0", indent = 0, start = 0 }
+                [ Text "one\n" { end = 4, id = "0.0", indent = 0, start = 0 }
+                , Text "two\n" { end = 4, id = "0.0", indent = 0, start = 0 }
                 ]
                 { end = 0, id = "1.0", indent = 0, start = 0 }
+            ]
+        , testAPI Markdown
+            "one\nthree\n"
+            [ TBParagraph [ Text "one\n" { end = 4, id = "0.0", indent = 0, start = 0 }, Text "three\n" { end = 6, id = "0.0", indent = 0, start = 0 } ] { end = 0, id = "1.0", indent = 0, start = 0 }
             , TBParagraph [] { end = 0, id = "1.2", indent = 0, start = 0 }
             ]
         , testAPI Markdown
@@ -40,5 +41,5 @@ suite =
             [ TBVerbatimBlock "code" [ "   one", "   two" ] { end = 1, id = "1.1", indent = 3, start = 1 } ]
         , testAPI Markdown
             "```\n   aaa\n      bbb\n   cccc"
-            []
+            [ TBVerbatimBlock "code" [ "   aaa", "      bbb", "   cccc" ] { end = 1, id = "1.1", indent = 3, start = 1 } ]
         ]
