@@ -1,6 +1,7 @@
 module Common.Text.Reduce exposing
     ( argIntoArg
     , argIntoMarked
+    , argList
     , contract3Stack
     , contractStackRepeatedly
     , markedIntoArg
@@ -9,7 +10,58 @@ module Common.Text.Reduce exposing
     , textIntoMarked
     )
 
+import Common.Debug exposing (..)
 import Common.Syntax exposing (Text(..))
+import Common.Text
+import L1.Transform as Reduce
+import List.Extra
+
+
+argList_ : List Text -> List Text
+argList_ textList =
+    case textList of
+        text1 :: text2 :: rest ->
+            case ( text1, text2 ) of
+                ( Text str1 meta1, Marked name textList2 meta2 ) ->
+                    argList_ <| Marked (name |> debug3 "argList_, name") (Text str1 meta1 :: textList2) { meta2 | end = meta1.end } :: rest
+
+                ( Marked name1 textList1 meta1, Marked name2 textList2 meta2 ) ->
+                    argList_ <| Marked name2 (Marked (name1 |> debug3 "argList_, name1") textList1 meta1 :: textList2) { meta2 | end = meta1.end } :: rest
+
+                _ ->
+                    textList
+
+        text1 :: [] ->
+            textList
+
+        [] ->
+            textList
+
+
+argList : List Text -> List Text
+argList textList =
+    case List.Extra.uncons (List.reverse textList) of
+        Nothing ->
+            []
+
+        Just ( last, rest ) ->
+            let
+                _ =
+                    debug1 "last" last
+
+                _ =
+                    debug2 "rest" rest
+            in
+            case last of
+                Marked name textList1 meta ->
+                    if Common.Syntax.listIsPureText rest then
+                        [ Marked (name |> debug3 "argList, name") (rest ++ textList1) meta ]
+
+                    else
+                        argList_ textList
+
+                _ ->
+                    argList_ textList
 
 
 contract3Stack : List Text -> List Text

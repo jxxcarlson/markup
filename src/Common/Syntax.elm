@@ -7,10 +7,17 @@ module Common.Syntax exposing
     , TextBlock(..)
     , dummyMeta
     , getName
+    , isMarked
+    , isPureText
+    , listIsPureText
     , map
     , textBlockToString
     , textToString
     )
+
+import Bool.Extra
+
+
 
 -- TYPES
 
@@ -127,6 +134,35 @@ textToString text =
 
         TError str ->
             str
+
+
+
+-- PREDICATES
+
+
+isMarked : Text -> Bool
+isMarked text =
+    case text of
+        Marked _ _ _ ->
+            True
+
+        _ ->
+            False
+
+
+isPureText : Text -> Bool
+isPureText text =
+    case text of
+        Text _ _ ->
+            True
+
+        _ ->
+            False
+
+
+listIsPureText : List Text -> Bool
+listIsPureText textList =
+    textList |> List.map isPureText |> Bool.Extra.all
 
 
 

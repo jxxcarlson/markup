@@ -42,7 +42,7 @@ renderFancy language count source =
             tableOfContents count { width = 500 } ast
 
         titleString =
-            ASTTools.getTitle ast |> Maybe.withDefault "Untitled"
+            ASTTools.getTitle ast |> Maybe.withDefault "Untitled" |> String.replace "\n" " "
 
         docTitle =
             E.el [ Element.Font.size 30 ] (E.text titleString)

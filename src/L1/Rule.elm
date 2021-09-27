@@ -24,7 +24,7 @@ defaultRule =
     , dropLeadingChars = 1
     , isVerbatim = False
     , transform = identity
-    , expect = [ { stop = l1DelimiterStr, action = ShiftText } ]
+    , expect = [ { stop = l1DelimiterStr, action = ShiftText2 } ]
     }
 
 
@@ -125,7 +125,7 @@ l1RuleList =
         , isVerbatim = False
         , transform = identity
         , expect =
-            [ { stop = [ "]" ], action = ReduceArg }
+            [ { stop = [ "]" ], action = ReduceArgList }
             ]
         }
       )

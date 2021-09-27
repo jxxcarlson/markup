@@ -21,10 +21,12 @@ type Action
     | CommitMarked
     | CommitVerbatim String
     | ShiftText
+    | ShiftText2
     | ShiftMarked
     | ShiftVerbatim String
     | ShiftArg
     | ReduceArg
+    | ReduceArgList
     | ErrorAction
 
 

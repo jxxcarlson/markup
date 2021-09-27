@@ -170,6 +170,17 @@ nextCursor_ leadingChar cursor rules textToProcess =
                             else
                                 ( cursor.committed, Text stringData.content meta :: cursor.stack )
 
+                        ShiftText2 ->
+                            let
+                                textList =
+                                    String.words stringData.content |> List.map (\s -> Text (s ++ " ") meta)
+                            in
+                            if cursor.stack == [] then
+                                ( Common.Text.combine textList ++ cursor.committed, cursor.stack )
+
+                            else
+                                ( cursor.committed, textList ++ cursor.stack )
+
                         ShiftMarked ->
                             --  ( cursor.committed, Marked (String.trim stringData.content) [] meta :: cursor.stack )
                             let
@@ -194,6 +205,9 @@ nextCursor_ leadingChar cursor rules textToProcess =
                                     debug3 "ReduceArg (IN)" cursor.stack
                             in
                             ( cursor.committed, (Reduce.markedIntoMarked >> Reduce.textIntoMarked >> Reduce.textIntoArg >> Reduce.argIntoMarked >> Reduce.markedIntoArg) cursor.stack |> debug3 "ReduceArg (OUT)" )
+
+                        ReduceArgList ->
+                            ( cursor.committed, Reduce.argList cursor.stack )
 
                         _ ->
                             ( cursor.committed, cursor.stack )
