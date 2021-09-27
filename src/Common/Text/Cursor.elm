@@ -4,6 +4,7 @@ import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Library.ParserTools as ParserTools exposing (StringData)
 import Common.Syntax as Syntax exposing (Text(..))
 import Common.Text.Error exposing (Context(..), Problem(..))
+import Common.Text.Reduce as Reduce
 import Common.Text.Rule as Rule exposing (Action(..), Rule, Rules)
 import Dict exposing (Dict)
 import List.Extra
@@ -172,11 +173,7 @@ nextCursor_ leadingChar cursor rules textToProcess =
                             ( cursor.committed, Arg [] meta :: cursor.stack )
 
                         ReduceArg ->
-                            let
-                                _ =
-                                    debug2 "ReduceArg, contractStackRepeatedly stack" (contractStackRepeatedly cursor.stack)
-                            in
-                            ( cursor.committed, (contractTextIntoArg >> contractArgIntoMarked >> contractMarkedIntoArg) cursor.stack )
+                            ( cursor.committed, (Reduce.textIntoArg >> Reduce.argIntoMarked >> Reduce.markedIntoArg) cursor.stack )
 
                         _ ->
                             ( cursor.committed, cursor.stack )
@@ -225,48 +222,6 @@ getScannerType cursor rule leadingChar =
 
             else
                 VerbatimScan c
-
-
-contractMarkedIntoArg : List Text -> List Text
-contractMarkedIntoArg stack =
-    case stack of
-        (Marked name textList1 meta1) :: (Arg textList2 meta2) :: rest ->
-            let
-                _ =
-                    debug2 "contractMarkedIntoArg" 3
-            in
-            Arg [ Marked name textList1 meta1 ] { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
-
-        _ ->
-            stack
-
-
-contractTextIntoArg : List Text -> List Text
-contractTextIntoArg stack =
-    case stack of
-        (Text str meta1) :: (Arg textList2 meta2) :: rest ->
-            let
-                _ =
-                    debug2 "contractTextIntoArg" 3
-            in
-            Arg (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
-
-        _ ->
-            stack
-
-
-contractArgIntoMarked : List Text -> List Text
-contractArgIntoMarked stack =
-    case stack of
-        (Arg textList1 meta1) :: (Marked name textList2 meta2) :: rest ->
-            let
-                _ =
-                    debug2 "contractArgIntoMarked" 2
-            in
-            Marked name (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
-
-        _ ->
-            stack
 
 
 contract : Text -> Text -> Maybe Text
@@ -367,15 +322,6 @@ contract3Stack stack =
 
         _ ->
             stack
-
-
-contractStack : List Text -> List Text
-contractStack =
-    let
-        _ =
-            debug2 "contractStack" "yes!"
-    in
-    contract2Stack >> contract3Stack
 
 
 contract2Stack : List Text -> List Text
