@@ -3,6 +3,7 @@ module Common.Text.Cursor exposing (Step(..), TextCursor, init, nextCursor, pars
 import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Library.ParserTools as ParserTools exposing (StringData)
 import Common.Syntax as Syntax exposing (Text(..))
+import Common.Text
 import Common.Text.Error exposing (Context(..), Problem(..))
 import Common.Text.Reduce as Reduce
 import Common.Text.Rule as Rule exposing (Action(..), Rule, Rules)
@@ -83,7 +84,7 @@ nextCursor rules cursor =
                     Done cursor
 
                 Just ( item, rest ) ->
-                    Done { cursor | committed = item :: cursor.committed, stack = rest }
+                    Done { cursor | committed = Common.Text.reverse item :: cursor.committed, stack = rest }
 
         Just ( leadingChar, _ ) ->
             -- NOTE: use rules here
@@ -153,7 +154,7 @@ nextCursor_ leadingChar cursor rules textToProcess =
                             in
                             case List.head newStack of
                                 Just item ->
-                                    ( Text " " (Syntax.dummyMeta 0 0) :: item :: cursor.committed, List.drop 1 newStack )
+                                    ( Text " " (Syntax.dummyMeta 0 0) :: (Common.Text.reverse item |> debug2 "Common.Text.reverse") :: cursor.committed, List.drop 1 newStack )
 
                                 Nothing ->
                                     -- TODO: is this correct?

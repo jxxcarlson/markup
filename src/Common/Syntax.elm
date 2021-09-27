@@ -30,19 +30,6 @@ type Text
     | TError String
 
 
-reverse : Text -> Text
-reverse text =
-    case text of
-        Marked name textList meta ->
-            Marked name (List.reverse textList) meta
-
-        Arg textList meta ->
-            Arg (List.reverse textList) meta
-
-        _ ->
-            text
-
-
 getName : Text -> Maybe String
 getName text =
     case text of

@@ -28,8 +28,8 @@ suiteParseLoop =
         , testParseLoopCommitted "(3)"
             "\\foo{bar}{baz}"
             [ Marked "foo"
-                [ Text "baz" { end = 13, id = "0.5", indent = 0, start = 10 }
-                , Text "bar" { end = 8, id = "0.2", indent = 0, start = 5 }
+                [ Text "bar" { end = 8, id = "0.2", indent = 0, start = 5 }
+                , Text "baz" { end = 13, id = "0.5", indent = 0, start = 10 }
                 ]
                 { end = 13, id = "0.0", indent = 0, start = 0 }
             ]
@@ -43,13 +43,21 @@ suiteParseLoop =
             , Text " " { end = 0, id = "1.2", indent = 0, start = 0 }
             , Text "move" { end = 23, id = "0.6", indent = 0, start = 19 }
             ]
-        , Test.only <|
-            testParseLoopCommitted "(6)"
-                "\\link{NYT}{https://nytimes.com} "
-                [ Marked "link"
-                    [ Text "https://nytimes.com" { end = 30, id = "0.5", indent = 0, start = 11 }
-                    , Text "NYT" { end = 9, id = "0.2", indent = 0, start = 6 }
-                    ]
-                    { end = 30, id = "0.0", indent = 0, start = 0 }
+        , testParseLoopCommitted "(6)"
+            "\\link{NYT}{https://nytimes.com} "
+            [ Marked "link"
+                [ Text "NYT" { end = 9, id = "0.2", indent = 0, start = 6 }
+                , Text "https://nytimes.com" { end = 30, id = "0.5", indent = 0, start = 11 }
                 ]
+                { end = 30, id = "0.0", indent = 0, start = 0 }
+            , Text " " { end = 0, id = "1.2", indent = 0, start = 0 }
+            ]
+        , testParseLoopCommitted "(7)"
+            "\\link{NYT}{https://nytimes.com}"
+            [ Marked "link"
+                [ Text "NYT" { end = 9, id = "0.2", indent = 0, start = 6 }
+                , Text "https://nytimes.com" { end = 30, id = "0.5", indent = 0, start = 11 }
+                ]
+                { end = 30, id = "0.0", indent = 0, start = 0 }
+            ]
         ]
