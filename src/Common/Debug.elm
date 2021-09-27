@@ -4,7 +4,7 @@ import Console
 
 
 debugOn =
-    False
+    True
 
 
 debug1 str =
