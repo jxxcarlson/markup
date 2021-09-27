@@ -74,7 +74,12 @@ nextCursor rules cursor =
     in
     case String.uncons textToProcess of
         Nothing ->
-            case List.Extra.uncons (contractStackRepeatedly cursor.stack) of
+            -- We need to apply contractStackRepeatedly when there is nothing left to process
+            -- so as to clear the stack (assuming no errors)
+            -- Example (Markdown cursor test (1):
+            --    STACK: [Text "Introduction to Chemistry" META ,Marked "title" [] META]
+            -- TODO: this should be done less crudely
+            case List.Extra.uncons (Reduce.contractStackRepeatedly cursor.stack) of
                 Nothing ->
                     Done cursor
 
@@ -132,7 +137,12 @@ nextCursor_ leadingChar cursor rules textToProcess =
                         Commit ->
                             let
                                 newStack =
-                                    contractStackRepeatedly cursor.stack |> debug3 "newStack (Commit)"
+                                    -- AGAIN,
+                                    -- EXAMPLE, Markdown cursor test (2), "It was *very* bold" yields
+                                    --     [Text "It was " META, Marked "strong" [] META,Text " " META ,Marked "strong" [] META]
+                                    -- INSTEAD OF
+                                    --     [Text "It was " META,Marked "strong" [Text "very" META] META,Text " " META,Text "bold" META]
+                                    Reduce.contractStackRepeatedly cursor.stack |> debug3 "newStack (Commit)"
 
                                 -- TODO: not working for \\foo{\\bar{baz}
                                 -- TODO: we have to handle the case of length newStack > 1, which is an error state
@@ -167,7 +177,7 @@ nextCursor_ leadingChar cursor rules textToProcess =
                             ( cursor.committed, Marked mark [] meta :: cursor.stack )
 
                         ShiftVerbatim c ->
-                            ( cursor.committed, Verbatim c "" meta :: cursor.stack |> contract3Stack )
+                            ( cursor.committed, Verbatim c "" meta :: cursor.stack |> Reduce.contract3Stack )
 
                         ShiftArg ->
                             ( cursor.committed, Arg [] meta :: cursor.stack )
@@ -222,166 +232,6 @@ getScannerType cursor rule leadingChar =
 
             else
                 VerbatimScan c
-
-
-contract : Text -> Text -> Maybe Text
-contract text1 text2 =
-    (let
-        _ =
-            debug3 "CONTRACT CASES (IN)" ( text1, text2 )
-     in
-     case ( text1, text2 ) of
-        ( Arg textList1 meta1, Arg textList2 meta2 ) ->
-            let
-                _ =
-                    debug2 "contract" 1
-            in
-            Just <| Arg (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
-
-        ( Arg textList1 meta1, Marked name textList2 meta2 ) ->
-            let
-                _ =
-                    debug2 "contract" 2
-            in
-            Just <| Marked name (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
-
-        ( Text str meta1, Arg textList2 meta2 ) ->
-            let
-                _ =
-                    debug2 "contract" 3
-            in
-            Just <| Arg (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
-
-        ( Marked name textList1 meta1, Arg textList2 meta2 ) ->
-            let
-                _ =
-                    debug2 "contract" 4
-            in
-            Just <| Arg (Marked name textList1 meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
-
-        ( Text str meta1, Marked name textList2 meta2 ) ->
-            let
-                _ =
-                    debug2 "contract" 5
-            in
-            Just <| Marked name (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
-
-        ( _, _ ) ->
-            let
-                _ =
-                    debug2 "contract" 0
-            in
-            Nothing
-    )
-        |> debug3 "CONTRACT CASES (OUT)"
-
-
-contract3 : Text -> Text -> Text -> Maybe Text
-contract3 text1 text2 text3 =
-    let
-        _ =
-            debug3 "contract3, stack" "-"
-    in
-    case ( text1, text2, text3 ) of
-        ( Marked a [] meta1, _, Marked b [] meta3 ) ->
-            if a == b then
-                Just <| Marked a [ text2 ] { start = meta1.start, end = meta3.end, indent = 0, id = meta3.id }
-
-            else
-                Nothing
-
-        ( Verbatim a "" meta1, Text x meta, Verbatim b "" meta3 ) ->
-            if a == b then
-                Just <| Verbatim a x { start = meta1.start, end = meta3.end, indent = 0, id = meta3.id }
-
-            else
-                Nothing
-
-        _ ->
-            Nothing
-
-
-contract3Stack : List Text -> List Text
-contract3Stack stack =
-    let
-        _ =
-            debug3 "contractStack3, stack" stack
-    in
-    case stack of
-        text1 :: text2 :: text3 :: rest ->
-            case contract3 text1 text2 text3 of
-                Nothing ->
-                    stack
-
-                Just text_ ->
-                    let
-                        _ =
-                            debug1 "ACTION 3" "contract stack, scanPoint"
-                    in
-                    text_ :: rest
-
-        _ ->
-            stack
-
-
-contract2Stack : List Text -> List Text
-contract2Stack stack =
-    let
-        _ =
-            debug3 "contractStack, stack" stack
-    in
-    case stack of
-        text1 :: text2 :: rest ->
-            case contract text1 text2 of
-                Nothing ->
-                    stack
-
-                Just text_ ->
-                    let
-                        _ =
-                            debug1 "ACTION 2" "contract stack, scanPoint"
-                    in
-                    text_ :: rest
-
-        _ ->
-            stack
-
-
-contractStackRepeatedly : List Text -> List Text
-contractStackRepeatedly stack =
-    let
-        _ =
-            debug1 "contractStackRepeatedly" "!!!"
-    in
-    (case stack of
-        text1 :: text2 :: text3 :: rest ->
-            case contract3 text1 text2 text3 of
-                Nothing ->
-                    stack
-
-                Just text_ ->
-                    let
-                        _ =
-                            debug1 "ACTION 3(R)" "contract stack, scanPoint"
-                    in
-                    text_ :: rest
-
-        text1 :: text2 :: rest ->
-            case contract text1 text2 of
-                Nothing ->
-                    stack
-
-                Just text_ ->
-                    let
-                        _ =
-                            debug1 "ACTION (2)R" "contract stack, scanPoint"
-                    in
-                    contractStackRepeatedly (text_ :: rest)
-
-        _ ->
-            stack
-    )
-        |> List.reverse
 
 
 
