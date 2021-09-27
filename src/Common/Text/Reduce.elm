@@ -23,10 +23,18 @@ argList_ textList =
         text1 :: text2 :: rest ->
             case ( text1, text2 ) of
                 ( Text str1 meta1, Marked name textList2 meta2 ) ->
-                    argList_ <| Marked (name |> debug3 "argList_, name") (Text str1 meta1 :: textList2) { meta2 | end = meta1.end } :: rest
+                    argList_ <|
+                        Marked (name |> debug3 "argList_, name") (Text str1 meta1 :: textList2) { meta2 | end = meta1.end }
+                            :: argList_ (rest |> debug3 "argList_, rest")
 
                 ( Marked name1 textList1 meta1, Marked name2 textList2 meta2 ) ->
-                    argList_ <| Marked name2 (Marked (name1 |> debug3 "argList_, name1") textList1 meta1 :: textList2) { meta2 | end = meta1.end } :: rest
+                    argList_ <|
+                        Marked name2
+                            (Marked (name1 |> debug3 "argList_, name1") textList1 meta1
+                                :: textList2
+                            )
+                            { meta2 | end = meta1.end }
+                            :: argList_ (rest |> debug3 "argList_, rest")
 
                 _ ->
                     textList

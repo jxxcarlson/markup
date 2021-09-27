@@ -50,4 +50,13 @@ suiteParseLoop =
                 ]
                 { end = 6, id = "0.0", indent = 0, start = 0 }
             ]
+        , testParseLoopCommitted "(6)"
+            "[i AAA [b BBB]] "
+            [ Marked "italic"
+                [ Text "AAA " { end = 7, id = "0.1", indent = 0, start = 3 }
+                , Marked "strong" [ Text "BBB " { end = 13, id = "0.3", indent = 0, start = 10 } ] { end = 13, id = "0.2", indent = 0, start = 7 }
+                ]
+                { end = 13, id = "0.0", indent = 0, start = 0 }
+            , Text " " { end = 0, id = "1.2", indent = 0, start = 0 }
+            ]
         ]
