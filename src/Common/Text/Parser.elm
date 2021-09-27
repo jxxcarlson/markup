@@ -1,11 +1,11 @@
 module Common.Text.Parser exposing (TextParser, dummyParse, parseTextInBlock)
 
-import Common.Render
+import Common.Render.TextBlock
 import Common.Syntax exposing (Block(..), Meta, Text(..), TextBlock(..), dummyMeta)
 
 
 type alias TextParser =
-    Int -> Common.Render.Settings -> String -> List Text
+    Int -> Common.Render.TextBlock.Settings -> String -> List Text
 
 
 dummyParse : TextParser
@@ -13,7 +13,7 @@ dummyParse generation settings string =
     [ Text string (dummyMeta generation 0) ]
 
 
-parseTextInBlock : Int -> Common.Render.Settings -> TextParser -> Block -> TextBlock
+parseTextInBlock : Int -> Common.Render.TextBlock.Settings -> TextParser -> Block -> TextBlock
 parseTextInBlock generation settings parse_ block =
     case block of
         Paragraph strings meta ->

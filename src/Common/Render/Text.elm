@@ -1,4 +1,4 @@
-module Common.Text exposing (render, viewTOC)
+module Common.Render.Text exposing (args, render, viewTOC)
 
 import Common.Debug exposing (debug1)
 import Common.Library.ASTTools as ASTTools
@@ -101,7 +101,11 @@ link g s textList =
                 }
 
         _ ->
-            el [] (Element.text "Invalid link")
+            el [ Font.color errorColor ] (Element.text "Invalid link")
+
+
+errorColor =
+    Element.rgb 0.8 0 0
 
 
 linkColor =

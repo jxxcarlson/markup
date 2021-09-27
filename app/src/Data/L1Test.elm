@@ -3,7 +3,7 @@ module Data.L1Test exposing (text)
 
 text =
     """
-
+[title L1 Test]
 
 L1 is a markup language with a syntax [i somewhat] like Lisp,
 but with square brackets instead of parentheses.
@@ -15,7 +15,9 @@ Yes, a [b [red very]] bold move indeed! [i (Note that macros are composing prope
 
 [link NYT https://nytimes.com]
 
-Some code
+[h1 blocks]
+
+[h2 code]
 
 || code
    \\int_0^1 x^n dx

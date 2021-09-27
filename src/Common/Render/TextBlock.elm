@@ -1,10 +1,10 @@
-module Common.Render exposing (Settings, render)
+module Common.Render.TextBlock exposing (Settings, render)
 
 import Common.Debug exposing (debug3)
 import Common.Library.ASTTools as ASTTools
 import Common.Math
+import Common.Render.Text
 import Common.Syntax as Syntax exposing (Block(..), Text(..), TextBlock(..))
-import Common.Text
 import Dict exposing (Dict)
 import Element exposing (..)
 import Element.Background as Background
@@ -13,25 +13,6 @@ import Element.Font as Font
 
 type alias Settings =
     { width : Int }
-
-
-
--- RENDER
---renderFancy : Int -> Settings -> List TextBlock -> List (Element msg)
---renderFancy generation settings blocks =
---    let
---        toc =
---            Markup.API.tableOfContents generation settings blocks
---
---
---
---        titleString =
---            ASTTools.getTitle blocks |> Maybe.withDefault "Untitled"
---
---        title =
---            el [ Font.size 30 ] (text titleString)
---    in
---    title :: column [ paddingXY 18 ] toc :: render generation settings ast2
 
 
 render : Int -> Settings -> List TextBlock -> List (Element msg)
@@ -45,7 +26,7 @@ renderBlock generation settings block =
         TBParagraph textList _ ->
             paragraph
                 []
-                (List.map (Common.Text.render generation settings) textList)
+                (List.map (Common.Render.Text.render generation settings) textList)
 
         TBVerbatimBlock name lines _ ->
             case Dict.get name verbatimBlockDict of

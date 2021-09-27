@@ -12,9 +12,9 @@ one of three markup languages (L1, Markdown, MiniLaTeX) to `Html msg`.
 
 import Common.BlockParser as Block
 import Common.Library.ASTTools as ASTTools
-import Common.Render exposing (Settings)
+import Common.Render.Text as Text
+import Common.Render.TextBlock as TextBlock exposing (Settings)
 import Common.Syntax as Syntax exposing (Language(..), Meta, Text(..))
-import Common.Text
 import Common.Text.Cursor as Cursor
 import Common.Text.Parser
 import Element as E exposing (Element)
@@ -59,17 +59,17 @@ renderFancy language count source =
 
 tableOfContents : Int -> Settings -> List Syntax.TextBlock -> List (Element msg)
 tableOfContents generation settings blocks =
-    blocks |> ASTTools.getHeadings |> Common.Text.viewTOC generation settings
+    blocks |> ASTTools.getHeadings |> Text.viewTOC generation settings
 
 
 {-| -}
 compile : Syntax.Language -> Int -> Settings -> List String -> List (Element msg)
 compile language generation settings lines =
-    lines |> parse language generation |> Common.Render.render generation settings
+    lines |> parse language generation |> TextBlock.render generation settings
 
 
 render =
-    Common.Render.render
+    TextBlock.render
 
 
 {-| -}
@@ -87,7 +87,10 @@ parse language generation lines =
     lines
         |> Block.parse language generation
         |> List.map (Syntax.map (parseText language))
-        |> astTransform language
+
+
+
+-- |> astTransform language
 
 
 astTransform : Language -> List Syntax.TextBlock -> List Syntax.TextBlock
