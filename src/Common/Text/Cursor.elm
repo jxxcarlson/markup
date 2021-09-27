@@ -87,11 +87,14 @@ nextCursor rules cursor =
                     Done { cursor | committed = item :: cursor.committed, stack = rest }
 
         Just ( leadingChar, _ ) ->
+            -- NOTE: use rules here
             nextCursor_ leadingChar cursor rules textToProcess
 
 
 nextCursor_ leadingChar cursor rules textToProcess =
     let
+        -- NOTE: use rules here
+        -- Especially in getParser
         rule =
             Rule.get rules leadingChar
 
@@ -117,12 +120,14 @@ nextCursor_ leadingChar cursor rules textToProcess =
                     debug1 "stringData.content" stringData.content
 
                 scanPoint =
+                    -- NOTE: use rules here
                     cursor.scanPoint + stringData.finish - stringData.start + rule.endCharLength
 
                 stopStr =
                     String.slice scanPoint (scanPoint + 1) cursor.source
 
                 action =
+                    -- NOTE: use rules here
                     Rule.getAction stopStr rule
 
                 meta =
@@ -169,6 +174,7 @@ nextCursor_ leadingChar cursor rules textToProcess =
                             --  ( cursor.committed, Marked (String.trim stringData.content) [] meta :: cursor.stack )
                             let
                                 mark =
+                                    -- NOTE: use rules here
                                     String.dropLeft rule.dropLeadingChars stringData.content |> String.trimRight |> rule.transform
 
                                 _ =

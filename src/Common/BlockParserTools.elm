@@ -10,7 +10,6 @@ module Common.BlockParserTools exposing
     , level
     , loop
     , nextStep
-    , parse
     , reduceStack
     , reduceStack_
     , reverseContents
@@ -39,16 +38,6 @@ type alias State =
     , counter : Int
     , stack : List Block
     }
-
-
-parse : (String -> State -> State) -> Int -> List String -> List Block
-parse nextStateAux_ generation lines =
-    lines |> run nextStateAux_ generation |> .output
-
-
-run : (String -> State -> State) -> Int -> List String -> State
-run nextStateAux_ generation input =
-    loop (initialState generation input) (nextStep nextStateAux_)
 
 
 nextStep : (String -> State -> State) -> State -> Step State State
@@ -104,17 +93,16 @@ reduceStack state =
                 state
 
             else
-                handle state rest block1 block2
+                reducStackAux state rest block1 block2
 
         block1 :: rest ->
-            -- (1)
             { state | output = reverseContents block1 :: state.output, stack = rest }
 
         [] ->
             state
 
 
-handle state stack2 block1 block2 =
+reducStackAux state stack2 block1 block2 =
     case block2 of
         Block name blocks meta ->
             let
