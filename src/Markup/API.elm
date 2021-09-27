@@ -19,6 +19,7 @@ import Common.Text.Cursor as Cursor
 import Common.Text.Parser
 import Element as E exposing (Element)
 import Element.Font
+import L1.Rule
 import Markdown.Rule
 import MiniLaTeX.Rule
 
@@ -109,4 +110,4 @@ parseText language input =
             Cursor.parseLoop MiniLaTeX.Rule.rules (Cursor.init 0 0 0 input) |> .committed |> List.reverse
 
         Syntax.L1 ->
-            Cursor.parseLoop Markdown.Rule.rules (Cursor.init 0 0 0 input) |> .committed |> List.reverse
+            Cursor.parseLoop L1.Rule.rules (Cursor.init 0 0 0 input) |> .committed |> List.reverse

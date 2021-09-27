@@ -5,11 +5,13 @@ text =
     """
 
 
-L1 is a markup language with a syntax somewhat like Lisp,
+L1 is a markup language with a syntax [i somewhat] like Lisp,
 but with square brackets instead of parentheses.
 It is similar to and linguistically a descendant of
 CaYaTeX, work of this author and Nicholas Yang,
 but with more robust error-handling abilities.
+
+Yes, a [b [red very]] bold move indeed! [i (Note that macros are composing properly].
 
 Some code
 

@@ -9,7 +9,7 @@ text =
 
 This is a very \\strong{bold} move.
 
-Yes, a \\italic{\\red{very}} bold move indeed! \\italic{(Note that macros are composing properly).}
+Yes, a \\strong{\\red{very}} bold move indeed! \\italic{(Note that macros are composing properly).}
 
 Pythagoras sez that $a^2 + b^2 = c^2$.
 

@@ -6,12 +6,12 @@ import Dict exposing (Dict)
 
 rules : Rules
 rules =
-    { dict = markdownRuleDict, default = defaultRule }
+    { dict = l1RuleDict, default = defaultRule }
 
 
-markdownRuleDict : Dict Char Rule
-markdownRuleDict =
-    Dict.fromList markdownRuleList
+l1RuleDict : Dict Char Rule
+l1RuleDict =
+    Dict.fromList l1RuleList
 
 
 defaultRule : Rule
@@ -58,27 +58,20 @@ transformHeading str =
             str
 
 
-transformAsterisk : String -> String
-transformAsterisk str =
+transformMarked : String -> String
+transformMarked str =
     case str of
-        "*" ->
+        "i" ->
+            "italic"
+
+        "b" ->
             "strong"
 
         _ ->
             str
 
 
-transformUnderscore : String -> String
-transformUnderscore str =
-    case str of
-        "_" ->
-            "italic"
-
-        _ ->
-            str
-
-
-markdownRuleList =
+l1RuleList =
     [ ( '#'
       , { name = "title"
         , start = \c -> c == '#'
@@ -96,56 +89,28 @@ markdownRuleList =
     , ( '['
       , { name = "annotationBegin"
         , start = \c -> c == '['
-        , continue = \c -> c == ']'
-        , spaceFollows = False
+        , continue = \c -> c /= ' '
+        , spaceFollows = True
         , endCharLength = 0
-        , dropLeadingChars = 0
+        , dropLeadingChars = 1
         , isVerbatim = False
-        , transform = identity
+        , transform = transformMarked
         , expect =
             [ { stop = [ "]" ], action = ShiftMarked }
             ]
         }
       )
-    , ( '('
-      , { name = "argBegin"
-        , start = \c -> c == '('
-        , continue = \c -> c == ')'
+    , ( ']'
+      , { name = "annotationEnd"
+        , start = \c -> c == ']'
+        , continue = \c -> False
         , spaceFollows = False
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = False
         , transform = identity
         , expect =
-            [ { stop = [ ")" ], action = ShiftMarked }
-            ]
-        }
-      )
-    , ( '*'
-      , { name = "bold"
-        , start = \c -> c == '*'
-        , continue = \c -> False
-        , spaceFollows = False
-        , endCharLength = 0
-        , dropLeadingChars = 0
-        , isVerbatim = False
-        , transform = transformAsterisk
-        , expect =
-            [ { stop = [ "*" ], action = ShiftMarked }
-            ]
-        }
-      )
-    , ( '_'
-      , { name = "italic"
-        , start = \c -> c == '_'
-        , continue = \c -> False
-        , endCharLength = 0
-        , dropLeadingChars = 0
-        , spaceFollows = True
-        , isVerbatim = False
-        , transform = transformUnderscore
-        , expect =
-            [ { stop = [ "_" ], action = ShiftMarked }
+            [ { stop = [ "]" ], action = ReduceArg }
             ]
         }
       )

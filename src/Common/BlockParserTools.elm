@@ -93,7 +93,7 @@ reduceStack state =
                 state
 
             else
-                reducStackAux state rest block1 block2
+                reduceStackAux state rest block1 block2
 
         block1 :: rest ->
             { state | output = reverseContents block1 :: state.output, stack = rest }
@@ -102,7 +102,8 @@ reduceStack state =
             state
 
 
-reducStackAux state stack2 block1 block2 =
+reduceStackAux : State -> List Block -> Block -> Block -> State
+reduceStackAux state stack2 block1 block2 =
     case block2 of
         Block name blocks meta ->
             let

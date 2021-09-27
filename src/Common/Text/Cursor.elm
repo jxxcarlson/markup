@@ -6,7 +6,6 @@ import Common.Syntax as Syntax exposing (Text(..))
 import Common.Text.Error exposing (Context(..), Problem(..))
 import Common.Text.Reduce as Reduce
 import Common.Text.Rule as Rule exposing (Action(..), Rule, Rules)
-import Dict exposing (Dict)
 import List.Extra
 import Parser.Advanced
 
@@ -189,7 +188,11 @@ nextCursor_ leadingChar cursor rules textToProcess =
                             ( cursor.committed, Arg [] meta :: cursor.stack )
 
                         ReduceArg ->
-                            ( cursor.committed, (Reduce.textIntoArg >> Reduce.argIntoMarked >> Reduce.markedIntoArg) cursor.stack )
+                            let
+                                _ =
+                                    debug3 "ReduceArg (IN)" cursor.stack
+                            in
+                            ( cursor.committed, (Reduce.markedIntoMarked >> Reduce.textIntoMarked >> Reduce.textIntoArg >> Reduce.argIntoMarked >> Reduce.markedIntoArg) cursor.stack |> debug3 "ReduceArg (OUT)" )
 
                         _ ->
                             ( cursor.committed, cursor.stack )
