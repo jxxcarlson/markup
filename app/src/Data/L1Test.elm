@@ -13,6 +13,8 @@ but with more robust error-handling abilities.
 
 Yes, a [b [red very]] bold move indeed! [i (Note that macros are composing properly].
 
+[link NYT https://nytimes.com]
+
 Some code
 
 || code

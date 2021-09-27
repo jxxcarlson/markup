@@ -11,6 +11,9 @@ This is a very \\strong{bold} move.
 
 Yes, a \\strong{\\red{very}} bold move indeed! \\italic{(Note that macros are composing properly).}
 
+\\link{NYT}{https://nytimes.com}
+
+
 Pythagoras sez that $a^2 + b^2 = c^2$.
 
 \\section{Math blocks}

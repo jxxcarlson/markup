@@ -20,6 +20,7 @@ import Common.Text.Parser
 import Element as E exposing (Element)
 import Element.Font
 import L1.Rule
+import L1.Transform
 import Markdown.Rule
 import MiniLaTeX.Rule
 
@@ -83,7 +84,20 @@ prepareForExport str =
 
 parse : Syntax.Language -> Int -> List String -> List Syntax.TextBlock
 parse language generation lines =
-    lines |> Block.parse language generation |> List.map (Syntax.map (parseText language))
+    lines
+        |> Block.parse language generation
+        |> List.map (Syntax.map (parseText language))
+        |> astTransform language
+
+
+astTransform : Language -> List Syntax.TextBlock -> List Syntax.TextBlock
+astTransform language =
+    case language of
+        L1 ->
+            List.map (L1.Transform.map L1.Transform.expandTextInMarked)
+
+        _ ->
+            identity
 
 
 blockParse : Syntax.Language -> Int -> List String -> List Syntax.Block

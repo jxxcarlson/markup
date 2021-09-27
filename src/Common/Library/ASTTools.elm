@@ -1,6 +1,16 @@
-module Common.Library.ASTTools exposing (filter, getHeadings, getTitle)
+module Common.Library.ASTTools exposing (filter, getHeadings, getText, getTitle)
 
 import Common.Syntax as Syntax
+
+
+getText : Syntax.Text -> Maybe String
+getText text =
+    case text of
+        Syntax.Text str _ ->
+            Just str
+
+        _ ->
+            Nothing
 
 
 getTitle : List Syntax.TextBlock -> Maybe String

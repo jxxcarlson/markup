@@ -31,4 +31,7 @@ suiteParseLoop =
         , testParseLoopCommitted "(3)"
             "[b [red very]]"
             [ Marked "strong" [ Marked "red" [ Text "very" { end = 12, id = "0.2", indent = 0, start = 8 } ] { end = 12, id = "0.1", indent = 0, start = 3 } ] { end = 12, id = "0.0", indent = 0, start = 0 } ]
+        , testParseLoopCommitted "(4)"
+            "[link label url]"
+            [ Marked "link" [ Text "label url" { end = 15, id = "0.1", indent = 0, start = 6 } ] { end = 15, id = "0.0", indent = 0, start = 0 } ]
         ]

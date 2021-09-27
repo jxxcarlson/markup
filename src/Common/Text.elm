@@ -1,12 +1,14 @@
 module Common.Text exposing (render, viewTOC)
 
 import Common.Debug exposing (debug1)
+import Common.Library.ASTTools as ASTTools
 import Common.Math
 import Common.Syntax as Syntax exposing (Block(..), Text(..), TextBlock(..))
 import Dict exposing (Dict)
-import Element exposing (Element, paragraph)
+import Element exposing (Element, el, newTabLink, paragraph)
 import Element.Background as Background
 import Element.Font as Font
+import Maybe.Extra
 
 
 type alias Settings =
@@ -70,6 +72,7 @@ markupDict =
         , ( "heading3", \g s textList -> heading3 g s textList )
         , ( "heading4", \g s textList -> heading4 g s textList )
         , ( "heading5", \g s textList -> italic g s textList )
+        , ( "link", \g s textList -> link g s textList )
         ]
 
 
@@ -79,6 +82,30 @@ verbatimDict =
         [ ( "$", \g s str -> math g s str )
         , ( "`", \g s str -> code g s str )
         ]
+
+
+args : List Text -> List String
+args textList =
+    List.map ASTTools.getText textList
+        |> Maybe.Extra.values
+        |> List.map String.trim
+        |> List.filter (\s -> s /= "")
+
+
+link g s textList =
+    case args textList of
+        label :: url :: rest ->
+            newTabLink []
+                { url = url
+                , label = el [ Font.color linkColor, Font.italic ] (Element.text <| label)
+                }
+
+        _ ->
+            el [] (Element.text "Invalid link")
+
+
+linkColor =
+    Element.rgb 0 0 0.8
 
 
 simpleElement formatList g s textList =
