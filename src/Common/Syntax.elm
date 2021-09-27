@@ -34,6 +34,52 @@ type Text
     | TError String
 
 
+
+{-
+   JUST FOR THINKING ABOUT L1
+   NOTE: type L1Element maps into type Text
+   [i Italic] => Marked "i" [Text "Italic"] meta
+   [b [i Italic]] => Marked "b" [Marked "i" [Text "Italic"]]
+   Etc
+
+   Reductions:
+   Text "i" :: Marked "" [] :: rest =>  Marked "i" []::rest
+
+   [i Italic]
+   01      23
+   ----------
+   0, Shift: [Marked "" []]
+   1, Shift : [Text "i" , Marked " []]
+   -, Reduce : [Marked "i" []]
+   2, Shift : [Text "Italic", Marked "i" []]
+   3, Reduce [], Marked "i" [Text "Italic"]]
+
+
+    type L1Element
+        = Text String Meta
+        | L1Element String (List L1Element) Meta
+        | Verbatim VerbatimType String Meta
+        | Problem (List ParseError) String
+
+
+    type VerbatimType
+        = Code
+        | Math
+        | Quoted
+
+
+    type ParseError
+        = ErrorA
+        | ErrorB
+
+
+    type L1VerbatimType
+        = VCode
+        | VMath
+
+-}
+
+
 getName : Text -> Maybe String
 getName text =
     case text of

@@ -1,42 +1,15 @@
 module Markdown.CursorTest exposing (..)
 
-import Common.Library.ParserTools as ParserTools
 import Common.Syntax as Syntax exposing (Meta, Text(..))
 import Common.Text.Cursor as Cursor
 import Expect exposing (Expectation)
 import Markdown.Rule as Rule
-import Set
 import Test exposing (..)
-
-
-markdownParseLoopCommitted : String -> List Text
-markdownParseLoopCommitted input =
-    Cursor.parseLoop Rule.rules (Cursor.init 0 0 0 input) |> .committed
-
-
-markdownParseLoop : String -> Cursor.TextCursor
-markdownParseLoop input =
-    Cursor.parseLoop Rule.rules (Cursor.init 0 0 0 input)
 
 
 testParseLoopCommitted : String -> String -> List Text -> Test
 testParseLoopCommitted label input output =
     test label <| \_ -> Cursor.parseLoop Rule.rules (Cursor.init 0 0 0 input) |> .committed |> List.reverse |> Expect.equal output
-
-
-stringDataContent : Cursor.Step Cursor.TextCursor Cursor.TextCursor -> String
-stringDataContent stepTC =
-    mapStepCursor (.stringData >> .content) stepTC
-
-
-mapStepCursor : (Cursor.TextCursor -> a) -> Cursor.Step Cursor.TextCursor Cursor.TextCursor -> a
-mapStepCursor f stepTC =
-    case stepTC of
-        Cursor.Done tc ->
-            f tc
-
-        Cursor.Loop tc ->
-            f tc
 
 
 suiteParseLoop : Test

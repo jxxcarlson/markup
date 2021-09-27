@@ -1,4 +1,4 @@
-module Markdown.Rule exposing (rules)
+module L1.Rule exposing (rules)
 
 import Common.Text.Rule exposing (Action(..), Rule, Rules)
 import Dict exposing (Dict)
@@ -17,23 +17,23 @@ markdownRuleDict =
 defaultRule : Rule
 defaultRule =
     { name = "alpha"
-    , start = \c -> not (List.member c (' ' :: markdownDelimiters))
-    , continue = \c -> not (List.member c markdownDelimiters)
+    , start = \c -> not (List.member c (' ' :: l1Delimiters))
+    , continue = \c -> not (List.member c l1Delimiters)
     , spaceFollows = False
     , endCharLength = 0
     , dropLeadingChars = 1
     , isVerbatim = False
     , transform = identity
-    , expect = [ { stop = markdownDelimitersStr, action = ShiftText } ]
+    , expect = [ { stop = l1DelimiterStr, action = ShiftText } ]
     }
 
 
-markdownDelimiters =
-    [ '*', '_', '`', '$', '[', ']', '(', ')', '#' ]
+l1Delimiters =
+    [ '`', '$', '[', ']' ]
 
 
-markdownDelimitersStr =
-    [ "*", "_", "`", "$", "[", "]", "(", ")", "#" ]
+l1DelimiterStr =
+    [ "`", "$", "[", "]" ]
 
 
 transformHeading : String -> String
@@ -187,7 +187,7 @@ markdownRuleList =
         , isVerbatim = False
         , transform = identity
         , expect =
-            [ { stop = markdownDelimitersStr, action = Commit }
+            [ { stop = l1DelimiterStr, action = Commit }
             ]
         }
       )

@@ -401,13 +401,6 @@ contract2Stack stack =
             stack
 
 
-
---
---contractStackRepeatedly : List Text -> List Text
---contractStackRepeatedly stack =
---    stack |> contractStackRepeatedly
-
-
 contractStackRepeatedly : List Text -> List Text
 contractStackRepeatedly stack =
     let
@@ -446,9 +439,6 @@ contractStackRepeatedly stack =
 
 
 
---case stringData of
---
---Loop { cursor | scanPoint = cursor.scanPoint + stringData.finish - stringData.start }
 -- LOOP
 
 
