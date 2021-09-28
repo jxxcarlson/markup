@@ -1,6 +1,6 @@
 module Markdown.Rule exposing (rules)
 
-import Common.Text.Rule exposing (Action(..), Rule, Rules)
+import Common.Text.Rule exposing (Action(..), ParseEnd(..), Rule, Rules)
 import Dict exposing (Dict)
 
 
@@ -19,7 +19,7 @@ defaultRule =
     { name = "alpha"
     , start = \c -> not (List.member c (' ' :: markdownDelimiters))
     , continue = \c -> not (List.member c markdownDelimiters)
-    , spaceFollows = False
+    , parseEnd = EndNormal
     , endCharLength = 0
     , dropLeadingChars = 1
     , isVerbatim = False
@@ -83,7 +83,7 @@ markdownRuleList =
       , { name = "title"
         , start = \c -> c == '#'
         , continue = \c -> c /= ' '
-        , spaceFollows = True
+        , parseEnd = EndEatSpace
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = False
@@ -97,7 +97,7 @@ markdownRuleList =
       , { name = "annotationBegin"
         , start = \c -> c == '['
         , continue = \c -> c == ']'
-        , spaceFollows = False
+        , parseEnd = EndNormal
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = False
@@ -111,7 +111,7 @@ markdownRuleList =
       , { name = "argBegin"
         , start = \c -> c == '('
         , continue = \c -> c == ')'
-        , spaceFollows = False
+        , parseEnd = EndNormal
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = False
@@ -125,7 +125,7 @@ markdownRuleList =
       , { name = "bold"
         , start = \c -> c == '*'
         , continue = \c -> False
-        , spaceFollows = False
+        , parseEnd = EndNormal
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = False
@@ -141,7 +141,7 @@ markdownRuleList =
         , continue = \c -> False
         , endCharLength = 0
         , dropLeadingChars = 0
-        , spaceFollows = True
+        , parseEnd = EndEatSpace
         , isVerbatim = False
         , transform = transformUnderscore
         , expect =
@@ -153,7 +153,7 @@ markdownRuleList =
       , { name = "code"
         , start = \c -> c == '`'
         , continue = \c -> False
-        , spaceFollows = False
+        , parseEnd = EndNormal
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = True
@@ -167,7 +167,7 @@ markdownRuleList =
       , { name = "math"
         , start = \c -> c == '$'
         , continue = \c -> False
-        , spaceFollows = False
+        , parseEnd = EndNormal
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = True
@@ -181,7 +181,7 @@ markdownRuleList =
       , { name = "blank"
         , start = \c -> c == ' '
         , continue = \c -> c == ' '
-        , spaceFollows = False
+        , parseEnd = EndNormal
         , endCharLength = 0
         , dropLeadingChars = 1
         , isVerbatim = False

@@ -1,6 +1,6 @@
 module L1.Rule exposing (rules)
 
-import Common.Text.Rule exposing (Action(..), Rule, Rules)
+import Common.Text.Rule exposing (Action(..), ParseEnd(..), Rule, Rules)
 import Dict exposing (Dict)
 
 
@@ -19,7 +19,7 @@ defaultRule =
     { name = "alpha"
     , start = \c -> not (List.member c (' ' :: l1Delimiters))
     , continue = \c -> not (List.member c l1Delimiters)
-    , spaceFollows = False
+    , parseEnd = EndNormal
     , endCharLength = 0
     , dropLeadingChars = 1
     , isVerbatim = False
@@ -91,7 +91,7 @@ l1RuleList =
       , { name = "title"
         , start = \c -> c == '#'
         , continue = \c -> c /= ' '
-        , spaceFollows = True
+        , parseEnd = EndEatSpace
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = False
@@ -105,7 +105,7 @@ l1RuleList =
       , { name = "annotationBegin"
         , start = \c -> c == '['
         , continue = \c -> c /= ' '
-        , spaceFollows = True
+        , parseEnd = EndEatSpace
         , endCharLength = 0
         , dropLeadingChars = 1
         , isVerbatim = False
@@ -119,7 +119,7 @@ l1RuleList =
       , { name = "annotationEnd"
         , start = \c -> c == ']'
         , continue = \c -> False
-        , spaceFollows = False
+        , parseEnd = EndNormal
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = False
@@ -132,14 +132,14 @@ l1RuleList =
     , ( '`'
       , { name = "code"
         , start = \c -> c == '`'
-        , continue = \c -> False
-        , spaceFollows = False
-        , endCharLength = 0
-        , dropLeadingChars = 0
+        , continue = \c -> c /= '`'
+        , parseEnd = EndEatSymbol "`"
+        , endCharLength = 1 -- TODO: problematic.  Need to eat the folllowing white space in a good way
+        , dropLeadingChars = 1
         , isVerbatim = True
-        , transform = identity
+        , transform = \c -> "code"
         , expect =
-            [ { stop = [ "`" ], action = ShiftVerbatim "`" }
+            [ { stop = [ "`" ], action = ShiftVerbatim2 "`" }
             ]
         }
       )
@@ -147,7 +147,7 @@ l1RuleList =
       , { name = "math"
         , start = \c -> c == '$'
         , continue = \c -> False
-        , spaceFollows = False
+        , parseEnd = EndNormal
         , endCharLength = 0
         , dropLeadingChars = 0
         , isVerbatim = True
@@ -161,7 +161,7 @@ l1RuleList =
       , { name = "blank"
         , start = \c -> c == ' '
         , continue = \c -> c == ' '
-        , spaceFollows = False
+        , parseEnd = EndNormal
         , endCharLength = 0
         , dropLeadingChars = 1
         , isVerbatim = False

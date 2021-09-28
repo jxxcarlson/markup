@@ -9,7 +9,8 @@ module Common.Syntax exposing
     , getName
     , isMarked
     , isPureText
-    , listIsPureText
+    , isPureTextOrVerbatim
+    , listSatisfies
     , map
     , textBlockToString
     , textToString
@@ -160,9 +161,22 @@ isPureText text =
             False
 
 
-listIsPureText : List Text -> Bool
-listIsPureText textList =
-    textList |> List.map isPureText |> Bool.Extra.all
+isPureTextOrVerbatim : Text -> Bool
+isPureTextOrVerbatim text =
+    case text of
+        Text _ _ ->
+            True
+
+        Verbatim _ _ _ ->
+            True
+
+        _ ->
+            False
+
+
+listSatisfies : (Text -> Bool) -> List Text -> Bool
+listSatisfies predicate textList =
+    textList |> List.map predicate |> Bool.Extra.all
 
 
 

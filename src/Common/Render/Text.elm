@@ -94,6 +94,7 @@ args textList =
 
 link g s textList =
     case args textList of
+        -- TODO: temporary fix: parse is producing the args in reverse order
         label :: url :: rest ->
             newTabLink []
                 { url = url

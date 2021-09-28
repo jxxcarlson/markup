@@ -69,4 +69,25 @@ suiteParseLoop =
                 ]
                 { end = 25, id = "0.0", indent = 0, start = 0 }
             ]
+        , testParseLoopCommitted "(8)" "`a b c`" [ Verbatim "code" "a b c" { end = 8, id = "0.0", indent = 0, start = 0 } ]
+        , testParseLoopCommitted "(9)"
+            "`a b c` DEF"
+            [ Verbatim "code" "a b c" { end = 8, id = "0.0", indent = 0, start = 0 }
+            , Text "DEF " { end = 11, id = "0.1", indent = 0, start = 8 }
+            ]
+        , testParseLoopCommitted "(10)"
+            "[link ABC DEF] GHI"
+            [ Marked "link" [ Text "ABC " { end = 13, id = "0.1", indent = 0, start = 6 }, Text "DEF " { end = 13, id = "0.1", indent = 0, start = 6 } ] { end = 6, id = "0.0", indent = 0, start = 0 }
+            , Text " " { end = 0, id = "1.2", indent = 0, start = 0 }
+            , Text "GHI " { end = 18, id = "0.4", indent = 0, start = 15 }
+            ]
+        , Test.only <|
+            testParseLoopCommitted "(11)"
+                "[link `a b c` DEF]"
+                [ Marked "link"
+                    [ Verbatim "code" "a b c" { end = 14, id = "0.1", indent = 0, start = 6 }
+                    , Text "DEF " { end = 17, id = "0.2", indent = 0, start = 14 }
+                    ]
+                    { end = 6, id = "0.0", indent = 0, start = 0 }
+                ]
         ]

@@ -13,7 +13,13 @@ but with more robust error-handling abilities.
 
 Yes, a [b [red very]] bold move indeed! [i (Note that macros are composing properly].
 
+
+[h2 Puzzle!]
+
 [link NYT https://nytimes.com]
+
+
+[link https://nytimes.com `New York Times` ]
 
 [h1 blocks]
 

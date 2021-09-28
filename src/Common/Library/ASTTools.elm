@@ -9,6 +9,9 @@ getText text =
         Syntax.Text str _ ->
             Just str
 
+        Syntax.Verbatim _ str _ ->
+            Just (String.replace "`" "" str)
+
         _ ->
             Nothing
 

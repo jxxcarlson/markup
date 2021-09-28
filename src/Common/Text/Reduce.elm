@@ -27,6 +27,11 @@ argList_ textList =
                         Marked (name |> debug3 "argList_, name") (Text str1 meta1 :: textList2) { meta2 | end = meta1.end }
                             :: argList (rest |> debug3 "argList_, rest")
 
+                ( Verbatim _ str1 meta1, Marked name textList2 meta2 ) ->
+                    argList <|
+                        Marked (name |> debug3 "argList_, verbatim name") (Text str1 meta1 :: textList2) { meta2 | end = meta1.end }
+                            :: argList (rest |> debug3 "argList_, rest")
+
                 ( Marked name1 textList1 meta1, Marked name2 textList2 meta2 ) ->
                     argList <|
                         Marked name2
@@ -62,7 +67,7 @@ argList textList =
             in
             case last of
                 Marked name textList1 meta ->
-                    if Common.Syntax.listIsPureText rest then
+                    if Common.Syntax.listSatisfies Common.Syntax.isPureTextOrVerbatim rest then
                         [ Marked (name |> debug3 "argList, name") (rest ++ textList1) meta ]
 
                     else

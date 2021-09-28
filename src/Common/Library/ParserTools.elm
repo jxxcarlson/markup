@@ -6,6 +6,7 @@ module Common.Library.ParserTools exposing
     , first
     , getText
     , getTextAndSpaces
+    , getTextSymbol
     , loop
     , many
     , manyNonEmpty
@@ -154,6 +155,11 @@ getTextAndSpaces prefix continue str =
     Parser.run (textAndSpaces prefix continue) str
 
 
+getTextSymbol : String -> (Char -> Bool) -> (Char -> Bool) -> String -> Result (List (Parser.DeadEnd Context Problem)) StringData
+getTextSymbol sym prefix continue str =
+    Parser.run (textSymbol sym prefix continue) str
+
+
 {-| Get the longest string
 whose first character satisfies `prefix` and whose remaining
 characters satisfy `continue`. Example:
@@ -181,6 +187,18 @@ textAndSpaces prefix continue =
         |. Parser.chompIf (\c -> prefix c) (UnHandledError 2)
         |. Parser.chompWhile (\c -> continue c)
         |. Parser.spaces
+        |= Parser.getOffset
+        |= Parser.getSource
+
+
+textSymbol : String -> (Char -> Bool) -> (Char -> Bool) -> Parser StringData
+textSymbol symb prefix continue =
+    Parser.succeed (\start finish content -> { start = start, finish = finish, content = String.slice start finish content })
+        |= Parser.getOffset
+        |. Parser.chompIf (\c -> prefix c) (UnHandledError 2)
+        |. Parser.chompWhile (\c -> continue c)
+        |. Parser.symbol (Parser.Token symb ExpectingBackTick)
+        -- TODO: replace with real "Expecting"
         |= Parser.getOffset
         |= Parser.getSource
 

@@ -1,4 +1,4 @@
-module Common.Text.Rule exposing (Action(..), Rule, Rules, get, getAction)
+module Common.Text.Rule exposing (Action(..), ParseEnd(..), Rule, Rules, get, getAction)
 
 import Dict exposing (Dict)
 
@@ -7,13 +7,19 @@ type alias Rule =
     { name : String
     , start : Char -> Bool
     , continue : Char -> Bool
-    , spaceFollows : Bool
+    , parseEnd : ParseEnd
     , endCharLength : Int
     , dropLeadingChars : Int
     , isVerbatim : Bool
     , transform : String -> String
     , expect : List { stop : List String, action : Action }
     }
+
+
+type ParseEnd
+    = EndNormal
+    | EndEatSpace
+    | EndEatSymbol String
 
 
 type Action
@@ -24,6 +30,7 @@ type Action
     | ShiftText2
     | ShiftMarked
     | ShiftVerbatim String
+    | ShiftVerbatim2 String
     | ShiftArg
     | ReduceArg
     | ReduceArgList
