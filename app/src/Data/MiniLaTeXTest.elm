@@ -18,9 +18,21 @@ Pythagoras sez that $a^2 + b^2 = c^2$.
 
 \\section{Math blocks}
 
+
+\\subsection{Dollar signs}
+
+
 $$
    \\int_0^1 x^n dx = \\frac{1}{n+1}
 $$
+
+\\subsection{Equation blocks}
+
+\\begin{equation}
+   \\int_0^1 x^n dx = \\frac{1}{n+1}
+\\end{equation}
+
+\\section{Code}
 
 This is some code:
 

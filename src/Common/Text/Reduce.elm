@@ -25,21 +25,21 @@ argList_ textList =
                 ( Text str1 meta1, Marked name textList2 meta2 ) ->
                     argList <|
                         Marked (name |> debug3 "argList_, name") (Text str1 meta1 :: textList2) { meta2 | end = meta1.end }
-                            :: argList (rest |> debug3 "argList_, rest")
+                            :: argList (rest |> debug3 "argList_, 1, rest")
 
                 ( Verbatim _ str1 meta1, Marked name textList2 meta2 ) ->
                     argList <|
                         Marked (name |> debug3 "argList_, verbatim name") (Text str1 meta1 :: textList2) { meta2 | end = meta1.end }
-                            :: argList (rest |> debug3 "argList_, rest")
+                            :: argList (rest |> debug3 "argList_, 2, rest")
 
                 ( Marked name1 textList1 meta1, Marked name2 textList2 meta2 ) ->
                     argList <|
                         Marked name2
-                            (Marked (name1 |> debug3 "argList_, name1") textList1 meta1
+                            (Marked (name1 |> debug3 "argList_, 3, name1") textList1 meta1
                                 :: textList2
                             )
                             { meta2 | end = meta1.end }
-                            :: argList (rest |> debug3 "argList_, rest")
+                            :: argList (rest |> debug3 "argList_, 4, rest")
 
                 _ ->
                     textList
@@ -53,6 +53,10 @@ argList_ textList =
 
 argList : List Text -> List Text
 argList textList =
+    let
+        _ =
+            debug2 "textList in argList" textList
+    in
     case List.Extra.uncons (List.reverse textList) of
         Nothing ->
             []
@@ -68,7 +72,7 @@ argList textList =
             case last of
                 Marked name textList1 meta ->
                     if Common.Syntax.listSatisfies Common.Syntax.isPureTextOrVerbatim rest then
-                        [ Marked (name |> debug3 "argList, name") (rest ++ textList1) meta ]
+                        [ Marked (name |> debug3 "argList (X), name") (rest ++ textList1) meta ]
 
                     else
                         argList_ textList

@@ -12,7 +12,7 @@ The MetaMarkup library provides a parser and renderer which is capable of transf
 The task of managing multiple languages is made possible by a rules-based shift-reduce parser that transforms source code from any of the target languages to a common AST.  To change markup languages, one changes the rule set.  A single rendering function suffices to render the comon AST to HTML.
 
 
-## Parsing and Rendering
+## Parsing
 
 The  parser consumes the source text as a list of strings, transforming it first into a list of blocks. Blocks are entities such as paragraphs, quotations, and LaTeX environments.
 Once the blocks have been found, their contents are parsed to handle inline constructs such as TeX macros, marked text such as the below, and so on.
@@ -110,9 +110,31 @@ If the action is `ShiftMarked,` the `committed` field is left untouched and the 
 
 #### Actions
 
-If the action is `CommitMarked,` the data `Marked str meta` is prepended to the `committed` field instead and `stack` is left untouched.
+Every rule has an `Action` field, and every `Action` variant appears in the `case currentParser textToProcess` clause of `Cursor.nextCursor,` where it defines how the `committed` and `stack` fields of the text cursor are to be updated.  There are seven variant actions, as listed below.  Most are generic, but two  — `ShiftVerbatim2` and `ReduceArgList` — are there to process L1 source text.
 
-As a final exampe, if the action is `ReduceArg,` then the commited text is left untouched and the function `contractTextIntoArg >> contractArgIntoMarked >> contractMarkedIntoArg` is applied to the stack.  Each function in a chain like this has signature `List Text -> List Text,` and it acts via pattern-matching on the first two or three elements on the stack to replace these elements by a single combined element.  For example, we have
+```
+   type Action
+        = Commit
+        | CommitMarked
+        | ShiftText
+        | ShiftText2
+        | ShiftMarked
+        | ShiftVerbatim String
+        | ShiftVerbatim2 String
+        | ShiftArg
+        | ReduceArg
+        | ReduceArgList
+        | ErrorAction
+
+Notice that there are there types of actions: shift, reduce, and handle error.
+
+##### Examples
+
+1. If the action is `ShiftText,` then `nextCursor` ans already parserd a string from the sooutce text.  If the stack is empty, then the string is prepended as `Text str` to `committed.` If the stack is not empty, it is prepended as `Text str` to the stack.
+
+2. If the action is `CommitMarked,` the data `Marked str meta` is prepended to the `committed` field instead and `stack` is left untouched.
+
+3. If the action is `ReduceArg,` then the commited text is left untouched and the function `contractTextIntoArg >> contractArgIntoMarked >> contractMarkedIntoArg` is applied to the stack.  Each function in a chain like this has signature `List Text -> List Text,` and it acts via pattern-matching on the first two or three elements on the stack to replace these elements by a single combined element.  For example, we have
 
 ```
     contractTextIntoArg stack =
@@ -135,12 +157,12 @@ before contraction, then afterwards it will read
 
 
 
-### Language Dependencies
+## Language Dependencies
 
 It takes two files and about 150 lines of code to define a markup language that can be handled by MetaMarkup.  We make no claim about the scope of the system.  It is adequate for L1, Rational Markdown, and MiniLaTeX, despite their obvous surface differences.  It would be interesting to characterize the kind of languages that can be handled by this system or close relaitves thereof.
 
 
-### Rendering
+## Rendering
 
 The final step, rendering a list of `TextBlock` to a list of type `Html msg,` is carried out by a single language-independent function,
 
@@ -164,12 +186,14 @@ with MiniLaTeX as in this last example:
 
 The renderer has a dictionary that maps names of  `Marked` elements to rendering functions.  In the case at hand, the names `b,` `*` and `strong` are mapped to the same element.
 
-One advantage of this architecture is that printing to PDF can be implemented by a function of type
+## Export to LaTeX and PDF
+
+One advantage of our design describe is that printing to PDF of any of languages discussed can be implemented by a single which emits standard LaTeX source code:
 
 ```
    renderToLaTeX : List TextBlock -> String
 
-that emits standard LaTeX source code.  Using this function as the final step in the pipeline considered above, we transform markup source text to LaTeX source text.  This can then be shipped to a server that accepts LaTeX files and returns them transformed into PDF.
+With this function as the final step in the pipeline considered above, we transform markup source text to LaTeX source text.  This can then be shipped to a server that accepts LaTeX files and returns them transformed into PDF.  We are currently using a server implemented in under 200 lines of Haskell code.
 
 
 

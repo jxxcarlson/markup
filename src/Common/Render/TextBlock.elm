@@ -5,6 +5,7 @@ import Common.Library.ASTTools as ASTTools
 import Common.Math
 import Common.Render.Text
 import Common.Syntax as Syntax exposing (Block(..), Text(..), TextBlock(..))
+import Common.TextBlock
 import Dict exposing (Dict)
 import Element exposing (..)
 import Element.Background as Background
@@ -57,6 +58,7 @@ verbatimBlockDict =
     Dict.fromList
         [ ( "code", \g s lines -> codeBlock g s lines )
         , ( "math", \g s lines -> mathBlock g s lines )
+        , ( "equation", \g s lines -> equation g s lines )
         ]
 
 
@@ -84,6 +86,11 @@ codeBlock generation settings textList =
 
 mathBlock : Int -> Settings -> List String -> Element msg
 mathBlock generation settings textList =
+    Common.Math.mathText generation Common.Math.DisplayMathMode (String.join "\n" textList)
+
+
+equation : Int -> Settings -> List String -> Element msg
+equation generation settings textList =
     Common.Math.mathText generation Common.Math.DisplayMathMode (String.join "\n" textList)
 
 

@@ -44,7 +44,17 @@ beginBlockParser =
         |= Parser.getOffset
         |= Parser.getSource
     )
-        |> Parser.map (\s -> Line.BeginBlock Line.RejectFirstLine s)
+        -- |> Parser.map (\s -> Line.BeginBlock Line.RejectFirstLine s)
+        |> Parser.map (\s -> mapBlock s)
+
+
+mapBlock : String -> Line.LineType
+mapBlock str =
+    if List.member str [ "equation" ] then
+        Line.BeginVerbatimBlock str
+
+    else
+        Line.BeginBlock Line.RejectFirstLine str
 
 
 endBlockParser : Parser Line.LineType

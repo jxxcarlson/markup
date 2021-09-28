@@ -1,6 +1,25 @@
-module Common.Text exposing (combine, reverse)
+module Common.Text exposing (combine, reverse, reverseMarked, stringValue)
 
 import Common.Syntax exposing (Text(..))
+
+
+stringValue : Text -> String
+stringValue text =
+    case text of
+        Text str _ ->
+            str
+
+        Marked _ textList _ ->
+            String.join " " (List.map stringValue textList)
+
+        Arg textList _ ->
+            String.join " " (List.map stringValue textList)
+
+        TError str ->
+            str
+
+        Verbatim _ str _ ->
+            str
 
 
 reverse : Text -> Text
@@ -11,6 +30,16 @@ reverse text =
 
         Arg textList meta ->
             Arg (List.reverse textList) meta
+
+        _ ->
+            text
+
+
+reverseMarked : Text -> Text
+reverseMarked text =
+    case text of
+        Marked name textList meta ->
+            Marked name (List.reverse textList) meta
 
         _ ->
             text

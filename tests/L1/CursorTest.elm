@@ -81,13 +81,13 @@ suiteParseLoop =
             , Text " " { end = 0, id = "1.2", indent = 0, start = 0 }
             , Text "GHI " { end = 18, id = "0.4", indent = 0, start = 15 }
             ]
-        , Test.only <|
-            testParseLoopCommitted "(11)"
-                "[link `a b c` DEF]"
-                [ Marked "link"
-                    [ Verbatim "code" "a b c" { end = 14, id = "0.1", indent = 0, start = 6 }
-                    , Text "DEF " { end = 17, id = "0.2", indent = 0, start = 14 }
-                    ]
-                    { end = 6, id = "0.0", indent = 0, start = 0 }
+        , testParseLoopCommitted
+            "(11)"
+            "[link `a b c` DEF]"
+            [ Marked "link"
+                [ Verbatim "code" "a b c" { end = 14, id = "0.1", indent = 0, start = 6 }
+                , Text "DEF " { end = 17, id = "0.2", indent = 0, start = 14 }
                 ]
+                { end = 6, id = "0.0", indent = 0, start = 0 }
+            ]
         ]
