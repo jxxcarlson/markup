@@ -59,4 +59,14 @@ suiteParseLoop =
                 { end = 13, id = "0.0", indent = 0, start = 0 }
             , Text " " { end = 0, id = "1.2", indent = 0, start = 0 }
             ]
+        , testParseLoopCommitted "(7)"
+            "[i Samson is very [b tall]]"
+            [ Marked "italic"
+                [ Text "Samson " { end = 18, id = "0.1", indent = 0, start = 3 }
+                , Text "is " { end = 18, id = "0.1", indent = 0, start = 3 }
+                , Text "very " { end = 18, id = "0.1", indent = 0, start = 3 }
+                , Marked "strong" [ Text "tall " { end = 25, id = "0.3", indent = 0, start = 21 } ] { end = 25, id = "0.2", indent = 0, start = 18 }
+                ]
+                { end = 25, id = "0.0", indent = 0, start = 0 }
+            ]
         ]
