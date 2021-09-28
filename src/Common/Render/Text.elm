@@ -92,6 +92,30 @@ args textList =
         |> List.filter (\s -> s /= "")
 
 
+
+--macro2 : (String -> String -> Element msg) -> Int -> Settings -> List Text -> Element msg
+--macro2 element g s textList =
+--    case args textList of
+--        -- TODO: temporary fix: parse is producing the args in reverse order
+--        arg1 :: arg2 :: rest ->
+--            element arg1 arg2
+--
+--        _ ->
+--            el [ Font.color errorColor ] (Element.text "Invalid arguments")
+--
+--link g s textList =
+--    macro2 link_ g s textList
+--
+--
+--link_ : String -> String -> Element msg
+--link_ label url =
+--    newTabLink []
+--        { url = url
+--        , label = el [ Font.color linkColor, Font.italic ] (Element.text <| label)
+--        }
+
+
+link : a -> b -> List Text -> Element msg
 link g s textList =
     case args textList of
         -- TODO: temporary fix: parse is producing the args in reverse order
@@ -190,8 +214,6 @@ tocPadding =
 
 
 heading1 g s textList =
-    -- simpleElement [ Font.size 32, Font.color (Element.rgb255 200 0 0) ] g s textList
-    --Element.paragraph [ Font.size 32 ] (List.map (render g s) textList)
     simpleElement [ Font.size 30 ] g s textList
 
 
