@@ -47,7 +47,7 @@ renderFancy language count source =
 
         toc_ : List (Element msg)
         toc_ =
-            tableOfContents count { width = 500 } ast
+            tableOfContents count { width = 500 } parseData.accumulator ast
 
         titleString =
             ASTTools.getTitle ast |> Maybe.withDefault "Untitled" |> String.replace "\n" " "
@@ -65,9 +65,9 @@ renderFancy language count source =
     docTitle :: toc :: renderedText_
 
 
-tableOfContents : Int -> Settings -> List Syntax.TextBlock -> List (Element msg)
-tableOfContents generation settings blocks =
-    blocks |> ASTTools.getHeadings |> Text.viewTOC generation settings
+tableOfContents : Int -> Settings -> Accumulator -> List Syntax.TextBlock -> List (Element msg)
+tableOfContents generation settings accumulator blocks =
+    blocks |> ASTTools.getHeadings |> Text.viewTOC generation settings accumulator
 
 
 {-| -}

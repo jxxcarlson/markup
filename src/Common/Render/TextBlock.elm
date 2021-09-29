@@ -36,7 +36,7 @@ renderBlock generation settings accumulator block =
         TBParagraph textList _ ->
             paragraph
                 []
-                (List.map (Common.Render.Text.render generation settings) textList)
+                (List.map (Common.Render.Text.render generation settings accumulator) textList)
 
         TBVerbatimBlock name lines _ ->
             case Dict.get name verbatimBlockDict of
