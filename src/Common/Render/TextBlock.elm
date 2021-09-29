@@ -97,17 +97,21 @@ codeBlock generation settings accumulator textList =
 
 mathBlock : Int -> Settings -> Accumulator -> List String -> Element msg
 mathBlock generation settings accumulator textList =
-    Common.Math.mathText generation Common.Math.DisplayMathMode (String.join "\n" textList)
+    Common.Math.mathText generation Common.Math.DisplayMathMode (String.join "\n" textList |> MiniLaTeX.MathMacro.evalStr accumulator.macroDict)
+
+
+
+-- Internal.MathMacro.evalStr latexState.mathMacroDictionary str
 
 
 equation : Int -> Settings -> Accumulator -> List String -> Element msg
 equation generation settings accumulator textList =
-    Common.Math.mathText generation Common.Math.DisplayMathMode (String.join "\n" textList)
+    Common.Math.mathText generation Common.Math.DisplayMathMode (String.join "\n" textList |> MiniLaTeX.MathMacro.evalStr accumulator.macroDict)
 
 
 aligned : Int -> Settings -> Accumulator -> List String -> Element msg
 aligned generation settings accumulator textList =
-    Common.Math.mathText generation Common.Math.DisplayMathMode ("\\begin{aligned}\n" ++ String.join "\n" textList ++ "\n\\end{aligned}")
+    Common.Math.mathText generation Common.Math.DisplayMathMode ("\\begin{aligned}\n" ++ (String.join "\n" textList |> MiniLaTeX.MathMacro.evalStr accumulator.macroDict) ++ "\n\\end{aligned}")
 
 
 quotationBlock : Int -> Settings -> Accumulator -> List Syntax.TextBlock -> Element msg
