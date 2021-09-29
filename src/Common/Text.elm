@@ -1,6 +1,11 @@
-module Common.Text exposing (combine, reverse, reverseMarked, stringValue)
+module Common.Text exposing (combine, reverse, reverseMarked, stringValue, stringValueOfList)
 
 import Common.Syntax exposing (Text(..))
+
+
+stringValueOfList : List Text -> String
+stringValueOfList textList =
+    String.join " " (List.map stringValue textList)
 
 
 stringValue : Text -> String

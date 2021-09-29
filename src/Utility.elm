@@ -1,4 +1,8 @@
-module Utility exposing (prepare, takeUntil)
+module Utility exposing (elementAttribute, prepare, takeUntil)
+
+import Element
+import Html.Attributes
+
 
 {-| Consider a predicate p and a list of elements
 [a\_1, a\_2, ..., a\_n][a_1, a_2, ..., a_n]. Find the unique prefix
@@ -13,8 +17,6 @@ but the a\_i for i < k do not satisfy p. Return
     { prefix = [1,2,3], rest = [4,5,6] }
 
 -}
-
-
 prepare : List String -> List String
 prepare strings =
     strings |> List.map reflate |> String.join " " |> String.trim |> String.split "\n"
@@ -27,6 +29,11 @@ reflate str =
 
     else
         str
+
+
+elementAttribute : String -> String -> Element.Attribute msg
+elementAttribute key value =
+    Element.htmlAttribute (Html.Attributes.attribute key value)
 
 
 takeUntil : (a -> Bool) -> List a -> State a

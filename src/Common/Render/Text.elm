@@ -4,12 +4,14 @@ import Common.Debug exposing (debug1)
 import Common.Library.ASTTools as ASTTools
 import Common.Math
 import Common.Syntax as Syntax exposing (Block(..), Text(..), TextBlock(..))
+import Common.Text
 import Dict exposing (Dict)
-import Element exposing (Element, el, newTabLink, paragraph)
+import Element exposing (Element, column, el, newTabLink, paddingEach, paragraph)
 import Element.Background as Background
 import Element.Font as Font
 import Maybe.Extra
 import MiniLaTeX.MathMacro
+import Utility
 
 
 type alias Settings =
@@ -179,20 +181,47 @@ viewTOC generation settings accumulator items =
     Element.el [ Font.size 18 ] (Element.text "Contents") :: List.map (viewTOCItem generation settings accumulator) items
 
 
+
+--
+--tocItem : Element -> E.Element msg
+--tocItem e =
+--    case AST.getTextList2 e of
+--        n :: content :: rest ->
+--            el [ paddingEach { left = tocPadding n, right = 0, top = 0, bottom = 0 }, Font.color (E.rgb255 46 33 194) ]
+--                (E.link [] { url = internalLink content, label = text (AST.getLabel e ++ ". " ++ content) })
+--
+--        _ ->
+--            E.none
+
+
+internalLink : String -> String
+internalLink str =
+    "#" ++ str |> makeSlug
+
+
+tocLink : List Text -> Element msg
+tocLink textList =
+    let
+        t =
+            Common.Text.stringValueOfList textList
+    in
+    Element.link [] { url = internalLink t, label = Element.text t }
+
+
 viewTOCItem : Int -> Settings -> Accumulator -> Syntax.Text -> Element msg
 viewTOCItem generation settings accumulator block =
     case block of
         Marked "heading2" textList _ ->
-            paragraph (tocStyle 2) (List.map (render generation settings accumulator) textList)
+            el (tocStyle 2) (tocLink textList)
 
         Marked "heading3" textList _ ->
-            paragraph (tocStyle 3) (List.map (render generation settings accumulator) textList)
+            el (tocStyle 3) (tocLink textList)
 
         Marked "heading4" textList _ ->
-            paragraph (tocStyle 4) (List.map (render generation settings accumulator) textList)
+            el (tocStyle 4) (tocLink textList)
 
         Marked "heading5" textList _ ->
-            paragraph (tocStyle 5) (List.map (render generation settings accumulator) textList)
+            el (tocStyle 5) (tocLink textList)
 
         _ ->
             Element.none
@@ -210,20 +239,30 @@ tocPadding =
     8
 
 
+makeSlug : String -> String
+makeSlug str =
+    str |> String.toLower |> String.replace " " "-"
+
+
+makeId : List Text -> Element.Attribute msg
+makeId textList =
+    Utility.elementAttribute "id" (Common.Text.stringValueOfList textList |> makeSlug)
+
+
 heading1 g s a textList =
-    simpleElement [ Font.size 30 ] g s a textList
+    simpleElement [ Font.size 30, makeId textList ] g s a textList
 
 
 heading2 g s a textList =
-    simpleElement [ Font.size 22 ] g s a textList
+    simpleElement [ Font.size 22, makeId textList ] g s a textList
 
 
 heading3 g s a textList =
-    simpleElement [ Font.size 18 ] g s a textList
+    simpleElement [ Font.size 18, makeId textList ] g s a textList
 
 
 heading4 g s a textList =
-    simpleElement [ Font.size 14, Font.italic, Font.bold ] g s a textList
+    simpleElement [ Font.size 14, Font.italic, Font.bold, makeId textList ] g s a textList
 
 
 strong g s a textList =

@@ -104,9 +104,18 @@ mathBlock generation settings accumulator textList =
 -- Internal.MathMacro.evalStr latexState.mathMacroDictionary str
 
 
+prepareMathLines : Accumulator -> List String -> String
+prepareMathLines accumulator stringList =
+    stringList
+        |> List.filter (\line -> String.left 6 (String.trimLeft line) /= "\\label")
+        |> String.join "\n"
+        |> MiniLaTeX.MathMacro.evalStr accumulator.macroDict
+
+
 equation : Int -> Settings -> Accumulator -> List String -> Element msg
 equation generation settings accumulator textList =
-    Common.Math.mathText generation Common.Math.DisplayMathMode (String.join "\n" textList |> MiniLaTeX.MathMacro.evalStr accumulator.macroDict)
+    -- Common.Math.mathText generation Common.Math.DisplayMathMode (String.join "\n" textList |> MiniLaTeX.MathMacro.evalStr accumulator.macroDict)
+    Common.Math.mathText generation Common.Math.DisplayMathMode (prepareMathLines accumulator textList)
 
 
 aligned : Int -> Settings -> Accumulator -> List String -> Element msg
