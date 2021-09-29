@@ -22,7 +22,12 @@ import Element.Font
 import L1.Rule
 import L1.Transform
 import Markdown.Rule
+import MiniLaTeX.MathMacro
 import MiniLaTeX.Rule
+
+
+type alias Accumulator =
+    { macroDict : MiniLaTeX.MathMacro.MathMacroDict }
 
 
 {-| -}
@@ -87,6 +92,15 @@ parse language generation lines =
     lines
         |> Block.parse language generation
         |> List.map (Syntax.map (parseText language))
+
+
+parseAccum : Syntax.Language -> Int -> List String -> { blocks : List Syntax.TextBlock, accumulator : Accumulator }
+parseAccum language generation lines =
+    let
+        state =
+            Block.runParser language generation lines
+    in
+    { blocks = List.map (Syntax.map (parseText language)) state.output, accumulator = state.accumulator }
 
 
 
