@@ -39,8 +39,11 @@ getTitle =
 renderFancy : Syntax.Language -> Int -> List String -> List (Element msg)
 renderFancy language count source =
     let
+        parseData =
+            parseAccum language count source
+
         ast =
-            parse language count source
+            parseData.blocks
 
         toc_ : List (Element msg)
         toc_ =
@@ -57,7 +60,7 @@ renderFancy language count source =
 
         renderedText_ : List (Element msg)
         renderedText_ =
-            render count { width = 500 } ast
+            render count { width = 500 } parseData.accumulator ast
     in
     docTitle :: toc :: renderedText_
 
@@ -70,7 +73,11 @@ tableOfContents generation settings blocks =
 {-| -}
 compile : Syntax.Language -> Int -> Settings -> List String -> List (Element msg)
 compile language generation settings lines =
-    lines |> parse language generation |> TextBlock.render generation settings
+    let
+        parseData =
+            parseAccum language generation lines
+    in
+    parseData.blocks |> TextBlock.render generation settings parseData.accumulator
 
 
 render =

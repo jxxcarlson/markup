@@ -10,19 +10,28 @@ import Dict exposing (Dict)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Font as Font
+import MiniLaTeX.MathMacro
 
 
 type alias Settings =
     { width : Int }
 
 
-render : Int -> Settings -> List TextBlock -> List (Element msg)
-render generation settings blocks =
-    List.map (renderBlock generation settings) blocks
+type alias Accumulator =
+    { macroDict : MiniLaTeX.MathMacro.MathMacroDict }
 
 
-renderBlock : Int -> Settings -> TextBlock -> Element msg
-renderBlock generation settings block =
+
+-- Internal.MathMacro.evalStr latexState.mathMacroDictionary str
+
+
+render : Int -> Settings -> Accumulator -> List TextBlock -> List (Element msg)
+render generation settings accumulator blocks =
+    List.map (renderBlock generation settings accumulator) blocks
+
+
+renderBlock : Int -> Settings -> Accumulator -> TextBlock -> Element msg
+renderBlock generation settings accumulator block =
     case block of
         TBParagraph textList _ ->
             paragraph
@@ -35,7 +44,7 @@ renderBlock generation settings block =
                     error ("Unimplemented verbatim block: " ++ name)
 
                 Just f ->
-                    f generation settings lines
+                    f generation settings accumulator lines
 
         TBBlock name blocks _ ->
             case Dict.get name blockDict of
@@ -43,7 +52,7 @@ renderBlock generation settings block =
                     error ("Unimplemented block: " ++ name)
 
                 Just f ->
-                    f generation settings blocks
+                    f generation settings accumulator blocks
 
         TBError desc ->
             error desc
@@ -53,27 +62,27 @@ error str =
     paragraph [ Background.color (rgb255 250 217 215) ] [ text str ]
 
 
-verbatimBlockDict : Dict String (Int -> Settings -> List String -> Element msg)
+verbatimBlockDict : Dict String (Int -> Settings -> Accumulator -> List String -> Element msg)
 verbatimBlockDict =
     Dict.fromList
-        [ ( "code", \g s lines -> codeBlock g s lines )
-        , ( "math", \g s lines -> mathBlock g s lines )
-        , ( "equation", \g s lines -> equation g s lines )
-        , ( "align", \g s lines -> aligned g s lines )
-        , ( "mathmacro", \g s lines -> Element.none )
+        [ ( "code", \g s a lines -> codeBlock g s a lines )
+        , ( "math", \g s a lines -> mathBlock g s a lines )
+        , ( "equation", \g s a lines -> equation g s a lines )
+        , ( "align", \g s a lines -> aligned g s a lines )
+        , ( "mathmacro", \g s a lines -> Element.none )
         ]
 
 
-blockDict : Dict String (Int -> Settings -> List TextBlock -> Element msg)
+blockDict : Dict String (Int -> Settings -> Accumulator -> List TextBlock -> Element msg)
 blockDict =
     Dict.fromList
-        [ ( "quotation", \g s blocks -> quotationBlock g s blocks )
-        , ( "item", \g s blocks -> item g s blocks )
+        [ ( "quotation", \g s a blocks -> quotationBlock g s a blocks )
+        , ( "item", \g s a blocks -> item g s a blocks )
         ]
 
 
-codeBlock : Int -> Settings -> List String -> Element msg
-codeBlock generation settings textList =
+codeBlock : Int -> Settings -> Accumulator -> List String -> Element msg
+codeBlock generation settings accumulator textList =
     column
         [ Font.family
             [ Font.typeface "Inconsolata"
@@ -86,37 +95,37 @@ codeBlock generation settings textList =
         (List.map (\t -> el [] (text t)) (List.map (String.dropLeft 0) textList))
 
 
-mathBlock : Int -> Settings -> List String -> Element msg
-mathBlock generation settings textList =
+mathBlock : Int -> Settings -> Accumulator -> List String -> Element msg
+mathBlock generation settings accumulator textList =
     Common.Math.mathText generation Common.Math.DisplayMathMode (String.join "\n" textList)
 
 
-equation : Int -> Settings -> List String -> Element msg
-equation generation settings textList =
+equation : Int -> Settings -> Accumulator -> List String -> Element msg
+equation generation settings accumulator textList =
     Common.Math.mathText generation Common.Math.DisplayMathMode (String.join "\n" textList)
 
 
-aligned : Int -> Settings -> List String -> Element msg
-aligned generation settings textList =
+aligned : Int -> Settings -> Accumulator -> List String -> Element msg
+aligned generation settings accumulator textList =
     Common.Math.mathText generation Common.Math.DisplayMathMode ("\\begin{aligned}\n" ++ String.join "\n" textList ++ "\n\\end{aligned}")
 
 
-quotationBlock : Int -> Settings -> List Syntax.TextBlock -> Element msg
-quotationBlock generation settings blocks =
+quotationBlock : Int -> Settings -> Accumulator -> List Syntax.TextBlock -> Element msg
+quotationBlock generation settings accumulator blocks =
     column
         [ paddingEach { left = 18, right = 0, top = 0, bottom = 8 }
         ]
-        (List.map (renderBlock generation settings) (debug3 "XX, block in quotation" blocks))
+        (List.map (renderBlock generation settings accumulator) (debug3 "XX, block in quotation" blocks))
 
 
-item : Int -> Settings -> List Syntax.TextBlock -> Element msg
-item generation settings blocks =
+item : Int -> Settings -> Accumulator -> List Syntax.TextBlock -> Element msg
+item generation settings accumulator blocks =
     row [ width fill, paddingEach { left = 18, right = 0, top = 0, bottom = 0 } ]
         [ el [ height fill ] none
         , column [ width fill ]
             [ row [ width fill, spacing 8 ]
                 [ itemSymbol
-                , row [ width fill ] (List.map (renderBlock generation settings) blocks)
+                , row [ width fill ] (List.map (renderBlock generation settings accumulator) blocks)
                 ]
             ]
         ]

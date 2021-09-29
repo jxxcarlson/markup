@@ -220,28 +220,7 @@ renderedText model =
 
 render : Language -> Int -> String -> List (Element msg)
 render language count source =
-    let
-        ast =
-            API.parse language count (String.lines source)
-
-        toc_ : List (Element msg)
-        toc_ =
-            API.tableOfContents count { width = 500 } ast
-
-        titleString =
-            ASTTools.getTitle ast |> Maybe.withDefault "Untitled"
-
-        docTitle =
-            el [ Font.size 30 ] (text titleString)
-
-        toc =
-            column [ paddingXY 0 24, spacing 8 ] toc_
-
-        renderedText_ : List (Element msg)
-        renderedText_ =
-            API.render count { width = 500 } ast
-    in
-    docTitle :: toc :: renderedText_
+    API.renderFancy language count (String.lines source)
 
 
 
