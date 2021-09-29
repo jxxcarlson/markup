@@ -60,9 +60,12 @@ suiteParseLoop =
                 ]
                 { end = 30, id = "0.0", indent = 0, start = 0 }
             ]
-        , Test.only <|
+        ,
             testParseLoopCommitted
                 "(8)"
                 "$e^{ikx}$"
                 [ Verbatim "$" "e^{ikx}" { end = 9, id = "0.0", indent = 0, start = 0 } ]
-        ]
+
+                ]
+
+

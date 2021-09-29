@@ -8,6 +8,7 @@ import Common.Syntax as Syntax exposing (Block(..), BlockType(..), Language(..))
 import L1.Line
 import Markdown.Line
 import MiniLaTeX.Line
+import MiniLaTeX.MathMacro
 import Utility
 
 
@@ -195,10 +196,36 @@ nextStateAux2 indent line newLineType lineType state =
                     Utility.takeUntil (\a -> BP.blockLabel a == s && BP.blockLevel a == BP.level indent) state.stack
 
                 data =
-                    BP.reduceStack_ { stack = prefix, output = [] } |> debug1 "data (1), Endblock"
+                    BP.reduceStack_ { stack = prefix, output = [] } |> debug1 "data (1), yada0"
+
+                stringListToString list =
+                    List.map String.trimLeft list |> String.join "\n"
+
+                verbatimBlockData =
+                    case List.head data.output of
+                        Just (VerbatimBlock "mathmacro" strList _) ->
+                            ( "mathmacro", stringListToString strList )
+
+                        _ ->
+                            ( "nothing", "" )
+
+                oldAccumulator =
+                    state.accumulator
+
+                newAccumulator =
+                    case verbatimBlockData of
+                        ( "mathmacro", mathMacroData ) ->
+                            { oldAccumulator | macroDict = MiniLaTeX.MathMacro.makeMacroDict mathMacroData }
+
+                        _ ->
+                            oldAccumulator
             in
             if s == BP.blockLabelAtBottomOfStack prefix then
-                { state | stack = data.stack ++ rest, output = data.output ++ state.output }
+                { state
+                    | stack = data.stack ++ rest
+                    , output = data.output ++ state.output
+                    , accumulator = newAccumulator
+                }
 
             else
                 let

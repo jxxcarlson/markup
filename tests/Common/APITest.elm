@@ -42,4 +42,19 @@ suite =
         , testAPI Markdown
             "```\n   aaa\n      bbb\n   cccc"
             [ TBVerbatimBlock "code" [ "   aaa", "      bbb", "   cccc" ] { end = 1, id = "1.1", indent = 3, start = 1 } ]
+        , testAPI MiniLaTeX
+            "\\begin{mathmacro}\n   \\newcommand{\\bra}[0]{\\langle}\n   \\newcommand{\\ket}[0]{\\rangle}\n\\end{mathmacro}"
+            [ TBVerbatimBlock "mathmacro" [ "   \\newcommand{\\bra}[0]{\\langle}", "   \\newcommand{\\ket}[0]{\\rangle}" ] { end = 0, id = "1.0", indent = 0, start = 0 } ]
         ]
+
+
+
+--   testParseLoopCommitted
+--       "(9)"
+--       "\\begin{mathmacro}\n   \\ewcommand{\\bra}[0]{\\langle}\n\\end{mathmacro}"
+--       [  ]
+--, Test.only <|
+--           testParseLoopCommitted
+--               "(10)"
+--               "\\begin{equation}\n    \\int_0^1 x^n dx\n\\end{equation}"
+--               [  ]

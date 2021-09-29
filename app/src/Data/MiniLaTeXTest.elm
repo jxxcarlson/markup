@@ -9,10 +9,10 @@ text =
 \\xlink{uuid:6f5a573d-5603-4470-8dc9-b0972997a6e6}{Notes on Quantum Field Theory}
 
 \\begin{mathmacro}
-\\newcommand{\\bra}[0]{\\langle}
-\\newcommand{\\ket}[0]{\\rangle}
-\\newcommand{\\caF}[0]{\\mathcal{F}}
-\\newcommand{\\boR}[0]{\\bf{R}}
+   \\newcommand{\\bra}[0]{\\langle}
+   \\newcommand{\\ket}[0]{\\rangle}
+   \\newcommand{\\caF}[0]{\\mathcal{F}}
+   \\newcommand{\\boR}[0]{\\bf{R}}
 \\end{mathmacro}
 
 \\setcounter{section}{9}

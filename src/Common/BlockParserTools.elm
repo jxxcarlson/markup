@@ -23,8 +23,9 @@ import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Line exposing (LineType(..))
 import Common.Syntax as Syntax exposing (Block(..), BlockType(..), dummyMeta)
 import List.Extra
+import MiniLaTeX.MathMacro
 import Utility
-
+import Dict
 
 type alias State =
     { input : List String
@@ -36,9 +37,11 @@ type alias State =
     , blockCount : Int
     , inVerbatimBlock : Bool
     , counter : Int
+    , accumulator : Accumulator
     , stack : List Block
     }
 
+type alias Accumulator = { macroDict: MiniLaTeX.MathMacro.MathMacroDict }
 
 nextStep : (String -> State -> State) -> State -> Step State State
 nextStep nextStateAux state =
@@ -81,9 +84,11 @@ initialState generation input =
     , blockCount = 0
     , counter = 0
     , inVerbatimBlock = False
+    , accumulator = initialAccumulator
     , stack = []
     }
 
+initialAccumulator = {macroDict = Dict.empty}
 
 reduceStack : State -> State
 reduceStack state =
@@ -331,7 +336,7 @@ reduceStack_ state =
                                         let
                                             newBlock : Block
                                             newBlock =
-                                                VerbatimBlock name (List.reverse <| strings ++ blocks) meta
+                                                VerbatimBlock name (List.reverse <| strings ++ blocks) meta |> debug3 "NEW BLOCK"
                                         in
                                         reduceStack_ { state | stack = stack2, output = newBlock :: state.output }
 
