@@ -8,10 +8,11 @@ import Common.Text
 import Common.Text.Error exposing (Context(..), Problem(..))
 import Common.Text.Reduce as Reduce
 import Common.Text.Rule as Rule exposing (Action(..), ParseEnd(..), Rule, Rules)
-import List.Extra
-import Parser.Advanced
-import MiniLaTeX.MathMacro
 import Dict
+import List.Extra
+import MiniLaTeX.MathMacro
+import Parser.Advanced
+
 
 {-|
 
@@ -31,13 +32,8 @@ type alias TextCursor =
     , stack : List Text
     , generation : Int
     , count : Int
-    , accumulator : Accumulator
     }
 
-
-type alias Accumulator = { macroDict: MiniLaTeX.MathMacro.MathMacroDict }
-
-initialAccumulator = {macroDict = Dict.empty}
 
 init : Int -> Int -> Int -> String -> TextCursor
 init generation count scanPoint str =
@@ -49,7 +45,6 @@ init generation count scanPoint str =
     , stack = []
     , generation = generation
     , count = count
-    , accumulator = initialAccumulator
     }
 
 
@@ -92,10 +87,9 @@ nextCursor rules cursor =
                     Done cursor
 
                 Just ( item, rest ) ->
-
                     -- Done { cursor | committed = Common.Text.reverse item :: cursor.committed, stack = rest }
                     -- TODO: need to think this though and also do error handling
-                    Done { cursor | committed = (List.map Common.Text.reverse ((debug1 "COMMIT ITEM" item) :: rest) |> List.reverse) ++ cursor.committed, stack = [] }
+                    Done { cursor | committed = (List.map Common.Text.reverse (debug1 "COMMIT ITEM" item :: rest) |> List.reverse) ++ cursor.committed, stack = [] }
 
         Just ( leadingChar, _ ) ->
             -- NOTE: use rules here
