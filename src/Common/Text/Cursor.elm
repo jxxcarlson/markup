@@ -101,6 +101,9 @@ nextCursor_ leadingChar cursor rules textToProcess =
         rule =
             Rule.get rules leadingChar
 
+        _ =
+            debug3 "cursor.scannerType" cursor.scannerType
+
         scannerType =
             getScannerType cursor rule leadingChar
 
@@ -207,7 +210,7 @@ nextCursor_ leadingChar cursor rules textToProcess =
                                     -- NOTE: use rules here
                                     String.dropLeft rule.dropLeadingChars stringData.content |> String.trimRight |> rule.transform
                             in
-                            ( cursor.committed, Verbatim mark (String.replace "`" "" stringData.content) meta :: cursor.stack |> Reduce.contract3Stack )
+                            ( cursor.committed, Verbatim mark (String.replace c "" stringData.content) meta :: cursor.stack |> Reduce.contract3Stack )
 
                         ShiftArg ->
                             ( cursor.committed, Arg [] meta :: cursor.stack )

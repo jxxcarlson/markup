@@ -116,14 +116,14 @@ miniLaTeXRuleList =
     , ( '$'
       , { name = "math"
         , start = \c -> c == '$'
-        , continue = \c -> False
+        , continue = \c -> c /= '$'
         , parseEnd = EndNormal
-        , endCharLength = 0
-        , dropLeadingChars = 0
+        , endCharLength = 1
+        , dropLeadingChars = 1
         , isVerbatim = True
-        , transform = identity
+        , transform = \_ -> "$"
         , expect =
-            [ { stop = [ "$" ], action = ShiftVerbatim "$" }
+            [ { stop = [ "$" ], action = ShiftVerbatim2 "$" }
             ]
         }
       )

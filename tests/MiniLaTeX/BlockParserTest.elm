@@ -64,8 +64,7 @@ suite =
         , testParser "(11)"
             "one\ntwo"
             [ BBParagraph [ "one\n", "two\n" ] ]
-        , Test.only <|
-            testParser "(12)"
-                "\\begin{equation}\n   \\int_0^1 x^n dx = \\frac{1}{n+1}\n\\end{equation}"
-                [ BBVerbatimBlock "equation" [ "   \\int_0^1 x^n dx = \\frac{1}{n+1}" ] ]
+        , testParser "(12)"
+            "\\begin{equation}\n   \\int_0^1 x^n dx = \\frac{1}{n+1}\n\\end{equation}"
+            [ BBVerbatimBlock "equation" [ "   \\int_0^1 x^n dx = \\frac{1}{n+1}" ] ]
         ]

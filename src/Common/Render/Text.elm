@@ -73,6 +73,12 @@ markupDict =
         , ( "heading4", \g s textList -> heading4 g s textList )
         , ( "heading5", \g s textList -> italic g s textList )
         , ( "link", \g s textList -> link g s textList )
+
+        -- MiniLaTeX stuff
+        , ( "term", \g s textList -> term g s textList )
+        , ( "emph", \g s textList -> emph g s textList )
+        , ( "eqref", \g s textList -> eqref g s textList )
+        , ( "setcounter", \g s textList -> Element.none )
         ]
 
 
@@ -92,41 +98,27 @@ args textList =
         |> List.filter (\s -> s /= "")
 
 
-
---macro2 : (String -> String -> Element msg) -> Int -> Settings -> List Text -> Element msg
---macro2 element g s textList =
---    case args textList of
---        -- TODO: temporary fix: parse is producing the args in reverse order
---        arg1 :: arg2 :: rest ->
---            element arg1 arg2
---
---        _ ->
---            el [ Font.color errorColor ] (Element.text "Invalid arguments")
---
---link g s textList =
---    macro2 link_ g s textList
---
---
---link_ : String -> String -> Element msg
---link_ label url =
---    newTabLink []
---        { url = url
---        , label = el [ Font.color linkColor, Font.italic ] (Element.text <| label)
---        }
-
-
-link : a -> b -> List Text -> Element msg
-link g s textList =
+macro2 : (String -> String -> Element msg) -> Int -> Settings -> List Text -> Element msg
+macro2 element g s textList =
     case args textList of
         -- TODO: temporary fix: parse is producing the args in reverse order
-        label :: url :: rest ->
-            newTabLink []
-                { url = url
-                , label = el [ Font.color linkColor, Font.italic ] (Element.text <| label)
-                }
+        arg1 :: arg2 :: rest ->
+            element arg1 arg2
 
         _ ->
-            el [ Font.color errorColor ] (Element.text "Invalid link")
+            el [ Font.color errorColor ] (Element.text "Invalid arguments")
+
+
+link g s textList =
+    macro2 link_ g s textList
+
+
+link_ : String -> String -> Element msg
+link_ label url =
+    newTabLink []
+        { url = url
+        , label = el [ Font.color linkColor, Font.italic ] (Element.text <| label)
+        }
 
 
 errorColor =
@@ -229,16 +221,25 @@ heading4 g s textList =
     simpleElement [ Font.size 14, Font.italic, Font.bold ] g s textList
 
 
-strong : Int -> Settings -> List Text -> Element msg
 strong g s textList =
-    Element.paragraph [ Font.bold ] (List.map (render g s) textList)
+    simpleElement [ Font.bold ] g s textList
 
 
-italic : Int -> Settings -> List Text -> Element msg
 italic g s textList =
-    Element.paragraph [ Font.italic, Element.paddingEach { left = 0, right = 2, top = 0, bottom = 0 } ] (List.map (render g s) textList)
+    simpleElement [ Font.italic, Element.paddingEach { left = 0, right = 2, top = 0, bottom = 0 } ] g s textList
 
 
-red : Int -> Settings -> List Text -> Element msg
+term g s textList =
+    simpleElement [ Font.italic, Element.paddingEach { left = 0, right = 2, top = 0, bottom = 0 } ] g s textList
+
+
+eqref g s textList =
+    simpleElement [ Font.italic, Element.paddingEach { left = 0, right = 2, top = 0, bottom = 0 } ] g s textList
+
+
+emph g s textList =
+    simpleElement [ Font.italic, Element.paddingEach { left = 0, right = 2, top = 0, bottom = 0 } ] g s textList
+
+
 red g s textList =
-    Element.paragraph [ Font.color (Element.rgb255 200 0 0) ] (List.map (render g s) textList)
+    simpleElement [ Font.color (Element.rgb255 200 0 0) ] g s textList

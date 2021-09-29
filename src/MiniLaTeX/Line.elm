@@ -5,6 +5,10 @@ import Common.Line as Line
 import Parser exposing ((|.), (|=), Parser)
 
 
+verbatimEnvironments =
+    [ "align", "equation", "mathmacro" ]
+
+
 lineType : String -> Line.LineType
 lineType str =
     case Parser.run lineTypeParser str of
@@ -50,7 +54,7 @@ beginBlockParser =
 
 mapBlock : String -> Line.LineType
 mapBlock str =
-    if List.member str [ "equation" ] then
+    if List.member str verbatimEnvironments then
         Line.BeginVerbatimBlock str
 
     else

@@ -59,6 +59,8 @@ verbatimBlockDict =
         [ ( "code", \g s lines -> codeBlock g s lines )
         , ( "math", \g s lines -> mathBlock g s lines )
         , ( "equation", \g s lines -> equation g s lines )
+        , ( "align", \g s lines -> aligned g s lines )
+        , ( "mathmacro", \g s lines -> Element.none )
         ]
 
 
@@ -92,6 +94,11 @@ mathBlock generation settings textList =
 equation : Int -> Settings -> List String -> Element msg
 equation generation settings textList =
     Common.Math.mathText generation Common.Math.DisplayMathMode (String.join "\n" textList)
+
+
+aligned : Int -> Settings -> List String -> Element msg
+aligned generation settings textList =
+    Common.Math.mathText generation Common.Math.DisplayMathMode ("\\begin{aligned}\n" ++ String.join "\n" textList ++ "\n\\end{aligned}")
 
 
 quotationBlock : Int -> Settings -> List Syntax.TextBlock -> Element msg
