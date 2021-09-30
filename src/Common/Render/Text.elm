@@ -6,7 +6,7 @@ import Common.Math
 import Common.Syntax as Syntax exposing (Block(..), Text(..), TextBlock(..))
 import Common.Text
 import Dict exposing (Dict)
-import Element exposing (Element, column, el, newTabLink, paddingEach, paragraph)
+import Element exposing (Element, alignLeft, alignRight, centerX, column, el, newTabLink, paddingEach, paragraph, px, spacing)
 import Element.Background as Background
 import Element.Font as Font
 import Maybe.Extra
@@ -80,6 +80,8 @@ markupDict =
         , ( "heading4", \g s a textList -> heading4 g s a textList )
         , ( "heading5", \g s a textList -> italic g s a textList )
         , ( "link", \g s a textList -> link g s a textList )
+        , ( "href", \g s a textList -> href g s a textList )
+        , ( "image", \g s a textList -> image g s a textList )
 
         -- MiniLaTeX stuff
         , ( "term", \g s a textList -> term g s a textList )
@@ -126,6 +128,84 @@ link_ label url =
         { url = url
         , label = el [ Font.color linkColor, Font.italic ] (Element.text <| label)
         }
+
+
+href g s a textList =
+    macro2 href_ g s a textList
+
+
+href_ : String -> String -> Element msg
+href_ url label =
+    newTabLink []
+        { url = url
+        , label = el [ Font.color linkColor, Font.italic ] (Element.text <| label)
+        }
+
+
+
+--         , ( "href", \g s a textList -> href g s a textList )
+
+
+image generation settings accumuator body =
+    let
+        arguments =
+            args body
+
+        url =
+            List.head arguments |> Maybe.withDefault "no-image"
+
+        dict =
+            Utility.keyValueDict (List.drop 1 arguments)
+
+        description =
+            Dict.get "caption" dict |> Maybe.withDefault ""
+
+        caption =
+            case Dict.get "caption" dict of
+                Nothing ->
+                    Element.none
+
+                Just c ->
+                    Element.row [ placement, Element.width Element.fill ] [ el [ Element.width Element.fill ] (Element.text c) ]
+
+        width =
+            case Dict.get "width" dict of
+                Nothing ->
+                    px displayWidth
+
+                Just w_ ->
+                    case String.toInt w_ of
+                        Nothing ->
+                            px displayWidth
+
+                        Just w ->
+                            px w
+
+        placement =
+            case Dict.get "placement" dict of
+                Nothing ->
+                    centerX
+
+                Just "left" ->
+                    alignLeft
+
+                Just "right" ->
+                    alignRight
+
+                Just "center" ->
+                    centerX
+
+                _ ->
+                    centerX
+
+        displayWidth =
+            settings.width
+    in
+    column [ spacing 8, Element.width (px displayWidth), placement ]
+        [ Element.image [ Element.width width, placement ]
+            { src = url, description = description }
+        , caption
+        ]
 
 
 errorColor =
