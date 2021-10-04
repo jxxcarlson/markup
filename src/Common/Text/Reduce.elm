@@ -11,31 +11,31 @@ module Common.Text.Reduce exposing
     )
 
 import Common.Debug exposing (..)
-import Common.Syntax exposing (Text(..))
+import Common.Syntax exposing (Expr(..))
 import Common.Text
 import L1.Transform as Reduce
 import List.Extra
 
 
-argList_ : List Text -> List Text
+argList_ : List Expr -> List Expr
 argList_ textList =
     case textList of
         text1 :: text2 :: rest ->
             case ( text1, text2 ) of
-                ( Text str1 meta1, Marked name textList2 meta2 ) ->
+                ( Text str1 meta1, Expr name textList2 meta2 ) ->
                     argList <|
-                        Marked (name |> debug3 "argList_, name") (Text str1 meta1 :: textList2) { meta2 | end = meta1.end }
+                        Expr (name |> debug3 "argList_, name") (Text str1 meta1 :: textList2) { meta2 | end = meta1.end }
                             :: argList (rest |> debug3 "argList_, 1, rest")
 
-                ( Verbatim _ str1 meta1, Marked name textList2 meta2 ) ->
+                ( Verbatim _ str1 meta1, Expr name textList2 meta2 ) ->
                     argList <|
-                        Marked (name |> debug3 "argList_, verbatim name") (Text str1 meta1 :: textList2) { meta2 | end = meta1.end }
+                        Expr (name |> debug3 "argList_, verbatim name") (Text str1 meta1 :: textList2) { meta2 | end = meta1.end }
                             :: argList (rest |> debug3 "argList_, 2, rest")
 
-                ( Marked name1 textList1 meta1, Marked name2 textList2 meta2 ) ->
+                ( Expr name1 textList1 meta1, Expr name2 textList2 meta2 ) ->
                     argList <|
-                        Marked name2
-                            (Marked (name1 |> debug3 "argList_, 3, name1") textList1 meta1
+                        Expr name2
+                            (Expr (name1 |> debug3 "argList_, 3, name1") textList1 meta1
                                 :: textList2
                             )
                             { meta2 | end = meta1.end }
@@ -51,7 +51,7 @@ argList_ textList =
             textList
 
 
-argList : List Text -> List Text
+argList : List Expr -> List Expr
 argList textList =
     let
         _ =
@@ -70,9 +70,9 @@ argList textList =
                     debug2 "rest" rest
             in
             case last of
-                Marked name textList1 meta ->
+                Expr name textList1 meta ->
                     if Common.Syntax.listSatisfies Common.Syntax.isPureTextOrVerbatim rest then
-                        [ Marked (name |> debug3 "argList (X), name") (rest ++ textList1) meta ]
+                        [ Expr (name |> debug3 "argList (X), name") (rest ++ textList1) meta ]
 
                     else
                         argList_ textList
@@ -81,7 +81,7 @@ argList textList =
                     argList_ textList
 
 
-contract3Stack : List Text -> List Text
+contract3Stack : List Expr -> List Expr
 contract3Stack stack =
     case stack of
         text1 :: text2 :: text3 :: rest ->
@@ -104,7 +104,7 @@ contract3Stack stack =
     - nextCursor_, in case Commit (this is also natural)
 
 -}
-contractStackRepeatedly : List Text -> List Text
+contractStackRepeatedly : List Expr -> List Expr
 contractStackRepeatedly stack =
     (case stack of
         text1 :: text2 :: text3 :: rest ->
@@ -129,7 +129,7 @@ contractStackRepeatedly stack =
         |> List.reverse
 
 
-argIntoArg : List Text -> List Text
+argIntoArg : List Expr -> List Expr
 argIntoArg stack =
     case stack of
         (Arg textList1 meta1) :: (Arg textList2 meta2) :: rest ->
@@ -139,37 +139,37 @@ argIntoArg stack =
             stack
 
 
-argIntoMarked : List Text -> List Text
+argIntoMarked : List Expr -> List Expr
 argIntoMarked stack =
     case stack of
-        (Arg textList1 meta1) :: (Marked name textList2 meta2) :: rest ->
-            Marked name (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
+        (Arg textList1 meta1) :: (Expr name textList2 meta2) :: rest ->
+            Expr name (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
 
         _ ->
             stack
 
 
-markedIntoArg : List Text -> List Text
+markedIntoArg : List Expr -> List Expr
 markedIntoArg stack =
     case stack of
-        (Marked name textList1 meta1) :: (Arg textList2 meta2) :: rest ->
-            Arg [ Marked name textList1 meta1 ] { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
+        (Expr name textList1 meta1) :: (Arg textList2 meta2) :: rest ->
+            Arg [ Expr name textList1 meta1 ] { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
 
         _ ->
             stack
 
 
-markedIntoMarked : List Text -> List Text
+markedIntoMarked : List Expr -> List Expr
 markedIntoMarked stack =
     case stack of
-        (Marked name textList1 meta1) :: (Marked name2 textList2 meta2) :: rest ->
-            Marked name2 (Marked name textList1 meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
+        (Expr name textList1 meta1) :: (Expr name2 textList2 meta2) :: rest ->
+            Expr name2 (Expr name textList1 meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
 
         _ ->
             stack
 
 
-textIntoArg : List Text -> List Text
+textIntoArg : List Expr -> List Expr
 textIntoArg stack =
     case stack of
         (Text str meta1) :: (Arg textList2 meta2) :: rest ->
@@ -179,44 +179,44 @@ textIntoArg stack =
             stack
 
 
-textIntoMarked : List Text -> List Text
+textIntoMarked : List Expr -> List Expr
 textIntoMarked stack =
     case stack of
-        (Text str meta1) :: (Marked name textList2 meta2) :: rest ->
-            Marked name (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
+        (Text str meta1) :: (Expr name textList2 meta2) :: rest ->
+            Expr name (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
 
         _ ->
             stack
 
 
-contract2 : Text -> Text -> Maybe Text
+contract2 : Expr -> Expr -> Maybe Expr
 contract2 text1 text2 =
     case ( text1, text2 ) of
         ( Arg textList1 meta1, Arg textList2 meta2 ) ->
             Just <| Arg (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
 
-        ( Arg textList1 meta1, Marked name textList2 meta2 ) ->
-            Just <| Marked name (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
+        ( Arg textList1 meta1, Expr name textList2 meta2 ) ->
+            Just <| Expr name (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
 
         ( Text str meta1, Arg textList2 meta2 ) ->
             Just <| Arg (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
 
-        ( Marked name textList1 meta1, Arg textList2 meta2 ) ->
-            Just <| Arg (Marked name textList1 meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
+        ( Expr name textList1 meta1, Arg textList2 meta2 ) ->
+            Just <| Arg (Expr name textList1 meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
 
-        ( Text str meta1, Marked name textList2 meta2 ) ->
-            Just <| Marked name (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
+        ( Text str meta1, Expr name textList2 meta2 ) ->
+            Just <| Expr name (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
 
         ( _, _ ) ->
             Nothing
 
 
-contract3 : Text -> Text -> Text -> Maybe Text
+contract3 : Expr -> Expr -> Expr -> Maybe Expr
 contract3 text1 text2 text3 =
     case ( text1, text2, text3 ) of
-        ( Marked a [] meta1, _, Marked b [] meta3 ) ->
+        ( Expr a [] meta1, _, Expr b [] meta3 ) ->
             if a == b then
-                Just <| Marked a [ text2 ] { start = meta1.start, end = meta3.end, indent = 0, id = meta3.id }
+                Just <| Expr a [ text2 ] { start = meta1.start, end = meta3.end, indent = 0, id = meta3.id }
 
             else
                 Nothing

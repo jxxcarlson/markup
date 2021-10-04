@@ -3,7 +3,7 @@ module Common.Render.Text exposing (args, render, viewTOC)
 import Common.Debug exposing (debug1)
 import Common.Library.ASTTools as ASTTools
 import Common.Math
-import Common.Syntax as Syntax exposing (Block(..), Text(..), TextBlock(..))
+import Common.Syntax as Syntax exposing (Block(..), Expr(..), TextBlock(..))
 import Common.Text
 import Dict exposing (Dict)
 import Element exposing (Element, alignLeft, alignRight, centerX, column, el, newTabLink, paddingEach, paragraph, px, spacing)
@@ -22,13 +22,13 @@ type alias Accumulator =
     { macroDict : MiniLaTeX.MathMacro.MathMacroDict }
 
 
-render : Int -> Settings -> Accumulator -> Text -> Element msg
+render : Int -> Settings -> Accumulator -> Expr -> Element msg
 render generation settings accumulator text =
     case text of
         Text string meta ->
             Element.el [] (Element.text string)
 
-        Marked name textList meta ->
+        Expr name textList meta ->
             Element.el [] (renderMarked name generation settings accumulator textList)
 
         Verbatim name str meta ->
@@ -37,7 +37,7 @@ render generation settings accumulator text =
         Arg _ _ ->
             Element.none
 
-        TError error_ ->
+        BlockError error_ ->
             error error_
 
 
@@ -67,7 +67,7 @@ renderMarked name generation settings accumulator textList =
             f generation settings accumulator textList
 
 
-markupDict : Dict String (Int -> Settings -> Accumulator -> List Text -> Element msg)
+markupDict : Dict String (Int -> Settings -> Accumulator -> List Expr -> Element msg)
 markupDict =
     Dict.fromList
         [ ( "strong", \g s a textList -> strong g s a textList )
@@ -99,7 +99,7 @@ verbatimDict =
         ]
 
 
-args : List Text -> List String
+args : List Expr -> List String
 args textList =
     List.map ASTTools.getText textList
         |> Maybe.Extra.values
@@ -107,7 +107,7 @@ args textList =
         |> List.filter (\s -> s /= "")
 
 
-macro2 : (String -> String -> Element msg) -> Int -> Settings -> Accumulator -> List Text -> Element msg
+macro2 : (String -> String -> Element msg) -> Int -> Settings -> Accumulator -> List Expr -> Element msg
 macro2 element g s a textList =
     case args textList of
         -- TODO: temporary fix: parse is producing the args in reverse order
@@ -256,7 +256,7 @@ tocColor =
     Element.rgb 0.1 0 0.8
 
 
-viewTOC : Int -> Settings -> Accumulator -> List Syntax.Text -> List (Element msg)
+viewTOC : Int -> Settings -> Accumulator -> List Syntax.Expr -> List (Element msg)
 viewTOC generation settings accumulator items =
     Element.el [ Font.size 18 ] (Element.text "Contents") :: List.map (viewTOCItem generation settings accumulator) items
 
@@ -279,7 +279,7 @@ internalLink str =
     "#" ++ str |> makeSlug
 
 
-tocLink : List Text -> Element msg
+tocLink : List Expr -> Element msg
 tocLink textList =
     let
         t =
@@ -288,19 +288,19 @@ tocLink textList =
     Element.link [] { url = internalLink t, label = Element.text t }
 
 
-viewTOCItem : Int -> Settings -> Accumulator -> Syntax.Text -> Element msg
+viewTOCItem : Int -> Settings -> Accumulator -> Syntax.Expr -> Element msg
 viewTOCItem generation settings accumulator block =
     case block of
-        Marked "heading2" textList _ ->
+        Expr "heading2" textList _ ->
             el (tocStyle 2) (tocLink textList)
 
-        Marked "heading3" textList _ ->
+        Expr "heading3" textList _ ->
             el (tocStyle 3) (tocLink textList)
 
-        Marked "heading4" textList _ ->
+        Expr "heading4" textList _ ->
             el (tocStyle 4) (tocLink textList)
 
-        Marked "heading5" textList _ ->
+        Expr "heading5" textList _ ->
             el (tocStyle 5) (tocLink textList)
 
         _ ->
@@ -324,7 +324,7 @@ makeSlug str =
     str |> String.toLower |> String.replace " " "-"
 
 
-makeId : List Text -> Element.Attribute msg
+makeId : List Expr -> Element.Attribute msg
 makeId textList =
     Utility.elementAttribute "id" (Common.Text.stringValueOfList textList |> makeSlug)
 

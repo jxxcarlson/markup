@@ -1,11 +1,11 @@
 module Common.Text.Parser exposing (TextParser, dummyParse, parseTextInBlock)
 
 import Common.Render.TextBlock
-import Common.Syntax exposing (Block(..), Meta, Text(..), TextBlock(..), dummyMeta)
+import Common.Syntax exposing (Block(..), Expr(..), Meta, TextBlock(..), dummyMeta)
 
 
 type alias TextParser =
-    Int -> Common.Render.TextBlock.Settings -> String -> List Text
+    Int -> Common.Render.TextBlock.Settings -> String -> List Expr
 
 
 dummyParse : TextParser
@@ -25,5 +25,5 @@ parseTextInBlock generation settings parse_ block =
         Block name blocks meta ->
             TBBlock name (List.map (parseTextInBlock generation settings parse_) blocks) meta
 
-        Error e ->
+        BlockError e ->
             TBError e

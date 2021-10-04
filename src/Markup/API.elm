@@ -14,7 +14,7 @@ import Common.BlockParser as Block
 import Common.Library.ASTTools as ASTTools
 import Common.Render.Text as Text
 import Common.Render.TextBlock as TextBlock exposing (Settings)
-import Common.Syntax as Syntax exposing (Language(..), Meta, Text(..))
+import Common.Syntax as Syntax exposing (Expr(..), Language(..), Meta)
 import Common.Text.Cursor as Cursor
 import Common.Text.Parser
 import Element as E exposing (Element)
@@ -138,7 +138,7 @@ parse2 language blocks =
 -- NOT EXPOSED
 
 
-parseText : Syntax.Language -> String -> List Text
+parseText : Syntax.Language -> String -> List Expr
 parseText language input =
     case language of
         Syntax.Markdown ->

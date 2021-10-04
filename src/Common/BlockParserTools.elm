@@ -22,10 +22,11 @@ import Common.BasicSyntax as Basic
 import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Line exposing (LineType(..))
 import Common.Syntax as Syntax exposing (Block(..), BlockType(..), dummyMeta)
+import Dict
 import List.Extra
 import MiniLaTeX.MathMacro
 import Utility
-import Dict
+
 
 type alias State =
     { input : List String
@@ -41,7 +42,10 @@ type alias State =
     , stack : List Block
     }
 
-type alias Accumulator = { macroDict: MiniLaTeX.MathMacro.MathMacroDict }
+
+type alias Accumulator =
+    { macroDict : MiniLaTeX.MathMacro.MathMacroDict }
+
 
 nextStep : (String -> State -> State) -> State -> Step State State
 nextStep nextStateAux state =
@@ -88,7 +92,10 @@ initialState generation input =
     , stack = []
     }
 
-initialAccumulator = {macroDict = Dict.empty}
+
+initialAccumulator =
+    { macroDict = Dict.empty }
+
 
 reduceStack : State -> State
 reduceStack state =
@@ -183,7 +190,7 @@ blockLevel block =
         Block _ _ meta ->
             level meta.indent
 
-        Error _ ->
+        BlockError _ ->
             0
 
 
@@ -209,7 +216,7 @@ typeOfBlock b =
         Block _ _ _ ->
             B
 
-        Error _ ->
+        BlockError _ ->
             E
 
 
@@ -225,7 +232,7 @@ blockLabel block =
         VerbatimBlock s _ _ ->
             s
 
-        Error s ->
+        BlockError s ->
             s
 
 
@@ -281,8 +288,8 @@ reverseContents block =
             -- (7)
             Block name (List.map reverseContents blocks) meta
 
-        Error s ->
-            Error s
+        BlockError s ->
+            BlockError s
     )
         |> debug3 "THE REAL reverseContents (OUT)"
 
@@ -389,8 +396,8 @@ replaceMeta meta block =
         Block name blocks _ ->
             Block name blocks meta
 
-        Error s ->
-            Error s
+        BlockError s ->
+            BlockError s
 
 
 shift : Block -> State -> State

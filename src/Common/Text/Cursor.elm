@@ -3,7 +3,7 @@ module Common.Text.Cursor exposing (Step(..), TextCursor, init, nextCursor, pars
 import Common.BlockParserTools exposing (reverseContents)
 import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Library.ParserTools as ParserTools exposing (StringData)
-import Common.Syntax as Syntax exposing (Text(..))
+import Common.Syntax as Syntax exposing (Expr(..))
 import Common.Text
 import Common.Text.Error exposing (Context(..), Problem(..))
 import Common.Text.Reduce as Reduce
@@ -28,8 +28,8 @@ type alias TextCursor =
     , scannerType : ScannerType
     , source : String
     , stringData : ParserTools.StringData
-    , committed : List Text
-    , stack : List Text
+    , committed : List Expr
+    , stack : List Expr
     , generation : Int
     , count : Int
     }
@@ -170,7 +170,7 @@ nextCursor_ leadingChar cursor rules textToProcess =
                                     ( cursor.committed, [] )
 
                         CommitMarked ->
-                            ( Marked (String.dropLeft 1 stringData.content) [] meta :: cursor.committed, cursor.stack )
+                            ( Expr (String.dropLeft 1 stringData.content) [] meta :: cursor.committed, cursor.stack )
 
                         ShiftText ->
                             if cursor.stack == [] then
@@ -189,7 +189,7 @@ nextCursor_ leadingChar cursor rules textToProcess =
                                 _ =
                                     debug2 "ShiftMarked mark, (drop, before, after)" ( rule.dropLeadingChars, stringData.content, String.dropLeft rule.dropLeadingChars stringData.content |> String.trimRight )
                             in
-                            ( cursor.committed, Marked mark [] meta :: cursor.stack )
+                            ( cursor.committed, Expr mark [] meta :: cursor.stack )
 
                         ShiftVerbatim c ->
                             ( cursor.committed, Verbatim c "" meta :: cursor.stack |> Reduce.contract3Stack )

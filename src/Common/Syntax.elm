@@ -1,9 +1,9 @@
 module Common.Syntax exposing
     ( Block(..)
     , BlockType(..)
+    , Expr(..)
     , Language(..)
     , Meta
-    , Text(..)
     , TextBlock(..)
     , dummyMeta
     , getName
@@ -27,21 +27,21 @@ type Block
     = Paragraph (List String) Meta
     | VerbatimBlock String (List String) Meta
     | Block String (List Block) Meta
-    | Error String
+    | BlockError String
 
 
-type Text
+type Expr
     = Text String Meta
-    | Marked String (List Text) Meta
-    | Arg (List Text) Meta
+    | Expr String (List Expr) Meta
+    | Arg (List Expr) Meta
     | Verbatim String String Meta
-    | TError String
+    | ExprError String
 
 
-getName : Text -> Maybe String
+getName : Expr -> Maybe String
 getName text =
     case text of
-        Marked str _ _ ->
+        Expr str _ _ ->
             Just str
 
         _ ->
@@ -56,7 +56,7 @@ type Language
 
 
 type TextBlock
-    = TBParagraph (List Text) Meta
+    = TBParagraph (List Expr) Meta
     | TBVerbatimBlock String (List String) Meta
     | TBBlock String (List TextBlock) Meta
     | TBError String
@@ -86,7 +86,7 @@ dummyMeta start indent =
 -- FUNCTIONS
 
 
-map : (String -> List Text) -> Block -> TextBlock
+map : (String -> List Expr) -> Block -> TextBlock
 map textParser block =
     case block of
         Paragraph stringList meta ->
@@ -98,7 +98,7 @@ map textParser block =
         Block name blockList meta ->
             TBBlock name (List.map (map textParser) blockList) meta
 
-        Error str ->
+        BlockError str ->
             TBError str
 
 
@@ -118,13 +118,13 @@ textBlockToString textBlock =
             [ str ]
 
 
-textToString : Text -> String
+textToString : Expr -> String
 textToString text =
     case text of
         Text string _ ->
             string
 
-        Marked _ textList _ ->
+        Expr _ textList _ ->
             List.map textToString textList |> String.join "\n"
 
         Arg textList _ ->
@@ -133,7 +133,7 @@ textToString text =
         Verbatim _ str _ ->
             str
 
-        TError str ->
+        BlockError str ->
             str
 
 
@@ -141,17 +141,17 @@ textToString text =
 -- PREDICATES
 
 
-isMarked : Text -> Bool
+isMarked : Expr -> Bool
 isMarked text =
     case text of
-        Marked _ _ _ ->
+        Expr _ _ _ ->
             True
 
         _ ->
             False
 
 
-isPureText : Text -> Bool
+isPureText : Expr -> Bool
 isPureText text =
     case text of
         Text _ _ ->
@@ -161,7 +161,7 @@ isPureText text =
             False
 
 
-isPureTextOrVerbatim : Text -> Bool
+isPureTextOrVerbatim : Expr -> Bool
 isPureTextOrVerbatim text =
     case text of
         Text _ _ ->
@@ -174,7 +174,7 @@ isPureTextOrVerbatim text =
             False
 
 
-listSatisfies : (Text -> Bool) -> List Text -> Bool
+listSatisfies : (Expr -> Bool) -> List Expr -> Bool
 listSatisfies predicate textList =
     textList |> List.map predicate |> Bool.Extra.all
 

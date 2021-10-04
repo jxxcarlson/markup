@@ -1,6 +1,6 @@
 module Common.BasicSyntax exposing (..)
 
-import Common.Syntax exposing (Block(..), Meta, Text(..), TextBlock(..))
+import Common.Syntax exposing (Block(..), Expr(..), Meta, TextBlock(..))
 
 
 type BasicBlock
@@ -11,7 +11,7 @@ type BasicBlock
 
 
 type BasicTextBlock
-    = TBBParagraph (List Text)
+    = TBBParagraph (List Expr)
     | TBBVerbatimBlock String (List String)
     | TBBBlock String (List BasicTextBlock)
     | TBBError String
@@ -45,5 +45,5 @@ simplify block =
         Block name blocks _ ->
             BBBlock name (List.map simplify blocks)
 
-        Error desc ->
+        BlockError desc ->
             BBError desc

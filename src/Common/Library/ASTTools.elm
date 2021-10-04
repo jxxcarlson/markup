@@ -3,7 +3,7 @@ module Common.Library.ASTTools exposing (filter, getHeadings, getText, getTitle)
 import Common.Syntax as Syntax
 
 
-getText : Syntax.Text -> Maybe String
+getText : Syntax.Expr -> Maybe String
 getText text =
     case text of
         Syntax.Text str _ ->
@@ -21,27 +21,27 @@ getTitle blocks =
     filterStrict "title" blocks |> List.head |> Maybe.map (Syntax.textToString >> String.trim)
 
 
-getHeadings : List Syntax.TextBlock -> List Syntax.Text
+getHeadings : List Syntax.TextBlock -> List Syntax.Expr
 getHeadings blocks =
     filter "heading" blocks
 
 
-filter : String -> List Syntax.TextBlock -> List Syntax.Text
+filter : String -> List Syntax.TextBlock -> List Syntax.Expr
 filter key blocks =
     List.map (filter_ key) blocks |> List.concat
 
 
-filterStrict : String -> List Syntax.TextBlock -> List Syntax.Text
+filterStrict : String -> List Syntax.TextBlock -> List Syntax.Expr
 filterStrict key blocks =
     List.map (filterStrict_ key) blocks |> List.concat
 
 
-filterStrictNot : String -> List Syntax.TextBlock -> List Syntax.Text
+filterStrictNot : String -> List Syntax.TextBlock -> List Syntax.Expr
 filterStrictNot key blocks =
     List.map (filterStrictNot_ key) blocks |> List.concat
 
 
-filter_ : String -> Syntax.TextBlock -> List Syntax.Text
+filter_ : String -> Syntax.TextBlock -> List Syntax.Expr
 filter_ key block =
     case block of
         Syntax.TBParagraph textList _ ->
@@ -54,7 +54,7 @@ filter_ key block =
             []
 
 
-filterStrict_ : String -> Syntax.TextBlock -> List Syntax.Text
+filterStrict_ : String -> Syntax.TextBlock -> List Syntax.Expr
 filterStrict_ key block =
     case block of
         Syntax.TBParagraph textList _ ->
@@ -67,7 +67,7 @@ filterStrict_ key block =
             []
 
 
-filterStrictNot_ : String -> Syntax.TextBlock -> List Syntax.Text
+filterStrictNot_ : String -> Syntax.TextBlock -> List Syntax.Expr
 filterStrictNot_ key block =
     case block of
         Syntax.TBParagraph textList _ ->

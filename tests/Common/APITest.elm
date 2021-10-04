@@ -1,7 +1,7 @@
 module Common.APITest exposing (..)
 
 import Common.BasicSyntax as Syntax exposing (BasicBlock(..))
-import Common.Syntax exposing (Language(..), Text(..), TextBlock(..))
+import Common.Syntax exposing (Expr(..), Language(..), TextBlock(..))
 import Expect exposing (Expectation)
 import Markup.API as API
 import Test exposing (..)

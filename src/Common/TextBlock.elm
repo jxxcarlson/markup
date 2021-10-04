@@ -1,6 +1,6 @@
 module Common.TextBlock exposing (stringValue)
 
-import Common.Syntax exposing (Text(..), TextBlock(..))
+import Common.Syntax exposing (Expr(..), TextBlock(..))
 import Common.Text
 
 

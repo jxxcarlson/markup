@@ -1,9 +1,9 @@
 module L1.Transform exposing (expandTextInMarked, map)
 
-import Common.Syntax exposing (Text(..), TextBlock(..), map)
+import Common.Syntax exposing (Expr(..), TextBlock(..), map)
 
 
-map : (Text -> Text) -> TextBlock -> TextBlock
+map : (Expr -> Expr) -> TextBlock -> TextBlock
 map f block =
     case block of
         TBParagraph textList meta ->
@@ -19,7 +19,7 @@ map f block =
             block
 
 
-expandText : Text -> List Text
+expandText : Expr -> List Expr
 expandText text =
     case text of
         Text str meta ->
@@ -29,11 +29,11 @@ expandText text =
             []
 
 
-expandTextInMarked : Text -> Text
+expandTextInMarked : Expr -> Expr
 expandTextInMarked text =
     case text of
-        Marked name textList meta ->
-            Marked name (List.map expandText textList |> List.concat) meta
+        Expr name textList meta ->
+            Expr name (List.map expandText textList |> List.concat) meta
 
         _ ->
             text

@@ -4,7 +4,7 @@ import Common.Debug exposing (debug3)
 import Common.Library.ASTTools as ASTTools
 import Common.Math
 import Common.Render.Text
-import Common.Syntax as Syntax exposing (Block(..), Text(..), TextBlock(..))
+import Common.Syntax as Syntax exposing (Block(..), Expr(..), TextBlock(..))
 import Common.TextBlock
 import Dict exposing (Dict)
 import Element exposing (..)

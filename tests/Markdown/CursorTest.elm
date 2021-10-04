@@ -1,13 +1,13 @@
 module Markdown.CursorTest exposing (..)
 
-import Common.Syntax as Syntax exposing (Meta, Text(..))
+import Common.Syntax as Syntax exposing (Expr(..), Meta)
 import Common.Text.Cursor as Cursor
 import Expect exposing (Expectation)
 import Markdown.Rule as Rule
 import Test exposing (..)
 
 
-testParseLoopCommitted : String -> String -> List Text -> Test
+testParseLoopCommitted : String -> String -> List Expr -> Test
 testParseLoopCommitted label input output =
     test label <| \_ -> Cursor.parseLoop Rule.rules (Cursor.init 0 0 0 input) |> .committed |> List.reverse |> Expect.equal output
 
@@ -17,11 +17,11 @@ suiteParseLoop =
     describe "the parseLoop function for Markdown"
         [ testParseLoopCommitted "(1)"
             "# Introduction to Chemistry"
-            [ Marked "title" [ Text "Introduction to Chemistry" { end = 27, id = "0.1", indent = 0, start = 2 } ] { end = 27, id = "0.0", indent = 0, start = 0 } ]
+            [ Expr "title" [ Text "Introduction to Chemistry" { end = 27, id = "0.1", indent = 0, start = 2 } ] { end = 27, id = "0.0", indent = 0, start = 0 } ]
         , testParseLoopCommitted "(2)"
             "It was *very* bold"
             [ Text "It was " { end = 7, id = "0.0", indent = 0, start = 0 }
-            , Marked "strong" [ Text "very" { end = 12, id = "0.2", indent = 0, start = 8 } ] { end = 8, id = "0.1", indent = 0, start = 12 }
+            , Expr "strong" [ Text "very" { end = 12, id = "0.2", indent = 0, start = 8 } ] { end = 8, id = "0.1", indent = 0, start = 12 }
             , Text " " { end = 0, id = "1.2", indent = 0, start = 0 }
             , Text "bold" { end = 18, id = "0.5", indent = 0, start = 14 }
             ]

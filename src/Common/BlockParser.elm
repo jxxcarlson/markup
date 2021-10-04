@@ -234,7 +234,7 @@ nextStateAux2 indent line newLineType lineType state =
 
                     errorMessage : Block
                     errorMessage =
-                        Error <| "Error: I was expecting an end-block labeled  " ++ s2 ++ ", but found " ++ s
+                        BlockError <| "Error: I was expecting an end-block labeled  " ++ s2 ++ ", but found " ++ s
                 in
                 { state | stack = data.stack ++ rest, output = errorMessage :: data.output ++ state.output }
 
