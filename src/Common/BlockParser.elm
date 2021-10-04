@@ -146,7 +146,7 @@ nextStateAux2 indent line newLineType lineType state =
                 { state | indent = indent, verbatimBlockInitialIndent = indent + 3 } |> BP.shift (VerbatimBlock s [] (Syntax.dummyMeta 0 0))
 
         OrdinaryLine ->
-            state |> handleOrdinaryLine indent line
+            state |> handleOrdinaryLine indent line |> (\s -> { s | lineNumber = s.lineNumber + 1 |> debug2 "OrdinaryLine, line" })
 
         VerbatimLine ->
             state |> handleVerbatimLine indent line
