@@ -254,7 +254,7 @@ handleBlankLine indent state =
 
             Just block ->
                 if List.member (BP.typeOfBlock block) [ V ] then
-                    { state | stack = BP.appendLineAtTop "" state.stack, indent = indent }
+                    { state | stack = BP.appendLineAtTop state.lineNumber "" state.stack, indent = indent }
 
                 else
                     -- { state | stack = [], output = (Syntax.Paragraph [] (Syntax.dummyMeta 0 0) :: List.reverse state.stack) ++ state.output }
@@ -272,7 +272,7 @@ handleOrdinaryLine indent line state =
 
             Just block ->
                 if List.member (BP.typeOfBlock block) [ P, B ] then
-                    { state | stack = BP.appendLineAtTop (String.dropLeft indent (line ++ "\n")) state.stack, indent = indent }
+                    { state | stack = BP.appendLineAtTop state.lineNumber (String.dropLeft indent (line ++ "\n")) state.stack, indent = indent }
 
                 else
                     BP.shift (Paragraph [ String.dropLeft indent (line ++ "\n") ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
@@ -289,7 +289,7 @@ handleVerbatimLine indent line state =
 
             Just block ->
                 if BP.typeOfBlock block == P then
-                    { state | stack = BP.appendLineAtTop (String.dropLeft 0 line) state.stack, indent = indent }
+                    { state | stack = BP.appendLineAtTop state.lineNumber (String.dropLeft 0 line) state.stack, indent = indent }
 
                 else
                     BP.shift (Paragraph [ String.dropLeft 0 line ] (Syntax.dummyMeta 0 0)) { state | indent = indent }

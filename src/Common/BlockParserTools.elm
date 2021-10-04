@@ -331,8 +331,8 @@ reduceStack_ state =
                                 state
 
 
-appendLineAtTop : String -> List Block -> List Block
-appendLineAtTop line stack =
+appendLineAtTop : Int -> String -> List Block -> List Block
+appendLineAtTop currentLineNumber line stack =
     -- TODO: check this
     case List.head stack of
         Nothing ->
@@ -342,16 +342,16 @@ appendLineAtTop line stack =
             case block of
                 -- TODO: fix Meta, examine other cases not handled
                 Paragraph strings meta ->
-                    Paragraph (line :: strings) meta :: List.drop 1 stack
+                    updateMetaEnd currentLineNumber (Paragraph (line :: strings) meta) :: List.drop 1 stack
 
                 Block name ((Paragraph lines meta1) :: rest) meta2 ->
-                    Block name (Paragraph (line :: lines) meta1 :: rest) meta2 :: List.drop 1 stack
+                    updateMetaEnd currentLineNumber (Block name (Paragraph (line :: lines) meta1 :: rest) meta2) :: List.drop 1 stack
 
                 Block name [] meta2 ->
-                    Block name [ Paragraph [ line ] (dummyMeta 0 0) ] meta2 :: List.drop 1 stack
+                    updateMetaEnd currentLineNumber (Block name [ Paragraph [ line ] (dummyMeta 0 0) ] meta2) :: List.drop 1 stack
 
                 Block name ((Block name2 blocks meta1) :: rest) meta2 ->
-                    Block name (Paragraph [ line ] meta1 :: Block name2 blocks meta1 :: rest) meta2 :: List.drop 1 stack
+                    updateMetaEnd currentLineNumber (Block name (Paragraph [ line ] meta1 :: Block name2 blocks meta1 :: rest) meta2) :: List.drop 1 stack
 
                 _ ->
                     stack
@@ -397,18 +397,26 @@ updateMetaEnd : Int -> Block -> Block
 updateMetaEnd k block =
     case block of
         Paragraph strings meta ->
-            Paragraph strings { meta | end = k }
+            Paragraph strings { meta | end = k - 1 }
 
         VerbatimBlock name strings meta ->
-            VerbatimBlock name strings { meta | end = k }
+            VerbatimBlock name strings { meta | end = k - 1 }
 
         Block name blocks meta ->
-            Block name blocks { meta | end = k }
+            Block name blocks { meta | end = k - 1 }
 
         BlockError s ->
             BlockError s
 
 
+{-|
+
+    This function is always called when a block is created (begun but not committed)
+
+    - The new block is given the current line numbers for both the begin and end fields.
+    - The blockCount and lineCount are incremented after the new Block is pushed onto the stack
+
+-}
 shift : Block -> State -> State
 shift block state =
     let
