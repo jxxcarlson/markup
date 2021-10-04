@@ -400,10 +400,10 @@ updateMetaEnd k block =
             Paragraph strings { meta | end = k - 1 }
 
         VerbatimBlock name strings meta ->
-            VerbatimBlock name strings { meta | end = k - 1 }
+            VerbatimBlock name strings { meta | end = k - 2 }
 
         Block name blocks meta ->
-            Block name blocks { meta | end = k - 1 }
+            Block name blocks { meta | end = k - 2 }
 
         BlockError s ->
             BlockError s
