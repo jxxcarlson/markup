@@ -62,7 +62,7 @@ parseLoop rules initialCursor =
     if initialCursor.source == "" then
         { initialCursor
             | stack = []
-            , committed = [ Text "" { start = initialCursor.scanPoint, end = initialCursor.scanPoint, indent = 0, id = String.fromInt initialCursor.generation } ]
+            , committed = [ Text "" { begin = initialCursor.scanPoint, end = initialCursor.scanPoint, indent = 0, id = String.fromInt initialCursor.generation } ]
         }
 
     else
@@ -139,7 +139,7 @@ nextCursor_ leadingChar cursor rules textToProcess =
                     Rule.getAction stopStr rule
 
                 meta =
-                    { start = cursor.scanPoint
+                    { begin = cursor.scanPoint
                     , end = cursor.scanPoint + stringData.finish - stringData.start + rule.endCharLength
                     , indent = 0
                     , id = String.fromInt cursor.generation ++ "." ++ String.fromInt cursor.count

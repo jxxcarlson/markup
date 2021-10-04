@@ -20,7 +20,7 @@ stringValue text =
         Arg textList _ ->
             String.join " " (List.map stringValue textList)
 
-        BlockError str ->
+        ExprError str ->
             str
 
         Verbatim _ str _ ->
@@ -56,7 +56,7 @@ combine textList =
         text1 :: text2 :: rest ->
             case ( text1, text2 ) of
                 ( Text str1 meta1, Text str2 meta2 ) ->
-                    combine (Text (str1 ++ str2) { start = meta1.start, end = meta2.end, id = meta1.id, indent = meta1.indent } :: rest)
+                    combine (Text (str1 ++ str2) { begin = meta1.begin, end = meta2.end, id = meta1.id, indent = meta1.indent } :: rest)
 
                 _ ->
                     textList

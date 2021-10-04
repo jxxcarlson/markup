@@ -63,7 +63,7 @@ type TextBlock
 
 
 type alias Meta =
-    { start : Int
+    { begin : Int
     , end : Int
     , indent : Int
     , id : String
@@ -79,7 +79,7 @@ type BlockType
 
 dummyMeta : Int -> Int -> Meta
 dummyMeta start indent =
-    { start = start, end = start, indent = indent, id = "1.2" }
+    { begin = start, end = start, indent = indent, id = "1.2" }
 
 
 
@@ -133,7 +133,7 @@ textToString text =
         Verbatim _ str _ ->
             str
 
-        BlockError str ->
+        ExprError str ->
             str
 
 

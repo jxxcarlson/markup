@@ -25,26 +25,26 @@ suite =
         [ testAPI Markdown
             "one\ntwo"
             [ TBParagraph
-                [ Text "one\n" { end = 4, id = "0.0", indent = 0, start = 0 }
-                , Text "two\n" { end = 4, id = "0.0", indent = 0, start = 0 }
+                [ Text "one\n" { end = 4, id = "0.0", indent = 0, begin = 0 }
+                , Text "two\n" { end = 4, id = "0.0", indent = 0, begin = 0 }
                 ]
-                { end = 0, id = "1.0", indent = 0, start = 0 }
+                { end = 0, id = "1.0", indent = 0, begin = 0 }
             ]
         , testAPI Markdown
             "one\nthree\n"
-            [ TBParagraph [ Text "one\n" { end = 4, id = "0.0", indent = 0, start = 0 }, Text "three\n" { end = 6, id = "0.0", indent = 0, start = 0 } ] { end = 0, id = "1.0", indent = 0, start = 0 }
-            , TBParagraph [] { end = 0, id = "1.2", indent = 0, start = 0 }
+            [ TBParagraph [ Text "one\n" { end = 4, id = "0.0", indent = 0, begin = 0 }, Text "three\n" { end = 6, id = "0.0", indent = 0, begin = 0 } ] { end = 0, id = "1.0", indent = 0, begin = 0 }
+            , TBParagraph [] { end = 0, id = "1.2", indent = 0, begin = 0 }
             ]
         , testAPI Markdown
             "```\n   one\n   two"
             -- TODO: incorrect position information
-            [ TBVerbatimBlock "code" [ "   one", "   two" ] { end = 1, id = "1.1", indent = 3, start = 1 } ]
+            [ TBVerbatimBlock "code" [ "   one", "   two" ] { end = 1, id = "1.1", indent = 3, begin = 1 } ]
         , testAPI Markdown
             "```\n   aaa\n      bbb\n   cccc"
-            [ TBVerbatimBlock "code" [ "   aaa", "      bbb", "   cccc" ] { end = 1, id = "1.1", indent = 3, start = 1 } ]
+            [ TBVerbatimBlock "code" [ "   aaa", "      bbb", "   cccc" ] { end = 1, id = "1.1", indent = 3, begin = 1 } ]
         , testAPI MiniLaTeX
             "\\begin{mathmacro}\n   \\newcommand{\\bra}[0]{\\langle}\n   \\newcommand{\\ket}[0]{\\rangle}\n\\end{mathmacro}"
-            [ TBVerbatimBlock "mathmacro" [ "   \\newcommand{\\bra}[0]{\\langle}", "   \\newcommand{\\ket}[0]{\\rangle}" ] { end = 0, id = "1.0", indent = 0, start = 0 } ]
+            [ TBVerbatimBlock "mathmacro" [ "   \\newcommand{\\bra}[0]{\\langle}", "   \\newcommand{\\ket}[0]{\\rangle}" ] { end = 0, id = "1.0", indent = 0, begin = 0 } ]
         ]
 
 

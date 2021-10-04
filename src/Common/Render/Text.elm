@@ -37,7 +37,7 @@ render generation settings accumulator text =
         Arg _ _ ->
             Element.none
 
-        BlockError error_ ->
+        ExprError error_ ->
             error error_
 
 

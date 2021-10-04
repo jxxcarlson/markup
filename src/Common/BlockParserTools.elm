@@ -404,7 +404,7 @@ shift : Block -> State -> State
 shift block state =
     let
         newMeta =
-            { start = state.lineNumber
+            { begin = state.lineNumber
             , end = state.lineNumber
             , indent = state.indent
             , id = String.fromInt state.generation ++ "." ++ String.fromInt state.blockCount

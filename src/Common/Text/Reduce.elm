@@ -133,7 +133,7 @@ argIntoArg : List Expr -> List Expr
 argIntoArg stack =
     case stack of
         (Arg textList1 meta1) :: (Arg textList2 meta2) :: rest ->
-            Arg (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
+            Arg (textList1 ++ textList2) { begin = meta2.begin, end = meta1.end, indent = 0, id = meta2.id } :: rest
 
         _ ->
             stack
@@ -143,7 +143,7 @@ argIntoMarked : List Expr -> List Expr
 argIntoMarked stack =
     case stack of
         (Arg textList1 meta1) :: (Expr name textList2 meta2) :: rest ->
-            Expr name (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
+            Expr name (textList1 ++ textList2) { begin = meta2.begin, end = meta1.end, indent = 0, id = meta2.id } :: rest
 
         _ ->
             stack
@@ -153,7 +153,7 @@ markedIntoArg : List Expr -> List Expr
 markedIntoArg stack =
     case stack of
         (Expr name textList1 meta1) :: (Arg textList2 meta2) :: rest ->
-            Arg [ Expr name textList1 meta1 ] { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
+            Arg [ Expr name textList1 meta1 ] { begin = meta2.begin, end = meta1.end, indent = 0, id = meta2.id } :: rest
 
         _ ->
             stack
@@ -163,7 +163,7 @@ markedIntoMarked : List Expr -> List Expr
 markedIntoMarked stack =
     case stack of
         (Expr name textList1 meta1) :: (Expr name2 textList2 meta2) :: rest ->
-            Expr name2 (Expr name textList1 meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
+            Expr name2 (Expr name textList1 meta1 :: textList2) { begin = meta2.begin, end = meta1.end, indent = 0, id = meta2.id } :: rest
 
         _ ->
             stack
@@ -173,7 +173,7 @@ textIntoArg : List Expr -> List Expr
 textIntoArg stack =
     case stack of
         (Text str meta1) :: (Arg textList2 meta2) :: rest ->
-            Arg (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
+            Arg (Text str meta1 :: textList2) { begin = meta2.begin, end = meta1.end, indent = 0, id = meta2.id } :: rest
 
         _ ->
             stack
@@ -183,7 +183,7 @@ textIntoMarked : List Expr -> List Expr
 textIntoMarked stack =
     case stack of
         (Text str meta1) :: (Expr name textList2 meta2) :: rest ->
-            Expr name (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id } :: rest
+            Expr name (Text str meta1 :: textList2) { begin = meta2.begin, end = meta1.end, indent = 0, id = meta2.id } :: rest
 
         _ ->
             stack
@@ -193,19 +193,19 @@ contract2 : Expr -> Expr -> Maybe Expr
 contract2 text1 text2 =
     case ( text1, text2 ) of
         ( Arg textList1 meta1, Arg textList2 meta2 ) ->
-            Just <| Arg (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
+            Just <| Arg (textList1 ++ textList2) { begin = meta2.begin, end = meta1.end, indent = 0, id = meta2.id }
 
         ( Arg textList1 meta1, Expr name textList2 meta2 ) ->
-            Just <| Expr name (textList1 ++ textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
+            Just <| Expr name (textList1 ++ textList2) { begin = meta2.begin, end = meta1.end, indent = 0, id = meta2.id }
 
         ( Text str meta1, Arg textList2 meta2 ) ->
-            Just <| Arg (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
+            Just <| Arg (Text str meta1 :: textList2) { begin = meta2.begin, end = meta1.end, indent = 0, id = meta2.id }
 
         ( Expr name textList1 meta1, Arg textList2 meta2 ) ->
-            Just <| Arg (Expr name textList1 meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
+            Just <| Arg (Expr name textList1 meta1 :: textList2) { begin = meta2.begin, end = meta1.end, indent = 0, id = meta2.id }
 
         ( Text str meta1, Expr name textList2 meta2 ) ->
-            Just <| Expr name (Text str meta1 :: textList2) { start = meta2.start, end = meta1.end, indent = 0, id = meta2.id }
+            Just <| Expr name (Text str meta1 :: textList2) { begin = meta2.begin, end = meta1.end, indent = 0, id = meta2.id }
 
         ( _, _ ) ->
             Nothing
@@ -216,14 +216,14 @@ contract3 text1 text2 text3 =
     case ( text1, text2, text3 ) of
         ( Expr a [] meta1, _, Expr b [] meta3 ) ->
             if a == b then
-                Just <| Expr a [ text2 ] { start = meta1.start, end = meta3.end, indent = 0, id = meta3.id }
+                Just <| Expr a [ text2 ] { begin = meta1.begin, end = meta3.end, indent = 0, id = meta3.id }
 
             else
                 Nothing
 
         ( Verbatim a "" meta1, Text x meta, Verbatim b "" meta3 ) ->
             if a == b then
-                Just <| Verbatim a x { start = meta1.start, end = meta3.end, indent = 0, id = meta3.id }
+                Just <| Verbatim a x { begin = meta1.begin, end = meta3.end, indent = 0, id = meta3.id }
 
             else
                 Nothing
