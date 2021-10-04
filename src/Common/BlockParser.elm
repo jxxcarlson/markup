@@ -22,7 +22,11 @@ runParser language generation input =
     BP.loop (BP.initialState generation input) (BP.nextStep (nextStateAux language))
 
 
-classify : Language -> Bool -> String -> { indent : Int, lineType : Line.LineType, content : String }
+type alias LineData =
+    { indent : Int, lineType : Line.LineType, content : String }
+
+
+classify : Language -> Bool -> String -> LineData
 classify language inVerbatimBlock str =
     let
         lineType =
@@ -67,83 +71,28 @@ nextStateAux language line state =
             classify language state.inVerbatimBlock line |> debug2 "lineType (nextStateAux)"
 
         inVerbatimBlock =
-            (case lineType.lineType of
-                BeginVerbatimBlock _ ->
-                    True
+            isInVerbatimBlock lineType state
 
-                _ ->
-                    -- TODO: check this out.  Is it OK?? Previously: < level state.indent
-                    if level lineType.indent < level state.verbatimBlockInitialIndent then
-                        False
-
-                    else
-                        state.inVerbatimBlock
-            )
-                |> debug3 "inVerbatimBlock"
-
-        newLineType =
-            case lineType.lineType of
-                BeginVerbatimBlock _ ->
-                    lineType.lineType
-
-                BlankLine ->
-                    if inVerbatimBlock then
-                        BlankLine
-
-                    else
-                        BlankLine
-
-                _ ->
-                    if inVerbatimBlock then
-                        VerbatimLine
-
-                    else
-                        lineType.lineType
+        adjustedLineType =
+            adjustLineType lineType inVerbatimBlock
 
         indent =
             lineType.indent
     in
-    nextStateAux2 indent line newLineType lineType { state | inVerbatimBlock = inVerbatimBlock }
+    nextStateAux2 indent line adjustedLineType lineType { state | inVerbatimBlock = inVerbatimBlock }
 
 
-nextStateAux2 indent line newLineType lineType state =
-    case newLineType of
+nextStateAux2 : Int -> String -> LineType -> LineData -> State -> State
+nextStateAux2 indent line adjustedLineType lineData state =
+    case adjustedLineType of
         BeginBlock Line.AcceptFirstLine s ->
-            let
-                innerBlockList =
-                    if lineType.content == "" then
-                        []
-
-                    else
-                        [ Paragraph [ lineType.content ] (Syntax.dummyMeta 0 0) ]
-            in
-            if BP.level indent <= BP.blockLevelOfStackTop state.stack then
-                { state | indent = indent } |> BP.reduceStack |> BP.shift (Block s innerBlockList (Syntax.dummyMeta 0 0))
-
-            else
-                { state | indent = indent } |> BP.shift (Block s innerBlockList (Syntax.dummyMeta 0 0))
+            handleBeginBlock1 lineData indent state s
 
         BeginBlock Line.RejectFirstLine s ->
-            if BP.level indent <= BP.blockLevelOfStackTop state.stack then
-                { state | indent = indent } |> BP.reduceStack |> BP.shift (Block s [] (Syntax.dummyMeta 0 0))
-
-            else
-                { state | indent = indent } |> BP.shift (Block s [] (Syntax.dummyMeta 0 0))
+            handleBeginBlock2 indent state s
 
         BeginVerbatimBlock s ->
-            if BP.level indent <= BP.blockLevelOfStackTop state.stack then
-                let
-                    yada =
-                        Utility.takeUntil (\a -> BP.blockLabel a == s && BP.blockLevel a == BP.level indent) state.stack
-                in
-                if BP.blockLabelAtBottomOfStack yada.prefix == s then
-                    { state | indent = indent, verbatimBlockInitialIndent = indent + 3 } |> BP.reduceStack
-
-                else
-                    { state | indent = indent, verbatimBlockInitialIndent = indent + 3 } |> BP.reduceStack |> BP.shift (VerbatimBlock s [] (Syntax.dummyMeta 0 0))
-
-            else
-                { state | indent = indent, verbatimBlockInitialIndent = indent + 3 } |> BP.shift (VerbatimBlock s [] (Syntax.dummyMeta 0 0))
+            handleBeginVerbatimBlock indent state s
 
         OrdinaryLine ->
             state |> handleOrdinaryLine indent line |> (\s -> { s | lineNumber = s.lineNumber + 1 |> debug2 "OrdinaryLine, line" })
@@ -155,53 +104,7 @@ nextStateAux2 indent line newLineType lineType state =
             handleBlankLine indent state
 
         EndBlock s ->
-            -- TODO: finish up
-            let
-                { prefix, rest } =
-                    Utility.takeUntil (\a -> BP.blockLabel a == s && BP.blockLevel a == BP.level indent) state.stack
-
-                data =
-                    BP.reduceStack_ { stack = prefix, output = [] } |> debug1 "data (1), yada0"
-
-                stringListToString list =
-                    List.map String.trimLeft list |> String.join "\n"
-
-                verbatimBlockData =
-                    case List.head data.output of
-                        Just (VerbatimBlock "mathmacro" strList _) ->
-                            ( "mathmacro", stringListToString strList )
-
-                        _ ->
-                            ( "nothing", "" )
-
-                oldAccumulator =
-                    state.accumulator
-
-                newAccumulator =
-                    case verbatimBlockData of
-                        ( "mathmacro", mathMacroData ) ->
-                            { oldAccumulator | macroDict = MiniLaTeX.MathMacro.makeMacroDict mathMacroData }
-
-                        _ ->
-                            oldAccumulator
-            in
-            if s == BP.blockLabelAtBottomOfStack prefix then
-                { state
-                    | stack = data.stack ++ rest
-                    , output = data.output ++ state.output
-                    , accumulator = newAccumulator
-                }
-
-            else
-                let
-                    s2 =
-                        BP.blockLabelAtBottomOfStack prefix
-
-                    errorMessage : Block
-                    errorMessage =
-                        BlockError <| "Error: I was expecting an end-block labeled  " ++ s2 ++ ", but found " ++ s
-                in
-                { state | stack = data.stack ++ rest, output = errorMessage :: data.output ++ state.output }
+            handleEndBlock indent state s
 
         EndVerbatimBlock s ->
             -- TODO: finish up
@@ -213,7 +116,133 @@ nextStateAux2 indent line newLineType lineType state =
 
 
 
--- HANDLERS
+-- HELPERS AND HANDLERS
+
+
+adjustLineType lineType inVerbatimBlock =
+    case lineType.lineType of
+        BeginVerbatimBlock _ ->
+            lineType.lineType
+
+        BlankLine ->
+            if inVerbatimBlock then
+                BlankLine
+
+            else
+                BlankLine
+
+        _ ->
+            if inVerbatimBlock then
+                VerbatimLine
+
+            else
+                lineType.lineType
+
+
+isInVerbatimBlock lineType state =
+    (case lineType.lineType of
+        BeginVerbatimBlock _ ->
+            True
+
+        _ ->
+            -- TODO: check this out.  Is it OK?? Previously: < level state.indent
+            if level lineType.indent < level state.verbatimBlockInitialIndent then
+                False
+
+            else
+                state.inVerbatimBlock
+    )
+        |> debug3 "inVerbatimBlock"
+
+
+handleEndBlock indent state s =
+    -- TODO: finish up
+    let
+        { prefix, rest } =
+            Utility.takeUntil (\a -> BP.blockLabel a == s && BP.blockLevel a == BP.level indent) state.stack
+
+        data =
+            BP.reduceStack_ { stack = prefix, output = [] } |> debug1 "data (1), yada0"
+
+        stringListToString list =
+            List.map String.trimLeft list |> String.join "\n"
+
+        verbatimBlockData =
+            case List.head data.output of
+                Just (VerbatimBlock "mathmacro" strList _) ->
+                    ( "mathmacro", stringListToString strList )
+
+                _ ->
+                    ( "nothing", "" )
+
+        oldAccumulator =
+            state.accumulator
+
+        newAccumulator =
+            case verbatimBlockData of
+                ( "mathmacro", mathMacroData ) ->
+                    { oldAccumulator | macroDict = MiniLaTeX.MathMacro.makeMacroDict mathMacroData }
+
+                _ ->
+                    oldAccumulator
+    in
+    if s == BP.blockLabelAtBottomOfStack prefix then
+        { state
+            | stack = data.stack ++ rest
+            , output = data.output ++ state.output
+            , accumulator = newAccumulator
+        }
+
+    else
+        let
+            s2 =
+                BP.blockLabelAtBottomOfStack prefix
+
+            errorMessage : Block
+            errorMessage =
+                BlockError <| "Error: I was expecting an end-block labeled  " ++ s2 ++ ", but found " ++ s
+        in
+        { state | stack = data.stack ++ rest, output = errorMessage :: data.output ++ state.output }
+
+
+handleBeginVerbatimBlock indent state s =
+    if BP.level indent <= BP.blockLevelOfStackTop state.stack then
+        let
+            yada =
+                Utility.takeUntil (\a -> BP.blockLabel a == s && BP.blockLevel a == BP.level indent) state.stack
+        in
+        if BP.blockLabelAtBottomOfStack yada.prefix == s then
+            { state | indent = indent, verbatimBlockInitialIndent = indent + 3 } |> BP.reduceStack
+
+        else
+            { state | indent = indent, verbatimBlockInitialIndent = indent + 3 } |> BP.reduceStack |> BP.shift (VerbatimBlock s [] (Syntax.dummyMeta 0 0))
+
+    else
+        { state | indent = indent, verbatimBlockInitialIndent = indent + 3 } |> BP.shift (VerbatimBlock s [] (Syntax.dummyMeta 0 0))
+
+
+handleBeginBlock1 lineData indent state s =
+    let
+        innerBlockList =
+            if lineData.content == "" then
+                []
+
+            else
+                [ Paragraph [ lineData.content ] (Syntax.dummyMeta 0 0) ]
+    in
+    if BP.level indent <= BP.blockLevelOfStackTop state.stack then
+        { state | indent = indent } |> BP.reduceStack |> BP.shift (Block s innerBlockList (Syntax.dummyMeta 0 0))
+
+    else
+        { state | indent = indent } |> BP.shift (Block s innerBlockList (Syntax.dummyMeta 0 0))
+
+
+handleBeginBlock2 indent state s =
+    if BP.level indent <= BP.blockLevelOfStackTop state.stack then
+        { state | indent = indent } |> BP.reduceStack |> BP.shift (Block s [] (Syntax.dummyMeta 0 0))
+
+    else
+        { state | indent = indent } |> BP.shift (Block s [] (Syntax.dummyMeta 0 0))
 
 
 handleBlankLine indent state =
@@ -233,25 +262,6 @@ handleBlankLine indent state =
 
     else
         BP.reduceStack state
-
-
-
---handleVerbatimBlankLine indent state =
---    -- TODO: finish up
---    if BP.level indent >= BP.blockLevelOfStackTop state.stack then
---        case List.head state.stack of
---            Nothing ->
---                BP.shift (Paragraph [ String.dropLeft 0 line ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
---
---            Just block ->
---                if BP.typeOfBlock block == P then
---                    { state | stack = BP.appendLineAtTop (String.dropLeft 0 line) state.stack, indent = indent }
---
---                else
---                    BP.shift (Paragraph [ String.dropLeft 0 line ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
---
---    else
---        BP.shift (Paragraph [ line ] (Syntax.dummyMeta 0 0)) (BP.reduceStack { state | indent = indent })
 
 
 handleOrdinaryLine indent line state =

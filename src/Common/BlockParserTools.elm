@@ -16,6 +16,8 @@ module Common.BlockParserTools exposing
     , reverseStack
     , shift
     , typeOfBlock
+    , updateMetaBegin
+    , updateMetaEnd
     )
 
 import Common.BasicSyntax as Basic
@@ -108,7 +110,7 @@ reduceStack state =
                 reduceStackAux state rest block1 block2
 
         block1 :: rest ->
-            { state | output = reverseContents block1 :: state.output, stack = rest }
+            { state | output = reverseContents (updateMetaEnd state.lineNumber block1) :: state.output, stack = rest }
 
         [] ->
             state
@@ -370,6 +372,38 @@ replaceMeta meta block =
 
         Block name blocks _ ->
             Block name blocks meta
+
+        BlockError s ->
+            BlockError s
+
+
+updateMetaBegin : Int -> Block -> Block
+updateMetaBegin k block =
+    case block of
+        Paragraph strings meta ->
+            Paragraph strings { meta | begin = k }
+
+        VerbatimBlock name strings meta ->
+            VerbatimBlock name strings { meta | begin = k }
+
+        Block name blocks meta ->
+            Block name blocks { meta | begin = k }
+
+        BlockError s ->
+            BlockError s
+
+
+updateMetaEnd : Int -> Block -> Block
+updateMetaEnd k block =
+    case block of
+        Paragraph strings meta ->
+            Paragraph strings { meta | end = k }
+
+        VerbatimBlock name strings meta ->
+            VerbatimBlock name strings { meta | end = k }
+
+        Block name blocks meta ->
+            Block name blocks { meta | end = k }
 
         BlockError s ->
             BlockError s
