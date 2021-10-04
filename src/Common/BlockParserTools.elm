@@ -236,16 +236,6 @@ blockLabel block =
             s
 
 
-blockLabelAtTopOfStack : List Block -> String
-blockLabelAtTopOfStack stack =
-    case List.head stack of
-        Nothing ->
-            "(no label)"
-
-        Just block ->
-            blockLabel block
-
-
 blockLabelAtBottomOfStack : List Block -> String
 blockLabelAtBottomOfStack stack =
     case List.head (List.reverse stack) of
@@ -254,21 +244,6 @@ blockLabelAtBottomOfStack stack =
 
         Just block ->
             blockLabel block
-
-
-sameKindOfBlock : Block -> Block -> Bool
-sameKindOfBlock a b =
-    typeOfBlock a == typeOfBlock b
-
-
-blockIsLikeTopOfStack : Block -> List Block -> Bool
-blockIsLikeTopOfStack block blocks =
-    case List.head blocks of
-        Nothing ->
-            False
-
-        Just block2 ->
-            sameKindOfBlock block block2
 
 
 reverseContents : Block -> Block

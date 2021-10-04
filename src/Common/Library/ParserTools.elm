@@ -227,7 +227,6 @@ oneChar =
 
 type Step state a
     = Loop state
-    | Done a
 
 
 loop : state -> (state -> Step state a) -> a
@@ -236,18 +235,12 @@ loop s nextState =
         Loop s_ ->
             loop s_ nextState
 
-        Done b ->
-            b
-
 
 mapLoop : (state -> Step state a) -> Step state a -> Step state a
 mapLoop f stepState =
     case stepState of
         Loop s ->
             f s
-
-        Done a ->
-            Done a
 
 
 {-| Return the longest prefix beginning with the supplied Char.

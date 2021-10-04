@@ -25,7 +25,6 @@ type ParseEnd
 type Action
     = Commit
     | CommitMarked
-    | CommitVerbatim String
     | ShiftText
     | ShiftText2
     | ShiftMarked

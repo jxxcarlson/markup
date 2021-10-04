@@ -239,7 +239,6 @@ type alias MXParser a =
 
 type Context
     = CArg String
-    | List
 
 
 type Problem

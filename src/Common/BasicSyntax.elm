@@ -1,6 +1,6 @@
 module Common.BasicSyntax exposing (..)
 
-import Common.Syntax exposing (Block(..), Expr(..), Meta, TextBlock(..))
+import Common.Syntax exposing (Block(..), Expr, TextBlock(..))
 
 
 type BasicBlock

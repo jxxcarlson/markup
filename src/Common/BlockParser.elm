@@ -1,6 +1,6 @@
 module Common.BlockParser exposing (classify, parse, runParser)
 
-import Common.BlockParserTools as BP exposing (State, Step(..), level)
+import Common.BlockParserTools as BP exposing (State, level)
 import Common.Debug exposing (debug1, debug2, debug3)
 import Common.Library.ParserTools as ParserTools
 import Common.Line as Line exposing (LineType(..))
@@ -47,28 +47,6 @@ classify language inVerbatimBlock str =
     { indent = leadingSpaces, lineType = lineType_, content = nibble str }
 
 
-classify1 : (String -> Line.LineType) -> Bool -> String -> { indent : Int, lineType : Line.LineType, content : String }
-classify1 lineType inVerbatimBlock str =
-    let
-        leadingSpaces =
-            Line.countLeadingSpaces str
-
-        nibble str_ =
-            String.dropLeft (String.length (ParserTools.nibble str_) + 1) str_
-
-        provisionalLineType =
-            lineType (String.dropLeft leadingSpaces str)
-
-        lineType_ =
-            if inVerbatimBlock && provisionalLineType == Line.BlankLine then
-                Line.VerbatimLine
-
-            else
-                provisionalLineType
-    in
-    { indent = leadingSpaces, lineType = lineType_, content = nibble str }
-
-
 getLineTypeParser : Language -> String -> Line.LineType
 getLineTypeParser language =
     case language of
@@ -85,9 +63,6 @@ getLineTypeParser language =
 nextStateAux : Language -> String -> State -> State
 nextStateAux language line state =
     let
-        _ =
-            debug2 "(state.indent, state.verbatimBlockInitialIndent)" ( state.verbatimBlockInitialIndent, state.indent )
-
         lineType =
             classify language state.inVerbatimBlock line |> debug2 "lineType (nextStateAux)"
 
@@ -132,10 +107,6 @@ nextStateAux language line state =
 
 
 nextStateAux2 indent line newLineType lineType state =
-    let
-        _ =
-            debug1 "newLineType" newLineType
-    in
     case newLineType of
         BeginBlock Line.AcceptFirstLine s ->
             let
@@ -162,14 +133,8 @@ nextStateAux2 indent line newLineType lineType state =
         BeginVerbatimBlock s ->
             if BP.level indent <= BP.blockLevelOfStackTop state.stack then
                 let
-                    _ =
-                        debug1 "(BeginVerbatimBlock)" s
-
                     yada =
                         Utility.takeUntil (\a -> BP.blockLabel a == s && BP.blockLevel a == BP.level indent) state.stack
-
-                    _ =
-                        yada.prefix |> BP.blockLabelAtBottomOfStack |> debug2 "yada.prefix, bottom label"
                 in
                 if BP.blockLabelAtBottomOfStack yada.prefix == s then
                     { state | indent = indent, verbatimBlockInitialIndent = indent + 3 } |> BP.reduceStack
@@ -290,51 +255,23 @@ handleBlankLine indent state =
 
 
 handleOrdinaryLine indent line state =
-    let
-        _ =
-            debug1 "!!! handleOrdinaryLine, (indent, line, inVerbatimBlock)" ( indent, line, state.inVerbatimBlock )
-    in
     if BP.level indent >= BP.blockLevelOfStackTop state.stack then
         case List.head state.stack of
             Nothing ->
-                let
-                    _ =
-                        debug1 "handleOrdinaryLine, (indent, line)" 1
-                in
                 BP.shift (Paragraph [ String.dropLeft indent (line ++ "\n") ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
 
             Just block ->
-                let
-                    _ =
-                        debug1 "handleOrdinaryLine, typeOfBlock" (BP.typeOfBlock block)
-                in
                 if List.member (BP.typeOfBlock block) [ P, B ] then
-                    let
-                        _ =
-                            debug1 "handleOrdinaryLine, (indent, line)" 2.1
-                    in
                     { state | stack = BP.appendLineAtTop (String.dropLeft indent (line ++ "\n")) state.stack, indent = indent }
 
                 else
-                    let
-                        _ =
-                            debug1 "handleOrdinaryLine, (indent, line)" 2.2
-                    in
                     BP.shift (Paragraph [ String.dropLeft indent (line ++ "\n") ] (Syntax.dummyMeta 0 0)) { state | indent = indent }
 
     else
-        let
-            _ =
-                debug1 "handleOrdinaryLine, (indent, line)" 3
-        in
         BP.shift (Paragraph [ line ++ "\n" ] (Syntax.dummyMeta 0 0)) (BP.reduceStack { state | indent = indent })
 
 
 handleVerbatimLine indent line state =
-    let
-        _ =
-            debug1 "handleVerbatimLine" line
-    in
     if BP.level indent >= BP.blockLevelOfStackTop state.stack then
         case List.head state.stack of
             Nothing ->

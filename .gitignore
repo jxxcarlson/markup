@@ -1,3 +1,4 @@
 elm-stuff/
 .idea/
 app/public/Main.js
+node_modules/
